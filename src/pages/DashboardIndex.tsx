@@ -4,6 +4,7 @@ import { Users, Calendar, DollarSign } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
+import LeaderPortalLink from '@/components/leader/LeaderPortalLink';
 
 const fetchDashboardStats = async () => {
   const today = new Date();
@@ -43,6 +44,8 @@ const DashboardIndex = () => {
         Bem-vindo, {session?.user?.email}! Aqui está um resumo da sua igreja.
       </p>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-8">
+        <LeaderPortalLink />
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total de Membros</CardTitle>
