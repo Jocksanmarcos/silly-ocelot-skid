@@ -241,3 +241,21 @@ export const ministrySchema = z.object({
 });
 
 export type MinistryFormValues = z.infer<typeof ministrySchema>;
+
+// Schemas para Configurações
+export const profileSettingsSchema = z.object({
+  full_name: z.string().min(3, { message: "O nome completo deve ter pelo menos 3 caracteres." }),
+  avatar_file: z.any().optional(),
+});
+
+export type ProfileSettingsFormValues = z.infer<typeof profileSettingsSchema>;
+
+export const securitySettingsSchema = z.object({
+  new_password: z.string().min(6, { message: "A nova senha deve ter pelo menos 6 caracteres." }),
+  confirm_password: z.string(),
+}).refine(data => data.new_password === data.confirm_password, {
+  message: "As senhas não coincidem.",
+  path: ["confirm_password"],
+});
+
+export type SecuritySettingsFormValues = z.infer<typeof securitySettingsSchema>;
