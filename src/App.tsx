@@ -25,6 +25,7 @@ import CellsPage from "./pages/CellsPage";
 import PublicCellsPage from "./pages/PublicCellsPage";
 import CellMembersPage from "./pages/CellMembersPage";
 import CellReportsPage from "./pages/CellReportsPage";
+import HierarchyPage from "./pages/HierarchyPage";
 
 const queryClient = new QueryClient();
 
@@ -61,6 +62,7 @@ const App = () => (
                 <Route path="/dashboard/cells/:id/members" element={<CellMembersPage />} />
                 <Route path="/dashboard/cells/:id/reports" element={<CellReportsPage />} />
                 <Route path="/dashboard/finances" element={<FinancesPage />} />
+                <Route path="/dashboard/hierarchy" element={<HierarchyPage />} />
               </Route>
             </Route>
 

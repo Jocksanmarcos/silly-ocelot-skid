@@ -12,6 +12,7 @@ export interface Member {
 export interface Profile {
   id: string;
   full_name?: string;
+  reports_to_id?: string | null;
 }
 
 export interface Event {
