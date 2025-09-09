@@ -1,6 +1,12 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { Member } from '@/types';
+import { Member, Family } from '@/types';
+
+// Definindo um tipo mais específico para a função de famílias
+type FamilyWithDetails = Family & {
+    members: Member[];
+    head?: { first_name: string; last_name: string } | null;
+};
 
 // Função para formatar a data para o padrão brasileiro
 const formatDate = (dateString: string | null | undefined) => {
@@ -67,4 +73,45 @@ export const generateGrowthChartPDF = (chartData: { name: string; "Novos Membros
     });
   
     doc.save('crescimento_de_membros.pdf');
+};
+
+// Gera o PDF da lista de famílias e seus membros
+export const generateFamiliesPDF = (families: FamilyWithDetails[]) => {
+    const doc = new jsPDF();
+    doc.text("Relatório de Núcleos Familiares", 14, 16);
+
+    const tableData: any[] = [];
+    families.forEach(family => {
+        if (family.members.length > 0) {
+            family.members.forEach((member, index) => {
+                tableData.push([
+                    index === 0 ? family.name : '',
+                    index === 0 ? (family.head ? `${family.head.first_name} ${family.head.last_name}` : 'N/D') : '',
+                    `${member.first_name} ${member.last_name}`,
+                    member.family_role || 'N/A'
+                ]);
+            });
+        } else {
+            tableData.push([
+                family.name,
+                family.head ? `${family.head.first_name} ${family.head.last_name}` : 'N/D',
+                '(Nenhum membro associado)',
+                ''
+            ]);
+        }
+    });
+
+    autoTable(doc, {
+        head: [['Nome da Família', 'Responsável', 'Membro', 'Vínculo']],
+        body: tableData,
+        startY: 20,
+        didParseCell: function (data) {
+            // Lógica para mesclar células da família e responsável
+            if (data.cell.raw === '') {
+                data.cell.styles.fillColor = '#ffffff'; // Cor de fundo para células vazias
+            }
+        }
+    });
+
+    doc.save('relatorio_familias.pdf');
 };

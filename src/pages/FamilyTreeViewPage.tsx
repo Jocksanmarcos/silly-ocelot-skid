@@ -3,8 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Family, Member } from "@/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, User, Users } from "lucide-react";
+import { ArrowLeft, FileDown, User, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { generateFamiliesPDF } from "@/lib/pdfGenerator";
 
 type FamilyWithDetails = Family & {
   members: Member[];
@@ -70,10 +72,21 @@ const FamilyTreeViewPage = () => {
           <ArrowLeft className="h-4 w-4" />
           Voltar para Gestão de Famílias
         </Link>
-        <h1 className="text-3xl font-bold">Visão Genealógica</h1>
-        <p className="mt-2 text-muted-foreground">
-          Visualize os núcleos familiares da comunidade. Total de {families?.length || 0} famílias cadastradas.
-        </p>
+        <div className="flex justify-between items-center">
+            <div>
+                <h1 className="text-3xl font-bold">Visão Genealógica</h1>
+                <p className="mt-2 text-muted-foreground">
+                Visualize os núcleos familiares da comunidade. Total de {families?.length || 0} famílias cadastradas.
+                </p>
+            </div>
+            <Button 
+                onClick={() => generateFamiliesPDF(families || [])}
+                disabled={!families || families.length === 0}
+            >
+                <FileDown className="mr-2 h-4 w-4" />
+                Exportar PDF
+            </Button>
+        </div>
       </div>
 
       {families && families.length > 0 ? (
