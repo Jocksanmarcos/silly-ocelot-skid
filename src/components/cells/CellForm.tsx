@@ -19,25 +19,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Cell } from "@/types";
+import { Cell, Profile } from "@/types";
 
 interface CellFormProps {
   onSubmit: (data: CellFormValues) => void;
   defaultValues?: Cell;
   isSubmitting: boolean;
+  profiles: Profile[];
 }
 
 const meetingDays = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
 const locationTypes = ["Residencial", "Online", "Na Igreja"];
 const ageGroups = ["Jovens", "Adolescentes", "Casais", "Mulheres", "Homens", "Todos os públicos"];
 
-const CellForm = ({ onSubmit, defaultValues, isSubmitting }: CellFormProps) => {
+const CellForm = ({ onSubmit, defaultValues, isSubmitting, profiles }: CellFormProps) => {
   const form = useForm<CellFormValues>({
     resolver: zodResolver(cellSchema),
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
-      leader_name: defaultValues?.leader_name || "",
+      leader_id: defaultValues?.leader_id || "",
       meeting_day: defaultValues?.meeting_day || "",
       meeting_time: defaultValues?.meeting_time || "",
       location_type: defaultValues?.location_type || "Residencial",
@@ -50,32 +51,39 @@ const CellForm = ({ onSubmit, defaultValues, isSubmitting }: CellFormProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nome da Célula</FormLabel>
-              <FormControl>
-                <Input placeholder="Ex: Célula Leão de Judá" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="leader_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nome do Líder</FormLabel>
-              <FormControl>
-                <Input placeholder="Nome completo do líder" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nome da Célula</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ex: Célula Leão de Judá" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="leader_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Líder</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl><SelectTrigger><SelectValue placeholder="Selecione o líder" /></SelectTrigger></FormControl>
+                  <SelectContent>
+                    {profiles.map(profile => (
+                      <SelectItem key={profile.id} value={profile.id}>{profile.full_name || profile.id}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <FormField
           control={form.control}
           name="description"

@@ -39,7 +39,7 @@ export type RegistrationFormValues = z.infer<typeof registrationSchema>;
 export const cellSchema = z.object({
     name: z.string().min(3, { message: "O nome da célula é obrigatório." }),
     description: z.string().optional(),
-    leader_name: z.string().min(3, { message: "O nome do líder é obrigatório." }),
+    leader_id: z.string().optional(),
     meeting_day: z.string().optional(),
     meeting_time: z.string().optional(),
     location_type: z.string().optional(),

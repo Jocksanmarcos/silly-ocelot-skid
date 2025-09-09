@@ -9,6 +9,11 @@ export interface Member {
   created_at: string;
 }
 
+export interface Profile {
+  id: string;
+  full_name?: string;
+}
+
 export interface Event {
   id: string;
   title: string;
@@ -36,7 +41,7 @@ export interface Cell {
   id: string;
   name: string;
   description?: string | null;
-  leader_name: string;
+  leader_id?: string | null;
   meeting_day?: string | null;
   meeting_time?: string | null;
   location_type?: string | null;
@@ -44,6 +49,7 @@ export interface Cell {
   age_group?: string | null;
   status: string;
   created_at: string;
+  profiles?: { full_name: string } | null;
 }
 
 export interface CellMember {
