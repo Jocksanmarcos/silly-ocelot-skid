@@ -67,6 +67,7 @@ import EscalasPage from "./pages/EscalasPage";
 import EscalaDetailPage from "./pages/EscalaDetailPage";
 import Galeria from "./pages/Galeria";
 import Semear from "./pages/Semear";
+import EditorPage from "./pages/EditorPage";
 
 const queryClient = new QueryClient();
 
@@ -100,6 +101,7 @@ const App = () => (
               </Route>
               
               <Route path="/login" element={<Login />} />
+              <Route path="/editor" element={<EditorPage />} />
               
               <Route element={<ProtectedRoute />}>
                 <Route element={<Layout />}>
