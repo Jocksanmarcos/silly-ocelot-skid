@@ -7,12 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Users } from "lucide-react";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable, getPaginationRowModel } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { showSuccess, showError } from "@/utils/toast";
 import FamilyForm from "@/components/families/FamilyForm";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "react-router-dom";
 
 const fetchFamilies = async (): Promise<Family[]> => {
   const { data, error } = await supabase.from("families").select("*, members(first_name, last_name)").order("name", { ascending: true });
@@ -125,13 +126,21 @@ const FamiliesPage = () => {
           <h1 className="text-3xl font-bold">Gestão de Famílias</h1>
           <p className="mt-2 text-muted-foreground">Crie e gerencie os núcleos familiares da sua comunidade.</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) setSelectedFamily(null); }}>
-          <DialogTrigger asChild><Button>Criar Família</Button></DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader><DialogTitle>{selectedFamily ? "Editar Família" : "Criar Nova Família"}</DialogTitle></DialogHeader>
-            <FamilyForm onSubmit={handleSubmit} defaultValues={selectedFamily || undefined} isSubmitting={mutation.isPending} members={members || []} />
-          </DialogContent>
-        </Dialog>
+        <div className="flex items-center gap-2">
+            <Button variant="outline" asChild>
+                <Link to="/dashboard/families/tree">
+                    <Users className="mr-2 h-4 w-4" />
+                    Visão Genealógica
+                </Link>
+            </Button>
+            <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) setSelectedFamily(null); }}>
+            <DialogTrigger asChild><Button>Criar Família</Button></DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader><DialogTitle>{selectedFamily ? "Editar Família" : "Criar Nova Família"}</DialogTitle></DialogHeader>
+                <FamilyForm onSubmit={handleSubmit} defaultValues={selectedFamily || undefined} isSubmitting={mutation.isPending} members={members || []} />
+            </DialogContent>
+            </Dialog>
+        </div>
       </div>
 
       <div className="rounded-md border">
@@ -153,7 +162,7 @@ const FamiliesPage = () => {
         <AlertDialogContent>
           <AlertDialogHeader><AlertDialogTitle>Você tem certeza?</AlertDialogTitle><AlertDialogDescription>Esta ação não pode ser desfeita. Isso removerá permanentemente a família.</AlertDialogDescription></AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setSelectedFamily(null)}>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setSelectedFamily(null)}>Cancelar</Cancel>
             <AlertDialogAction onClick={() => selectedFamily && deleteMutation.mutate(selectedFamily.id)} disabled={deleteMutation.isPending}>{deleteMutation.isPending ? "Removendo..." : "Remover"}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
