@@ -7,6 +7,7 @@ export const memberSchema = z.object({
   phone: z.string().optional(),
   address: z.string().optional(),
   membership_date: z.string().optional(),
+  date_of_birth: z.string().optional(),
 });
 
 export type MemberFormValues = z.infer<typeof memberSchema>;

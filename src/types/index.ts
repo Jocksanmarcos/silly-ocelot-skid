@@ -6,6 +6,7 @@ export interface Member {
   phone?: string | null;
   address?: string | null;
   membership_date?: string | null;
+  date_of_birth?: string | null;
   created_at: string;
 }
 

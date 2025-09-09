@@ -29,6 +29,7 @@ const MemberForm = ({ onSubmit, defaultValues, isSubmitting }: MemberFormProps) 
       phone: defaultValues?.phone || "",
       address: defaultValues?.address || "",
       membership_date: defaultValues?.membership_date ? new Date(defaultValues.membership_date).toISOString().split('T')[0] : "",
+      date_of_birth: defaultValues?.date_of_birth ? new Date(defaultValues.date_of_birth).toISOString().split('T')[0] : "",
     },
   });
 
@@ -102,19 +103,34 @@ const MemberForm = ({ onSubmit, defaultValues, isSubmitting }: MemberFormProps) 
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="membership_date"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Data de Admissão</FormLabel>
-              <FormControl>
-                <Input type="date" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="membership_date"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Data de Admissão</FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="date_of_birth"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Data de Nascimento</FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Salvando..." : "Salvar"}
         </Button>
