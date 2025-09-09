@@ -9,11 +9,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PlusCircle, HeartHandshake } from "lucide-react";
+import { PlusCircle, HeartHandshake, ShieldQuestion } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import ItemCard from "@/components/mural/ItemCard";
 import DonationForm from "@/components/mural/DonationForm";
 import MyDonationsTab from "@/components/mural/MyDonationsTab";
+import { Link } from "react-router-dom";
 
 const fetchItems = async (): Promise<GenerosityItem[]> => {
   const { data, error } = await supabase
@@ -168,15 +169,23 @@ const MuralDaGenerosidadePage = () => {
             <TabsTrigger value="doacoes">Todas as Doações</TabsTrigger>
             <TabsTrigger value="meus-itens">Minhas Doações</TabsTrigger>
           </TabsList>
-          <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) setSelectedItem(null); }}>
-            <DialogTrigger asChild>
-              <Button><PlusCircle className="mr-2 h-4 w-4" /> Oferecer Doação</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader><DialogTitle>{selectedItem ? 'Editar Item' : 'Oferecer um item para doação'}</DialogTitle></DialogHeader>
-              <DonationForm onSubmit={handleSubmit} isSubmitting={mutation.isPending} />
-            </DialogContent>
-          </Dialog>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" asChild>
+              <Link to="/pedir-ajuda">
+                <ShieldQuestion className="mr-2 h-4 w-4" />
+                Pedir Ajuda
+              </Link>
+            </Button>
+            <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) setSelectedItem(null); }}>
+              <DialogTrigger asChild>
+                <Button><PlusCircle className="mr-2 h-4 w-4" /> Oferecer Doação</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader><DialogTitle>{selectedItem ? 'Editar Item' : 'Oferecer um item para doação'}</DialogTitle></DialogHeader>
+                <DonationForm onSubmit={handleSubmit} isSubmitting={mutation.isPending} />
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
         <TabsContent value="doacoes">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

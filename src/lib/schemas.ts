@@ -269,3 +269,10 @@ export const donationSchema = z.object({
 });
 
 export type DonationFormValues = z.infer<typeof donationSchema>;
+
+export const generosityRequestSchema = z.object({
+  request_details: z.string().min(10, { message: "Por favor, descreva sua necessidade com um pouco mais de detalhe." }),
+  is_anonymous: z.boolean().default(true),
+});
+
+export type GenerosityRequestFormValues = z.infer<typeof generosityRequestSchema>;

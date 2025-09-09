@@ -59,6 +59,8 @@ import AppearancePage from "./pages/settings/AppearancePage";
 import ProfileSettingsPage from "./pages/settings/ProfileSettingsPage";
 import SecuritySettingsPage from "./pages/settings/SecuritySettingsPage";
 import MuralDaGenerosidadePage from "./pages/MuralDaGenerosidadePage";
+import PedirAjudaPage from "./pages/PedirAjudaPage";
+import GenerosidadeAdminPage from "./pages/GenerosidadeAdminPage";
 
 const queryClient = new QueryClient();
 
@@ -96,6 +98,7 @@ const App = () => (
                   <Route path="/cursos/:id" element={<CourseStudentViewPage />} />
                   <Route path="/cursos/:courseId/aula/:lessonId" element={<CoursePlayerPage />} />
                   <Route path="/mural-da-generosidade" element={<MuralDaGenerosidadePage />} />
+                  <Route path="/pedir-ajuda" element={<PedirAjudaPage />} />
                 </Route>
 
                 <Route element={<PortalLayout />}>
@@ -109,6 +112,7 @@ const App = () => (
                   <Route path="/dashboard" element={<DashboardIndex />} />
                   <Route path="/dashboard/agenda" element={<PastoralAgendaPage />} />
                   <Route path="/dashboard/aconselhamento" element={<AconselhamentoAdminPage />} />
+                  <Route path="/dashboard/generosidade" element={<GenerosidadeAdminPage />} />
                   <Route path="/dashboard/visitors" element={<VisitorsPage />} />
                   <Route path="/dashboard/members" element={<MembersPage />} />
                   <Route path="/dashboard/members/dashboard" element={<MembersDashboardPage />} />

@@ -7,6 +7,7 @@ const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Painel" },
   { href: "/dashboard/agenda", icon: Calendar, label: "Agenda" },
   { href: "/dashboard/aconselhamento", icon: HeartHandshake, label: "Aconselhamento" },
+  { href: "/dashboard/generosidade", icon: HeartHandshake, label: "Generosidade" },
   { href: "/dashboard/visitors", icon: Handshake, label: "Recepção" },
   { href: "/dashboard/members", icon: Users, label: "Pessoas" },
   { href: "/dashboard/journey", icon: TrendingUp, label: "Jornada" },
