@@ -15,6 +15,7 @@ import SongForm from "@/components/louvor/SongForm";
 import { Link } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const fetchLouvorData = async () => {
   const songsPromise = supabase.from("songs").select("*").order("title");
@@ -34,7 +35,9 @@ const fetchLouvorData = async () => {
 const LouvorPage = () => {
   const queryClient = useQueryClient();
   const [isSongDialogOpen, setIsSongDialogOpen] = useState(false);
+  const [isTeamDialogOpen, setIsTeamDialogOpen] = useState(false);
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
+  const [newTeamName, setNewTeamName] = useState("");
   const [newMember, setNewMember] = useState({ profileId: '', teamId: '', role: '' });
 
   const { data, isLoading } = useQuery({
@@ -55,6 +58,20 @@ const LouvorPage = () => {
       showSuccess(`Música ${selectedSong ? 'atualizada' : 'adicionada'} com sucesso!`);
       setIsSongDialogOpen(false);
       setSelectedSong(null);
+    },
+    onError: (error: Error) => showError(error.message),
+  });
+
+  const teamMutation = useMutation({
+    mutationFn: async (name: string) => {
+      const { error } = await supabase.from("worship_teams").insert({ name });
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["louvorData"] });
+      showSuccess("Equipe criada com sucesso!");
+      setIsTeamDialogOpen(false);
+      setNewTeamName("");
     },
     onError: (error: Error) => showError(error.message),
   });
@@ -145,7 +162,19 @@ const LouvorPage = () => {
         </TabsContent>
         <TabsContent value="equipes">
           <Card>
-            <CardHeader><CardTitle>Adicionar Membro a uma Equipe</CardTitle></CardHeader>
+            <CardHeader className="flex-row justify-between items-center">
+              <CardTitle>Adicionar Membro a uma Equipe</CardTitle>
+              <Dialog open={isTeamDialogOpen} onOpenChange={setIsTeamDialogOpen}>
+                <DialogTrigger asChild><Button variant="outline" size="sm"><PlusCircle className="mr-2 h-4 w-4" /> Nova Equipe</Button></DialogTrigger>
+                <DialogContent className="sm:max-w-xs"><DialogHeader><DialogTitle>Criar Nova Equipe</DialogTitle></DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <Label htmlFor="team-name">Nome da Equipe</Label>
+                    <Input id="team-name" value={newTeamName} onChange={(e) => setNewTeamName(e.target.value)} />
+                  </div>
+                  <Button onClick={() => teamMutation.mutate(newTeamName)} disabled={teamMutation.isPending}>Salvar</Button>
+                </DialogContent>
+              </Dialog>
+            </CardHeader>
             <CardContent className="flex items-end gap-2">
               <div className="flex-1"><label className="text-sm font-medium">Membro</label><Select onValueChange={(value) => setNewMember(p => ({...p, profileId: value}))}><SelectTrigger><SelectValue placeholder="Selecione um membro" /></SelectTrigger><SelectContent>{data?.profiles?.map(p => <SelectItem key={p.id} value={p.id}>{p.full_name}</SelectItem>)}</SelectContent></Select></div>
               <div className="flex-1"><label className="text-sm font-medium">Equipe</label><Select onValueChange={(value) => setNewMember(p => ({...p, teamId: value}))}><SelectTrigger><SelectValue placeholder="Selecione a equipe" /></SelectTrigger><SelectContent>{data?.teams?.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}</SelectContent></Select></div>
