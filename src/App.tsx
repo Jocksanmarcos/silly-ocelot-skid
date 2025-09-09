@@ -9,10 +9,14 @@ import Eventos from "./pages/Eventos";
 import Contato from "./pages/Contato";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
+import DashboardIndex from "./pages/DashboardIndex";
 import { AuthProvider } from "./contexts/AuthProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
+import DashboardLayout from "./components/DashboardLayout";
+import MembersPage from "./pages/MembersPage";
+import EventsPage from "./pages/EventsPage";
+import FinancesPage from "./pages/FinancesPage";
 
 const queryClient = new QueryClient();
 
@@ -34,7 +38,12 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             
             <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route element={<DashboardLayout />}>
+                <Route path="/dashboard" element={<DashboardIndex />} />
+                <Route path="/dashboard/members" element={<MembersPage />} />
+                <Route path="/dashboard/events" element={<EventsPage />} />
+                <Route path="/dashboard/finances" element={<FinancesPage />} />
+              </Route>
             </Route>
 
             <Route path="*" element={<NotFound />} />
