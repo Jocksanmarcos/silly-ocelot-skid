@@ -4,7 +4,9 @@ import { Users, Calendar, DollarSign } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
-import LeaderPortalLink from '@/components/leader/LeaderPortalLink';
+import { useUserRoles } from '@/hooks/useUserRoles';
+import LeaderDashboardWidget from '@/components/dashboard/LeaderDashboardWidget';
+import SupervisorDashboardWidget from '@/components/dashboard/SupervisorDashboardWidget';
 
 const fetchDashboardStats = async () => {
   const today = new Date();
@@ -32,19 +34,29 @@ const fetchDashboardStats = async () => {
 
 const DashboardIndex = () => {
   const { session } = useAuth();
-  const { data, isLoading } = useQuery({
+  const { data: stats, isLoading: isLoadingStats } = useQuery({
     queryKey: ['dashboardStats'],
     queryFn: fetchDashboardStats,
   });
+  const { leaderCells, supervisedCells, isLeader, isSupervisor, isLoading: isLoadingRoles } = useUserRoles();
+
+  const isLoading = isLoadingStats || isLoadingRoles;
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold">Painel de Gestão</h1>
-      <p className="mt-2 text-muted-foreground">
-        Bem-vindo, {session?.user?.email}! Aqui está um resumo da sua igreja.
-      </p>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-8">
-        <LeaderPortalLink />
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold">Painel de Gestão</h1>
+        <p className="mt-2 text-muted-foreground">
+          Bem-vindo, {session?.user?.email}!
+        </p>
+      </div>
+      
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {isLoading ? <Skeleton className="h-48 col-span-full" /> : (
+          <>
+            {isLeader && leaderCells.map(cell => <LeaderDashboardWidget key={cell.id} cell={cell} />)}
+          </>
+        )}
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -52,7 +64,7 @@ const DashboardIndex = () => {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {isLoading ? <Skeleton className="h-8 w-1/2" /> : <div className="text-2xl font-bold">{data?.membersCount}</div>}
+            {isLoading ? <Skeleton className="h-8 w-1/2" /> : <div className="text-2xl font-bold">{stats?.membersCount}</div>}
             <p className="text-xs text-muted-foreground">Membros cadastrados no sistema</p>
           </CardContent>
         </Card>
@@ -62,7 +74,7 @@ const DashboardIndex = () => {
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {isLoading ? <Skeleton className="h-8 w-1/2" /> : <div className="text-2xl font-bold">{data?.eventsCount}</div>}
+            {isLoading ? <Skeleton className="h-8 w-1/2" /> : <div className="text-2xl font-bold">{stats?.eventsCount}</div>}
             <p className="text-xs text-muted-foreground">Eventos futuros agendados</p>
           </CardContent>
         </Card>
@@ -72,11 +84,17 @@ const DashboardIndex = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {isLoading ? <Skeleton className="h-8 w-1/2" /> : <div className="text-2xl font-bold">R$ {data?.monthlyTotal.toFixed(2).replace('.', ',')}</div>}
+            {isLoading ? <Skeleton className="h-8 w-1/2" /> : <div className="text-2xl font-bold">R$ {stats?.monthlyTotal.toFixed(2).replace('.', ',')}</div>}
             <p className="text-xs text-muted-foreground">Total arrecadado no mês atual</p>
           </CardContent>
         </Card>
       </div>
+
+      {isLoading ? <Skeleton className="h-64 w-full" /> : (
+        <>
+          {isSupervisor && <SupervisorDashboardWidget cells={supervisedCells} />}
+        </>
+      )}
     </div>
   );
 };
