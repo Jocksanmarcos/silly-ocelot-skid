@@ -150,7 +150,7 @@ const CoursesPage = () => {
         <AlertDialogContent>
           <AlertDialogHeader><AlertDialogTitle>Você tem certeza?</AlertDialogTitle><AlertDialogDescription>Esta ação não pode ser desfeita. Isso removerá permanentemente o curso e todas as suas aulas.</AlertDialogDescription></AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setSelectedCourse(null)}>Cancelar</Cancel>
+            <AlertDialogCancel onClick={() => setSelectedCourse(null)}>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={() => selectedCourse && deleteMutation.mutate(selectedCourse.id)} disabled={deleteMutation.isPending}>{deleteMutation.isPending ? "Removendo..." : "Remover"}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
