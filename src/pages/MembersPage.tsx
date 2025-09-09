@@ -30,11 +30,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, BarChart } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { showSuccess, showError } from "@/utils/toast";
 import MemberForm from "@/components/members/MemberForm";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "react-router-dom";
 
 const fetchMembers = async (): Promise<Member[]> => {
   const { data, error } = await supabase.from("members").select("*").order("created_at", { ascending: false });
@@ -157,24 +158,32 @@ const MembersPage = () => {
           <h1 className="text-3xl font-bold">Gestão de Membros</h1>
           <p className="mt-2 text-muted-foreground">Adicione, visualize e gerencie os membros da sua igreja.</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={(open) => {
-          setIsDialogOpen(open);
-          if (!open) setSelectedMember(null);
-        }}>
-          <DialogTrigger asChild>
-            <Button>Adicionar Membro</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{selectedMember ? "Editar Membro" : "Adicionar Novo Membro"}</DialogTitle>
-            </DialogHeader>
-            <MemberForm 
-              onSubmit={handleSubmit} 
-              defaultValues={selectedMember || undefined}
-              isSubmitting={mutation.isPending}
-            />
-          </DialogContent>
-        </Dialog>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" asChild>
+            <Link to="/dashboard/members/dashboard">
+              <BarChart className="mr-2 h-4 w-4" />
+              Painel
+            </Link>
+          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={(open) => {
+            setIsDialogOpen(open);
+            if (!open) setSelectedMember(null);
+          }}>
+            <DialogTrigger asChild>
+              <Button>Adicionar Membro</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{selectedMember ? "Editar Membro" : "Adicionar Novo Membro"}</DialogTitle>
+              </DialogHeader>
+              <MemberForm 
+                onSubmit={handleSubmit} 
+                defaultValues={selectedMember || undefined}
+                isSubmitting={mutation.isPending}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <MembersDataTable columns={columns} data={members || []} />

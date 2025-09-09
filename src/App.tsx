@@ -15,6 +15,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import DashboardLayout from "./components/DashboardLayout";
 import MembersPage from "./pages/MembersPage";
+import MembersDashboardPage from "./pages/MembersDashboardPage";
 import EventsPage from "./pages/EventsPage";
 import FinancesPage from "./pages/FinancesPage";
 import EventDetailPage from "./pages/EventDetailPage";
@@ -56,6 +57,7 @@ const App = () => (
               <Route element={<DashboardLayout />}>
                 <Route path="/dashboard" element={<DashboardIndex />} />
                 <Route path="/dashboard/members" element={<MembersPage />} />
+                <Route path="/dashboard/members/dashboard" element={<MembersDashboardPage />} />
                 <Route path="/dashboard/events" element={<EventsPage />} />
                 <Route path="/dashboard/events/:id/registrations" element={<EventRegistrationsPage />} />
                 <Route path="/dashboard/cells" element={<CellsPage />} />
