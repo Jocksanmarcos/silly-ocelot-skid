@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Church, Users, Calendar, DollarSign, LayoutDashboard, LogOut, Home, Sitemap, HeartHandshake, GraduationCap, Handshake, TrendingUp, Archive, BookOpen } from "lucide-react";
+import { Church, Users, Calendar, DollarSign, LayoutDashboard, LogOut, Home, Sitemap, HeartHandshake, GraduationCap, Handshake, TrendingUp, Archive, BookOpen, Settings } from "lucide-react";
 import { Button } from "./ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -21,6 +21,10 @@ const navItems = [
   { href: "/dashboard/hierarchy", icon: Sitemap, label: "Hierarquia" },
 ];
 
+const bottomNavItems = [
+    { href: "/dashboard/settings", icon: Settings, label: "Configurações" },
+];
+
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -30,6 +34,21 @@ const Sidebar = () => {
     navigate('/');
   };
 
+  const renderLink = (item: typeof navItems[0]) => (
+    <Link
+      key={item.href}
+      to={item.href}
+      className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${
+        location.pathname.startsWith(item.href) && (item.href !== '/dashboard' || location.pathname === '/dashboard')
+          ? "bg-muted text-primary"
+          : "text-muted-foreground"
+      }`}
+    >
+      <item.icon className="h-4 w-4" />
+      {item.label}
+    </Link>
+  );
+
   return (
     <aside className="hidden md:flex flex-col w-64 bg-background border-r">
       <div className="p-4 border-b">
@@ -38,24 +57,14 @@ const Sidebar = () => {
           <span className="font-bold">CBN Kerigma Gestão</span>
         </Link>
       </div>
-      <nav className="flex-1 p-4 space-y-2">
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            to={item.href}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${
-              location.pathname.startsWith(item.href) && (item.href !== '/dashboard' || location.pathname === '/dashboard')
-                ? "bg-muted text-primary"
-                : "text-muted-foreground"
-            }`}
-          >
-            <item.icon className="h-4 w-4" />
-            {item.label}
-          </Link>
-        ))}
+      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+        {navItems.map(renderLink)}
       </nav>
       <div className="p-4 border-t">
-        <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
+        <nav className="space-y-2">
+            {bottomNavItems.map(renderLink)}
+        </nav>
+        <Button variant="ghost" className="w-full justify-start mt-2" onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
           Sair
         </Button>

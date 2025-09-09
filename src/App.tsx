@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Sobre from "./pages/Sobre";
 import Eventos from "./pages/Eventos";
@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import DashboardIndex from "./pages/DashboardIndex";
 import { AuthProvider } from "./contexts/AuthProvider";
+import { ThemeProvider } from "./contexts/ThemeProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import DashboardLayout from "./components/DashboardLayout";
@@ -53,6 +54,10 @@ import PortalPerfilPage from "./pages/portal/PortalPerfilPage";
 import AssetDetailPage from "./pages/AssetDetailPage";
 import PatrimonioSettingsPage from "./pages/PatrimonioSettingsPage";
 import FinancesDashboardPage from "./pages/FinancesDashboardPage";
+import SettingsLayout from "./components/settings/SettingsLayout";
+import AppearancePage from "./pages/settings/AppearancePage";
+import ProfileSettingsPage from "./pages/settings/ProfileSettingsPage";
+import SecuritySettingsPage from "./pages/settings/SecuritySettingsPage";
 
 const queryClient = new QueryClient();
 
@@ -62,74 +67,81 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route element={<Layout />}>
-              <Route path="/" element={<Index />} />
-              <Route path="/sobre" element={<Sobre />} />
-              <Route path="/celulas" element={<PublicCellsPage />} />
-              <Route path="/eventos" element={<Eventos />} />
-              <Route path="/eventos/:id" element={<EventDetailPage />} />
-              <Route path="/cursos" element={<PublicCoursesPage />} />
-              <Route path="/agenda" element={<PublicAgendaPage />} />
-              <Route path="/aconselhamento" element={<AconselhamentoPage />} />
-              <Route path="/biblioteca" element={<PublicBibliotecaPage />} />
-              <Route path="/voluntariado" element={<PublicVoluntariadoPage />} />
-              <Route path="/contato" element={<Contato />} />
-              <Route path="/inscricao/:id" element={<RegistrationConfirmationPage />} />
-              <Route path="/payment/success" element={<PaymentStatusPage />} />
-              <Route path="/payment/failure" element={<PaymentStatusPage />} />
-              <Route path="/payment/pending" element={<PaymentStatusPage />} />
-            </Route>
-            
-            <Route path="/login" element={<Login />} />
-            
-            <Route element={<ProtectedRoute />}>
+        <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+          <AuthProvider>
+            <Routes>
               <Route element={<Layout />}>
-                <Route path="/cursos/:id" element={<CourseStudentViewPage />} />
-                <Route path="/cursos/:courseId/aula/:lessonId" element={<CoursePlayerPage />} />
+                <Route path="/" element={<Index />} />
+                <Route path="/sobre" element={<Sobre />} />
+                <Route path="/celulas" element={<PublicCellsPage />} />
+                <Route path="/eventos" element={<Eventos />} />
+                <Route path="/eventos/:id" element={<EventDetailPage />} />
+                <Route path="/cursos" element={<PublicCoursesPage />} />
+                <Route path="/agenda" element={<PublicAgendaPage />} />
+                <Route path="/aconselhamento" element={<AconselhamentoPage />} />
+                <Route path="/biblioteca" element={<PublicBibliotecaPage />} />
+                <Route path="/voluntariado" element={<PublicVoluntariadoPage />} />
+                <Route path="/contato" element={<Contato />} />
+                <Route path="/inscricao/:id" element={<RegistrationConfirmationPage />} />
+                <Route path="/payment/success" element={<PaymentStatusPage />} />
+                <Route path="/payment/failure" element={<PaymentStatusPage />} />
+                <Route path="/payment/pending" element={<PaymentStatusPage />} />
+              </Route>
+              
+              <Route path="/login" element={<Login />} />
+              
+              <Route element={<ProtectedRoute />}>
+                <Route element={<Layout />}>
+                  <Route path="/cursos/:id" element={<CourseStudentViewPage />} />
+                  <Route path="/cursos/:courseId/aula/:lessonId" element={<CoursePlayerPage />} />
+                </Route>
+
+                <Route element={<PortalLayout />}>
+                  <Route path="/portal" element={<PortalIndex />} />
+                  <Route path="/portal/cursos" element={<PortalCursosPage />} />
+                  <Route path="/portal/celula" element={<PortalCelulaPage />} />
+                  <Route path="/portal/perfil" element={<PortalPerfilPage />} />
+                </Route>
+
+                <Route element={<DashboardLayout />}>
+                  <Route path="/dashboard" element={<DashboardIndex />} />
+                  <Route path="/dashboard/agenda" element={<PastoralAgendaPage />} />
+                  <Route path="/dashboard/aconselhamento" element={<AconselhamentoAdminPage />} />
+                  <Route path="/dashboard/visitors" element={<VisitorsPage />} />
+                  <Route path="/dashboard/members" element={<MembersPage />} />
+                  <Route path="/dashboard/members/dashboard" element={<MembersDashboardPage />} />
+                  <Route path="/dashboard/journey" element={<MemberJourneyPage />} />
+                  <Route path="/dashboard/events" element={<EventsPage />} />
+                  <Route path="/dashboard/events/:id/registrations" element={<EventRegistrationsPage />} />
+                  <Route path="/dashboard/cells" element={<CellsPage />} />
+                  <Route path="/dashboard/cells/:id/members" element={<CellMembersPage />} />
+                  <Route path="/dashboard/cells/:id/reports" element={<CellReportsPage />} />
+                  <Route path="/dashboard/finances" element={<FinancesPage />} />
+                  <Route path="/dashboard/finances/dashboard" element={<FinancesDashboardPage />} />
+                  <Route path="/dashboard/hierarchy" element={<HierarchyPage />} />
+                  <Route path="/dashboard/families" element={<FamiliesPage />} />
+                  <Route path="/dashboard/families/tree" element={<FamilyTreeViewPage />} />
+                  <Route path="/dashboard/courses" element={<CoursesPage />} />
+                  <Route path="/dashboard/courses/:id/lessons" element={<LessonsPage />} />
+                  <Route path="/dashboard/patrimonio" element={<PatrimonioPage />} />
+                  <Route path="/dashboard/patrimonio/settings" element={<PatrimonioSettingsPage />} />
+                  <Route path="/dashboard/patrimonio/:id" element={<AssetDetailPage />} />
+                  <Route path="/dashboard/biblioteca" element={<BibliotecaPage />} />
+                  <Route path="/dashboard/voluntariado" element={<VoluntariadoAdminPage />} />
+                  
+                  <Route path="/dashboard/settings" element={<SettingsLayout />}>
+                    <Route index element={<Navigate to="appearance" replace />} />
+                    <Route path="appearance" element={<AppearancePage />} />
+                    <Route path="profile" element={<ProfileSettingsPage />} />
+                    <Route path="security" element={<SecuritySettingsPage />} />
+                  </Route>
+                </Route>
               </Route>
 
-              {/* Rotas do Portal do Membro */}
-              <Route element={<PortalLayout />}>
-                <Route path="/portal" element={<PortalIndex />} />
-                <Route path="/portal/cursos" element={<PortalCursosPage />} />
-                <Route path="/portal/celula" element={<PortalCelulaPage />} />
-                <Route path="/portal/perfil" element={<PortalPerfilPage />} />
-              </Route>
-
-              {/* Rotas do Painel Administrativo */}
-              <Route element={<DashboardLayout />}>
-                <Route path="/dashboard" element={<DashboardIndex />} />
-                <Route path="/dashboard/agenda" element={<PastoralAgendaPage />} />
-                <Route path="/dashboard/aconselhamento" element={<AconselhamentoAdminPage />} />
-                <Route path="/dashboard/visitors" element={<VisitorsPage />} />
-                <Route path="/dashboard/members" element={<MembersPage />} />
-                <Route path="/dashboard/members/dashboard" element={<MembersDashboardPage />} />
-                <Route path="/dashboard/journey" element={<MemberJourneyPage />} />
-                <Route path="/dashboard/events" element={<EventsPage />} />
-                <Route path="/dashboard/events/:id/registrations" element={<EventRegistrationsPage />} />
-                <Route path="/dashboard/cells" element={<CellsPage />} />
-                <Route path="/dashboard/cells/:id/members" element={<CellMembersPage />} />
-                <Route path="/dashboard/cells/:id/reports" element={<CellReportsPage />} />
-                <Route path="/dashboard/finances" element={<FinancesPage />} />
-                <Route path="/dashboard/finances/dashboard" element={<FinancesDashboardPage />} />
-                <Route path="/dashboard/hierarchy" element={<HierarchyPage />} />
-                <Route path="/dashboard/families" element={<FamiliesPage />} />
-                <Route path="/dashboard/families/tree" element={<FamilyTreeViewPage />} />
-                <Route path="/dashboard/courses" element={<CoursesPage />} />
-                <Route path="/dashboard/courses/:id/lessons" element={<LessonsPage />} />
-                <Route path="/dashboard/patrimonio" element={<PatrimonioPage />} />
-                <Route path="/dashboard/patrimonio/settings" element={<PatrimonioSettingsPage />} />
-                <Route path="/dashboard/patrimonio/:id" element={<AssetDetailPage />} />
-                <Route path="/dashboard/biblioteca" element={<BibliotecaPage />} />
-                <Route path="/dashboard/voluntariado" element={<VoluntariadoAdminPage />} />
-              </Route>
-            </Route>
-
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
+        </ThemeProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
