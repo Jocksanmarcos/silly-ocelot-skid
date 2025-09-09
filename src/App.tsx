@@ -44,6 +44,7 @@ import AconselhamentoAdminPage from "./pages/AconselhamentoAdminPage";
 import BibliotecaPage from "./pages/BibliotecaPage";
 import PublicBibliotecaPage from "./pages/PublicBibliotecaPage";
 import VoluntariadoAdminPage from "./pages/VoluntariadoAdminPage";
+import PublicVoluntariadoPage from "./pages/PublicVoluntariadoPage";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +66,7 @@ const App = () => (
               <Route path="/agenda" element={<PublicAgendaPage />} />
               <Route path="/aconselhamento" element={<AconselhamentoPage />} />
               <Route path="/biblioteca" element={<PublicBibliotecaPage />} />
+              <Route path="/voluntariado" element={<PublicVoluntariadoPage />} />
               <Route path="/contato" element={<Contato />} />
               <Route path="/inscricao/:id" element={<RegistrationConfirmationPage />} />
               <Route path="/payment/success" element={<PaymentStatusPage />} />

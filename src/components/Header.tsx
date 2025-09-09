@@ -15,6 +15,7 @@ const Header = () => {
     { href: "/cursos", label: "Cursos" },
     { href: "/agenda", label: "Agenda" },
     { href: "/biblioteca", label: "Biblioteca" },
+    { href: "/voluntariado", label: "Voluntariado" },
     { href: "/aconselhamento", label: "Aconselhamento" },
     { href: "/contato", label: "Contato" },
   ];

@@ -12,6 +12,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { showSuccess, showError } from "@/utils/toast";
 import MinistryForm from "@/components/voluntariado/MinistryForm";
 import { PlusCircle } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 const fetchMinistries = async (): Promise<Ministry[]> => {
   const { data, error } = await supabase.from("ministries").select("*, profiles(full_name)").order("name");
@@ -31,6 +33,8 @@ const fetchProfiles = async (): Promise<Profile[]> => {
   return data;
 };
 
+const volunteerStatuses: Volunteer['status'][] = ['pending', 'approved', 'inactive'];
+
 const VoluntariadoAdminPage = () => {
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -40,7 +44,7 @@ const VoluntariadoAdminPage = () => {
   const { data: volunteers, isLoading: isLoadingVolunteers } = useQuery({ queryKey: ["volunteers"], queryFn: fetchVolunteers });
   const { data: profiles, isLoading: isLoadingProfiles } = useQuery({ queryKey: ["profilesForMinistries"], queryFn: fetchProfiles });
 
-  const mutation = useMutation({
+  const ministryMutation = useMutation({
     mutationFn: async (formData: { data: MinistryFormValues; id?: string }) => {
       const { data, id } = formData;
       const { error } = id
@@ -57,13 +61,25 @@ const VoluntariadoAdminPage = () => {
     onError: (error: Error) => showError(error.message),
   });
 
+  const statusMutation = useMutation({
+    mutationFn: async ({ volunteerId, status }: { volunteerId: string, status: Volunteer['status'] }) => {
+        const { error } = await supabase.from("volunteers").update({ status }).eq("id", volunteerId);
+        if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["volunteers"] });
+        showSuccess("Status do voluntário atualizado.");
+    },
+    onError: (error: Error) => showError(error.message),
+  });
+
   const handleEdit = (ministry: Ministry) => {
     setSelectedMinistry(ministry);
     setIsDialogOpen(true);
   };
 
   const handleSubmit = (data: MinistryFormValues) => {
-    mutation.mutate({ data, id: selectedMinistry?.id });
+    ministryMutation.mutate({ data, id: selectedMinistry?.id });
   };
 
   const isLoading = isLoadingMinistries || isLoadingVolunteers || isLoadingProfiles;
@@ -85,7 +101,7 @@ const VoluntariadoAdminPage = () => {
             <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Adicionar Ministério</Button></DialogTrigger>
             <DialogContent>
               <DialogHeader><DialogTitle>{selectedMinistry ? "Editar Ministério" : "Novo Ministério"}</DialogTitle></DialogHeader>
-              <MinistryForm onSubmit={handleSubmit} defaultValues={selectedMinistry || undefined} isSubmitting={mutation.isPending} profiles={profiles || []} />
+              <MinistryForm onSubmit={handleSubmit} defaultValues={selectedMinistry || undefined} isSubmitting={ministryMutation.isPending} profiles={profiles || []} />
             </DialogContent>
           </Dialog>
         </div>
@@ -113,7 +129,29 @@ const VoluntariadoAdminPage = () => {
           <Card>
             <CardHeader><CardTitle>Inscrições de Voluntários</CardTitle><CardDescription>Aprove ou gerencie os voluntários inscritos.</CardDescription></CardHeader>
             <CardContent>
-                <p className="text-center text-muted-foreground py-8">A gestão de inscrições será implementada aqui.</p>
+              <Table>
+                <TableHeader><TableRow><TableHead>Voluntário</TableHead><TableHead>Ministério</TableHead><TableHead>Data</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+                <TableBody>
+                  {isLoading ? <TableRow><TableCell colSpan={4}><Skeleton className="h-24 w-full" /></TableCell></TableRow> :
+                   volunteers?.map(v => (
+                    <TableRow key={v.id}>
+                      <TableCell className="font-medium">{v.profiles?.full_name}</TableCell>
+                      <TableCell>{v.ministries?.name}</TableCell>
+                      <TableCell>{new Date(v.created_at).toLocaleDateString('pt-BR')}</TableCell>
+                      <TableCell>
+                        <Select value={v.status} onValueChange={(status) => statusMutation.mutate({ volunteerId: v.id, status: status as Volunteer['status'] })}>
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {volunteerStatuses.map(s => <SelectItem key={s} value={s}>{s === 'pending' ? 'Pendente' : s === 'approved' ? 'Aprovado' : 'Inativo'}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                    </TableRow>
+                   ))}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         </TabsContent>
