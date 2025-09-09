@@ -224,3 +224,11 @@ export const bookSchema = z.object({
 });
 
 export type BookFormValues = z.infer<typeof bookSchema>;
+
+export const loanSchema = z.object({
+  book_id: z.string().uuid({ message: "Selecione um livro válido." }),
+  user_id: z.string().uuid({ message: "Selecione um membro válido." }),
+  due_date: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Data de devolução inválida." }),
+});
+
+export type LoanFormValues = z.infer<typeof loanSchema>;

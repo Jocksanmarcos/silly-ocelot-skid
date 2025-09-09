@@ -242,4 +242,6 @@ export interface Loan {
   due_date: string;
   return_date?: string | null;
   librarian_id: string;
+  books?: { title: string } | null;
+  profiles?: { full_name: string } | null;
 }
