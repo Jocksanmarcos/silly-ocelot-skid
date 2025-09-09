@@ -39,6 +39,7 @@ const CellForm = ({ onSubmit, defaultValues, isSubmitting, profiles }: CellFormP
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
       leader_id: defaultValues?.leader_id || "",
+      supervisor_id: defaultValues?.supervisor_id || "",
       meeting_day: defaultValues?.meeting_day || "",
       meeting_time: defaultValues?.meeting_time || "",
       location_type: defaultValues?.location_type || "Residencial",
@@ -51,20 +52,20 @@ const CellForm = ({ onSubmit, defaultValues, isSubmitting, profiles }: CellFormP
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nome da Célula</FormLabel>
+              <FormControl>
+                <Input placeholder="Ex: Célula Leão de Judá" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nome da Célula</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ex: Célula Leão de Judá" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <FormField
             control={form.control}
             name="leader_id"
@@ -73,6 +74,24 @@ const CellForm = ({ onSubmit, defaultValues, isSubmitting, profiles }: CellFormP
                 <FormLabel>Líder</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl><SelectTrigger><SelectValue placeholder="Selecione o líder" /></SelectTrigger></FormControl>
+                  <SelectContent>
+                    {profiles.map(profile => (
+                      <SelectItem key={profile.id} value={profile.id}>{profile.full_name || profile.id}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="supervisor_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Supervisor</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl><SelectTrigger><SelectValue placeholder="Selecione o supervisor" /></SelectTrigger></FormControl>
                   <SelectContent>
                     {profiles.map(profile => (
                       <SelectItem key={profile.id} value={profile.id}>{profile.full_name || profile.id}</SelectItem>

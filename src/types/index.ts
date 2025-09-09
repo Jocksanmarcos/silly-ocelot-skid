@@ -42,6 +42,7 @@ export interface Cell {
   name: string;
   description?: string | null;
   leader_id?: string | null;
+  supervisor_id?: string | null;
   meeting_day?: string | null;
   meeting_time?: string | null;
   location_type?: string | null;
@@ -59,6 +60,7 @@ export interface CellMember {
   email?: string | null;
   phone?: string | null;
   status: string;
+  role: string;
   created_at: string;
 }
 
