@@ -7,6 +7,34 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+
+// Componente auxiliar para os itens do menu suspenso
+const ListItemLink = ({ to, title, children }: { to: string, title: string, children: React.ReactNode }) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <Link
+          to={to}
+          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </Link>
+      </NavigationMenuLink>
+    </li>
+  );
+};
 
 const Header = () => {
   const { session } = useAuth();
@@ -18,15 +46,18 @@ const Header = () => {
     navigate('/');
   };
 
+  // Links para o menu mobile (gaveta)
   const navLinks = [
     { href: "/", label: "Início" },
     { href: "/sobre", label: "Sobre Nós" },
-    { href: "/biblioteca", label: "Biblioteca" },
     { href: "/celulas", label: "Células" },
     { href: "/agenda", label: "Agenda" },
+    { href: "/cursos", label: "Cursos" },
+    { href: "/voluntariado", label: "Voluntariado" },
+    { href: "/biblioteca", label: "Biblioteca" },
     { href: "/aconselhamento", label: "Aconselhamento" },
     { href: "/galeria", label: "Galeria" },
-    { href: "/semear", label: "Semear & Transformar" },
+    { href: "/semear", label: "Contribua" },
     { href: "/contato", label: "Contato" },
   ];
 
@@ -41,17 +72,75 @@ const Header = () => {
             </span>
           </Link>
         </div>
-        <nav className="hidden flex-1 items-center space-x-4 lg:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              to={link.href}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        
+        {/* Menu Desktop */}
+        <NavigationMenu className="hidden lg:flex">
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <Link to="/">
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Início
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>A Igreja</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                  <ListItemLink to="/sobre" title="Sobre Nós">
+                    Nossa história, missão e valores.
+                  </ListItemLink>
+                  <ListItemLink to="/galeria" title="Galeria">
+                    Reviva os momentos que compartilhamos.
+                  </ListItemLink>
+                  <ListItemLink to="/contato" title="Contato">
+                    Fale conosco ou planeje sua visita.
+                  </ListItemLink>
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>Participe</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                  <ListItemLink to="/celulas" title="Células">
+                    Encontre um pequeno grupo para se conectar.
+                  </ListItemLink>
+                  <ListItemLink to="/agenda" title="Agenda">
+                    Fique por dentro de todos os nossos eventos.
+                  </ListItemLink>
+                  <ListItemLink to="/cursos" title="Cursos">
+                    Invista no seu crescimento espiritual.
+                  </ListItemLink>
+                  <ListItemLink to="/voluntariado" title="Voluntariado">
+                    Encontre um lugar para usar seus dons.
+                  </ListItemLink>
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>Recursos</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                  <ListItemLink to="/biblioteca" title="Biblioteca">
+                    Explore nosso acervo de livros.
+                  </ListItemLink>
+                  <ListItemLink to="/aconselhamento" title="Aconselhamento">
+                    Um espaço seguro e confidencial para você.
+                  </ListItemLink>
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link to="/semear">
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Contribua
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+
         <div className="flex flex-1 items-center justify-end space-x-4">
           {session && (
             <Button variant="ghost" size="sm" asChild>
