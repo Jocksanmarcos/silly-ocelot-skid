@@ -1,4 +1,4 @@
-import { Church, Menu } from "lucide-react";
+import { Church, Menu, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Link } from "react-router-dom";
@@ -14,6 +14,7 @@ const Header = () => {
     { href: "/eventos", label: "Eventos" },
     { href: "/cursos", label: "Cursos" },
     { href: "/agenda", label: "Agenda" },
+    { href: "/biblioteca", label: "Biblioteca" },
     { href: "/aconselhamento", label: "Aconselhamento" },
     { href: "/contato", label: "Contato" },
   ];
