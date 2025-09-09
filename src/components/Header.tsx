@@ -25,8 +25,8 @@ const Header = () => {
     { href: "/celulas", label: "Células" },
     { href: "/agenda", label: "Agenda" },
     { href: "/aconselhamento", label: "Aconselhamento" },
-    { href: "#", label: "Galeria" },
-    { href: "#", label: "Semear & Transformar" },
+    { href: "/galeria", label: "Galeria" },
+    { href: "/semear", label: "Semear & Transformar" },
     { href: "/contato", label: "Contato" },
   ];
 

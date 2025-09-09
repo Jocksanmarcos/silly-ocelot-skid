@@ -65,6 +65,8 @@ import HallDaGenerosidadePage from "./pages/HallDaGenerosidadePage";
 import LouvorPage from "./pages/LouvorPage";
 import EscalasPage from "./pages/EscalasPage";
 import EscalaDetailPage from "./pages/EscalaDetailPage";
+import Galeria from "./pages/Galeria";
+import Semear from "./pages/Semear";
 
 const queryClient = new QueryClient();
 
@@ -88,6 +90,8 @@ const App = () => (
                 <Route path="/aconselhamento" element={<AconselhamentoPage />} />
                 <Route path="/biblioteca" element={<PublicBibliotecaPage />} />
                 <Route path="/voluntariado" element={<PublicVoluntariadoPage />} />
+                <Route path="/galeria" element={<Galeria />} />
+                <Route path="/semear" element={<Semear />} />
                 <Route path="/contato" element={<Contato />} />
                 <Route path="/inscricao/:id" element={<RegistrationConfirmationPage />} />
                 <Route path="/payment/success" element={<PaymentStatusPage />} />
