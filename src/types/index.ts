@@ -31,3 +31,27 @@ export interface EventRegistration {
   checked_in: boolean;
   created_at: string;
 }
+
+export interface Cell {
+  id: string;
+  name: string;
+  description?: string | null;
+  leader_name: string;
+  meeting_day?: string | null;
+  meeting_time?: string | null;
+  location_type?: string | null;
+  address?: string | null;
+  age_group?: string | null;
+  status: string;
+  created_at: string;
+}
+
+export interface CellMember {
+  id: string;
+  cell_id: string;
+  full_name: string;
+  email?: string | null;
+  phone?: string | null;
+  status: string;
+  created_at: string;
+}

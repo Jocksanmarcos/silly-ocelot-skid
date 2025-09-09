@@ -35,3 +35,25 @@ export const registrationSchema = z.object({
 });
 
 export type RegistrationFormValues = z.infer<typeof registrationSchema>;
+
+export const cellSchema = z.object({
+    name: z.string().min(3, { message: "O nome da célula é obrigatório." }),
+    description: z.string().optional(),
+    leader_name: z.string().min(3, { message: "O nome do líder é obrigatório." }),
+    meeting_day: z.string().optional(),
+    meeting_time: z.string().optional(),
+    location_type: z.string().optional(),
+    address: z.string().optional(),
+    age_group: z.string().optional(),
+    status: z.enum(["Ativa", "Inativa"]),
+});
+
+export type CellFormValues = z.infer<typeof cellSchema>;
+
+export const cellInterestSchema = z.object({
+    full_name: z.string().min(3, { message: "O nome completo é obrigatório." }),
+    email: z.string().email({ message: "Por favor, insira um email válido." }),
+    phone: z.string().optional(),
+});
+
+export type CellInterestFormValues = z.infer<typeof cellInterestSchema>;

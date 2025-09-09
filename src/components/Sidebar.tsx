@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Church, Users, Calendar, DollarSign, LayoutDashboard, LogOut } from "lucide-react";
+import { Church, Users, Calendar, DollarSign, LayoutDashboard, LogOut, Home } from "lucide-react";
 import { Button } from "./ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -7,6 +7,7 @@ const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Painel" },
   { href: "/dashboard/members", icon: Users, label: "Membros" },
   { href: "/dashboard/events", icon: Calendar, label: "Eventos" },
+  { href: "/dashboard/cells", icon: Home, label: "Células" },
   { href: "/dashboard/finances", icon: DollarSign, label: "Finanças" },
 ];
 
@@ -33,7 +34,7 @@ const Sidebar = () => {
             key={item.href}
             to={item.href}
             className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${
-              location.pathname === item.href
+              location.pathname.startsWith(item.href) && (item.href !== '/dashboard' || location.pathname === '/dashboard')
                 ? "bg-muted text-primary"
                 : "text-muted-foreground"
             }`}
