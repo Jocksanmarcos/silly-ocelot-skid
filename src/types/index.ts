@@ -8,3 +8,15 @@ export interface Member {
   membership_date?: string | null;
   created_at: string;
 }
+
+export interface Event {
+  id: string;
+  title: string;
+  description?: string | null;
+  event_date: string;
+  location?: string | null;
+  price?: number | null;
+  capacity?: number | null;
+  type: string;
+  created_at: string;
+}
