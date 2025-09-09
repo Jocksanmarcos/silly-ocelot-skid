@@ -5,7 +5,7 @@ import { AssetCategory, AssetLocation } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -20,12 +20,12 @@ const PatrimonioSettingsPage = () => {
   const [currentItem, setCurrentItem] = useState<{ item: Item | null, type: 'category' | 'location' }>({ item: null, type: 'category' });
   const [itemName, setItemName] = useState('');
 
-  const { data: categories, isLoading: isLoadingCategories } = useQuery({ queryKey: ['assetCategories'], queryFn: async () => {
+  const { data: categories } = useQuery({ queryKey: ['assetCategories'], queryFn: async () => {
     const { data, error } = await supabase.from('asset_categories').select('*');
     if (error) throw error;
     return data;
   }});
-  const { data: locations, isLoading: isLoadingLocations } = useQuery({ queryKey: ['assetLocations'], queryFn: async () => {
+  const { data: locations } = useQuery({ queryKey: ['assetLocations'], queryFn: async () => {
     const { data, error } = await supabase.from('asset_locations').select('*');
     if (error) throw error;
     return data;
@@ -98,8 +98,7 @@ const PatrimonioSettingsPage = () => {
             </CardHeader>
             <CardContent>{renderTable(locations, 'location')}</CardContent>
           </Card>
-        </Card>
-      </TabsContent>
+        </TabsContent>
       </Tabs>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
