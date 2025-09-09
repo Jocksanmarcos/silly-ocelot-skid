@@ -55,3 +55,12 @@ export interface CellMember {
   status: string;
   created_at: string;
 }
+
+export interface CellReport {
+  id: string;
+  cell_id: string;
+  meeting_date: string;
+  attendance_count: number;
+  notes?: string | null;
+  created_at: string;
+}

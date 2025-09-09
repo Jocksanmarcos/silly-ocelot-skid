@@ -24,6 +24,7 @@ import EventRegistrationsPage from "./pages/EventRegistrationsPage";
 import CellsPage from "./pages/CellsPage";
 import PublicCellsPage from "./pages/PublicCellsPage";
 import CellMembersPage from "./pages/CellMembersPage";
+import CellReportsPage from "./pages/CellReportsPage";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const App = () => (
                 <Route path="/dashboard/events/:id/registrations" element={<EventRegistrationsPage />} />
                 <Route path="/dashboard/cells" element={<CellsPage />} />
                 <Route path="/dashboard/cells/:id/members" element={<CellMembersPage />} />
+                <Route path="/dashboard/cells/:id/reports" element={<CellReportsPage />} />
                 <Route path="/dashboard/finances" element={<FinancesPage />} />
               </Route>
             </Route>

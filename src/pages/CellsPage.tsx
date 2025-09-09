@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Users } from "lucide-react";
+import { MoreHorizontal, Users, FileText } from "lucide-react";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable, getPaginationRowModel } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { showSuccess, showError } from "@/utils/toast";
@@ -136,6 +136,12 @@ const CellsPage = () => {
               <Link to={`/dashboard/cells/${row.original.id}/members`} className="flex items-center">
                 <Users className="mr-2 h-4 w-4" />
                 Ver Membros
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to={`/dashboard/cells/${row.original.id}/reports`} className="flex items-center">
+                <FileText className="mr-2 h-4 w-4" />
+                Ver Relatórios
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleEdit(row.original)}>Editar</DropdownMenuItem>

@@ -57,3 +57,14 @@ export const cellInterestSchema = z.object({
 });
 
 export type CellInterestFormValues = z.infer<typeof cellInterestSchema>;
+
+export const cellReportSchema = z.object({
+  meeting_date: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Data inválida." }),
+  attendance_count: z.preprocess(
+    (a) => parseInt(z.string().parse(a), 10),
+    z.number().int().min(0, { message: "O número de presentes não pode ser negativo." })
+  ),
+  notes: z.string().optional(),
+});
+
+export type CellReportFormValues = z.infer<typeof cellReportSchema>;
