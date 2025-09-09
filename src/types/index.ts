@@ -289,6 +289,7 @@ export interface GenerosityItem {
 export interface WorshipTeam {
   id: string;
   name: string;
+  worship_members: any[]; // Simplificado por enquanto
 }
 
 export interface WorshipMember {
@@ -307,4 +308,27 @@ export interface Song {
   bpm?: number | null;
   lyrics_chords?: string | null;
   youtube_url?: string | null;
+}
+
+export interface WorshipEvent {
+  id: string;
+  event_date: string;
+  title: string;
+  team_id?: string | null;
+  notes?: string | null;
+  worship_teams?: { name: string } | null;
+}
+
+export interface WorshipEventSong {
+  id: string;
+  event_id: string;
+  song_id: string;
+  song_order?: number | null;
+}
+
+export interface WorshipEventMember {
+  id: string;
+  event_id: string;
+  member_id: string;
+  status: 'pending' | 'confirmed' | 'declined';
 }

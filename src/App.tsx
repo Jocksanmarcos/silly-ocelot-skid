@@ -63,6 +63,7 @@ import PedirAjudaPage from "./pages/PedirAjudaPage";
 import GenerosidadeAdminPage from "./pages/GenerosidadeAdminPage";
 import HallDaGenerosidadePage from "./pages/HallDaGenerosidadePage";
 import LouvorPage from "./pages/LouvorPage";
+import EscalasPage from "./pages/EscalasPage";
 
 const queryClient = new QueryClient();
 
@@ -114,6 +115,7 @@ const App = () => (
                 <Route element={<DashboardLayout />}>
                   <Route path="/dashboard" element={<DashboardIndex />} />
                   <Route path="/dashboard/louvor" element={<LouvorPage />} />
+                  <Route path="/dashboard/louvor/escalas" element={<EscalasPage />} />
                   <Route path="/dashboard/agenda" element={<PastoralAgendaPage />} />
                   <Route path="/dashboard/aconselhamento" element={<AconselhamentoAdminPage />} />
                   <Route path="/dashboard/generosidade" element={<GenerosidadeAdminPage />} />

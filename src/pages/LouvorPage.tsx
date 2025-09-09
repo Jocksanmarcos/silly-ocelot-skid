@@ -10,8 +10,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { showSuccess, showError } from "@/utils/toast";
-import { PlusCircle, Music, Users } from "lucide-react";
+import { PlusCircle, Music, Users, Calendar } from "lucide-react";
 import SongForm from "@/components/louvor/SongForm";
+import { Link } from "react-router-dom";
 
 const fetchLouvorData = async () => {
   const songsPromise = supabase.from("songs").select("*").order("title");
@@ -72,10 +73,18 @@ const LouvorPage = () => {
             <TabsTrigger value="repertorio"><Music className="mr-2 h-4 w-4" /> Repertório</TabsTrigger>
             <TabsTrigger value="equipes"><Users className="mr-2 h-4 w-4" /> Equipes</TabsTrigger>
           </TabsList>
-          <Dialog open={isSongDialogOpen} onOpenChange={(open) => { setIsSongDialogOpen(open); if (!open) setSelectedSong(null); }}>
-            <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Adicionar Música</Button></DialogTrigger>
-            <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>{selectedSong ? "Editar Música" : "Adicionar ao Repertório"}</DialogTitle></DialogHeader><SongForm onSubmit={handleSongSubmit} defaultValues={selectedSong || undefined} isSubmitting={songMutation.isPending} /></DialogContent>
-          </Dialog>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" asChild>
+              <Link to="/dashboard/louvor/escalas">
+                <Calendar className="mr-2 h-4 w-4" />
+                Gerenciar Escalas
+              </Link>
+            </Button>
+            <Dialog open={isSongDialogOpen} onOpenChange={(open) => { setIsSongDialogOpen(open); if (!open) setSelectedSong(null); }}>
+              <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Adicionar Música</Button></DialogTrigger>
+              <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>{selectedSong ? "Editar Música" : "Adicionar ao Repertório"}</DialogTitle></DialogHeader><SongForm onSubmit={handleSongSubmit} defaultValues={selectedSong || undefined} isSubmitting={songMutation.isPending} /></DialogContent>
+            </Dialog>
+          </div>
         </div>
         <TabsContent value="repertorio">
           <Card>

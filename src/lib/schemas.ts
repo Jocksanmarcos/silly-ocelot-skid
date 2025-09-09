@@ -291,3 +291,12 @@ export const songSchema = z.object({
 });
 
 export type SongFormValues = z.infer<typeof songSchema>;
+
+export const scaleSchema = z.object({
+  title: z.string().min(3, { message: "O título da escala é obrigatório." }),
+  event_date: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Data inválida." }),
+  team_id: z.string().uuid({ message: "Selecione uma equipe." }),
+  notes: z.string().optional(),
+});
+
+export type ScaleFormValues = z.infer<typeof scaleSchema>;
