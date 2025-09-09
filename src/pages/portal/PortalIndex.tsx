@@ -1,10 +1,13 @@
 import { useAuth } from "@/contexts/AuthProvider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Home } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useMemberCell } from "@/hooks/useMemberCell";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const PortalIndex = () => {
   const { session } = useAuth();
+  const { data: cell, isLoading: isLoadingCell } = useMemberCell();
   const fullName = session?.user?.user_metadata?.full_name || session?.user?.email;
 
   return (
@@ -25,14 +28,47 @@ const PortalIndex = () => {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Aqui você verá os cursos em que está inscrito.
+              Acesse os cursos em que você está inscrito.
             </p>
             <Link to="/portal/cursos" className="text-sm font-semibold text-primary mt-4 block">
               Ver todos os cursos &rarr;
             </Link>
           </CardContent>
         </Card>
-        {/* Outros cards (Minha Célula, etc.) serão adicionados aqui no futuro */}
+        
+        {isLoadingCell ? (
+            <Skeleton className="h-full w-full rounded-lg" />
+        ) : (
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Home className="h-5 w-5 text-primary" />
+                        Minha Célula
+                    </CardTitle>
+                    <CardDescription>Acompanhe seu pequeno grupo.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {cell ? (
+                        <div>
+                            <p className="font-semibold">{cell.name}</p>
+                            <p className="text-sm text-muted-foreground">Líder: {cell.leader?.full_name}</p>
+                            <Link to="/portal/celula" className="text-sm font-semibold text-primary mt-4 block">
+                                Ver detalhes da célula &rarr;
+                            </Link>
+                        </div>
+                    ) : (
+                        <div>
+                            <p className="text-sm text-muted-foreground">
+                                Você ainda não está em uma célula.
+                            </p>
+                            <Link to="/celulas" className="text-sm font-semibold text-primary mt-4 block">
+                                Encontrar uma célula &rarr;
+                            </Link>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+        )}
       </div>
     </div>
   );

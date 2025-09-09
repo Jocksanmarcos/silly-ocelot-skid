@@ -48,6 +48,8 @@ import PublicVoluntariadoPage from "./pages/PublicVoluntariadoPage";
 import PortalLayout from "./components/portal/PortalLayout";
 import PortalIndex from "./pages/portal/PortalIndex";
 import PortalCursosPage from "./pages/portal/PortalCursosPage";
+import PortalCelulaPage from "./pages/portal/PortalCelulaPage";
+import PortalPerfilPage from "./pages/portal/PortalPerfilPage";
 
 const queryClient = new QueryClient();
 
@@ -89,7 +91,8 @@ const App = () => (
               <Route element={<PortalLayout />}>
                 <Route path="/portal" element={<PortalIndex />} />
                 <Route path="/portal/cursos" element={<PortalCursosPage />} />
-                {/* Adicionar outras rotas do portal aqui (célula, perfil, etc) */}
+                <Route path="/portal/celula" element={<PortalCelulaPage />} />
+                <Route path="/portal/perfil" element={<PortalPerfilPage />} />
               </Route>
 
               {/* Rotas do Painel Administrativo */}
