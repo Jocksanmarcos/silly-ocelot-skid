@@ -259,3 +259,13 @@ export const securitySettingsSchema = z.object({
 });
 
 export type SecuritySettingsFormValues = z.infer<typeof securitySettingsSchema>;
+
+// Schema para o Mural da Generosidade
+export const donationSchema = z.object({
+  title: z.string().min(3, { message: "O título é obrigatório." }),
+  description: z.string().optional(),
+  category: z.enum(['Móveis', 'Roupas', 'Eletrodomésticos', 'Alimentos', 'Livros', 'Brinquedos', 'Outros']),
+  images: z.any().optional(),
+});
+
+export type DonationFormValues = z.infer<typeof donationSchema>;

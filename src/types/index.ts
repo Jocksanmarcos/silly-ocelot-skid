@@ -27,6 +27,7 @@ export type UserRole = 'super_admin' | 'admin_missao' | 'pastor' | 'lider_celula
 export interface Profile {
   id: string;
   full_name?: string;
+  avatar_url?: string;
   reports_to_id?: string | null;
   role: UserRole; // Atualizado
   congregation_id?: string | null; // Adicionado
@@ -265,4 +266,17 @@ export interface Volunteer {
   created_at: string;
   profiles?: { full_name: string } | null;
   ministries?: { name: string } | null;
+}
+
+// Tipos para o Mural da Generosidade
+export interface GenerosityItem {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string | null;
+  category: 'Móveis' | 'Roupas' | 'Eletrodomésticos' | 'Alimentos' | 'Livros' | 'Brinquedos' | 'Outros';
+  image_urls?: string[] | null;
+  status: 'Disponível' | 'Reservado' | 'Doado';
+  created_at: string;
+  profiles?: { full_name: string; avatar_url?: string | null } | null;
 }

@@ -58,6 +58,7 @@ import SettingsLayout from "./components/settings/SettingsLayout";
 import AppearancePage from "./pages/settings/AppearancePage";
 import ProfileSettingsPage from "./pages/settings/ProfileSettingsPage";
 import SecuritySettingsPage from "./pages/settings/SecuritySettingsPage";
+import MuralDaGenerosidadePage from "./pages/MuralDaGenerosidadePage";
 
 const queryClient = new QueryClient();
 
@@ -94,6 +95,7 @@ const App = () => (
                 <Route element={<Layout />}>
                   <Route path="/cursos/:id" element={<CourseStudentViewPage />} />
                   <Route path="/cursos/:courseId/aula/:lessonId" element={<CoursePlayerPage />} />
+                  <Route path="/mural-da-generosidade" element={<MuralDaGenerosidadePage />} />
                 </Route>
 
                 <Route element={<PortalLayout />}>
