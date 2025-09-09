@@ -74,7 +74,7 @@ export function MembersDataTable({ columns, data }: DataTableProps) {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  Nenhum membro encontrado.
+                  Nenhuma pessoa encontrada.
                 </TableCell>
               </TableRow>
             )}

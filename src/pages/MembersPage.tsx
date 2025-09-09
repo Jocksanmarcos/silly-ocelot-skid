@@ -76,7 +76,7 @@ const MembersPage = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["members"] });
-      showSuccess(`Membro ${selectedMember ? 'atualizado' : 'adicionado'} com sucesso!`);
+      showSuccess(`Pessoa ${selectedMember ? 'atualizada' : 'adicionada'} com sucesso!`);
       setIsDialogOpen(false);
       setSelectedMember(null);
     },
@@ -92,7 +92,7 @@ const MembersPage = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["members"] });
-      showSuccess("Membro removido com sucesso!");
+      showSuccess("Pessoa removida com sucesso!");
       setIsAlertOpen(false);
       setSelectedMember(null);
     },
@@ -169,8 +169,8 @@ const MembersPage = () => {
     <div>
       <div className="flex justify-between items-center mb-4">
         <div>
-          <h1 className="text-3xl font-bold">Gestão de Membros</h1>
-          <p className="mt-2 text-muted-foreground">Adicione, visualize e gerencie os membros da sua igreja.</p>
+          <h1 className="text-3xl font-bold">Gestão de Pessoas</h1>
+          <p className="mt-2 text-muted-foreground">Adicione, visualize e gerencie as pessoas da sua igreja.</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" asChild>
@@ -188,11 +188,11 @@ const MembersPage = () => {
             if (!open) setSelectedMember(null);
           }}>
             <DialogTrigger asChild>
-              <Button>Adicionar Membro</Button>
+              <Button>Adicionar Pessoa</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>{selectedMember ? "Editar Membro" : "Adicionar Novo Membro"}</DialogTitle>
+                <DialogTitle>{selectedMember ? "Editar Pessoa" : "Adicionar Nova Pessoa"}</DialogTitle>
               </DialogHeader>
               <MemberForm 
                 onSubmit={handleSubmit} 
@@ -212,7 +212,7 @@ const MembersPage = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta ação não pode ser desfeita. Isso removerá permanentemente o membro dos seus registros.
+              Esta ação não pode ser desfeita. Isso removerá permanentemente a pessoa dos seus registros.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

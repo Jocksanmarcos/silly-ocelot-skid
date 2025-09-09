@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Painel" },
   { href: "/dashboard/visitors", icon: Handshake, label: "Recepção" },
-  { href: "/dashboard/members", icon: Users, label: "Membros" },
+  { href: "/dashboard/members", icon: Users, label: "Pessoas" },
   { href: "/dashboard/journey", icon: TrendingUp, label: "Jornada" },
   { href: "/dashboard/families", icon: HeartHandshake, label: "Famílias" },
   { href: "/dashboard/cells", icon: Home, label: "Células" },

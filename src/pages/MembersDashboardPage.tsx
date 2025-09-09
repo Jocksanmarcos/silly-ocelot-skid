@@ -36,11 +36,11 @@ const MembersDashboardPage = () => {
       <div>
         <Link to="/dashboard/members" className="flex items-center gap-2 text-sm text-muted-foreground hover:underline mb-4">
           <ArrowLeft className="h-4 w-4" />
-          Voltar para Lista de Membros
+          Voltar para Lista de Pessoas
         </Link>
-        <h1 className="text-3xl font-bold">Painel de Membros</h1>
+        <h1 className="text-3xl font-bold">Painel de Pessoas</h1>
         <p className="mt-2 text-muted-foreground">
-          Insights e estatísticas sobre os membros da comunidade.
+          Insights e estatísticas sobre as pessoas da comunidade.
         </p>
       </div>
       <div className="grid gap-6 md:grid-cols-3">
