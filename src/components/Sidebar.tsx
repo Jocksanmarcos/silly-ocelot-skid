@@ -4,23 +4,28 @@ import { Button } from "./ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
+  // Geral
   { href: "/dashboard", icon: LayoutDashboard, label: "Painel" },
-  { href: "/dashboard/agenda", icon: Calendar, label: "Agenda" },
-  { href: "/dashboard/aconselhamento", icon: HeartHandshake, label: "Aconselhamento" },
-  { href: "/dashboard/generosidade", icon: HeartHandshake, label: "Generosidade" },
-  { href: "/dashboard/visitors", icon: Handshake, label: "Recepção" },
+  // Pessoas e Comunidade
   { href: "/dashboard/members", icon: Users, label: "Pessoas" },
-  { href: "/dashboard/journey", icon: TrendingUp, label: "Jornada" },
   { href: "/dashboard/families", icon: HeartHandshake, label: "Famílias" },
   { href: "/dashboard/cells", icon: Home, label: "Células" },
-  { href: "/dashboard/louvor", icon: Music, label: "Louvor" },
+  { href: "/dashboard/visitors", icon: Handshake, label: "Recepção" },
+  { href: "/dashboard/journey", icon: TrendingUp, label: "Jornada" },
+  { href: "/dashboard/hierarchy", icon: Network, label: "Hierarquia" },
+  // Ministérios e Atividades
+  { href: "/dashboard/agenda", icon: Calendar, label: "Agenda" },
   { href: "/dashboard/events", icon: Calendar, label: "Eventos" },
+  { href: "/dashboard/louvor", icon: Music, label: "Louvor" },
   { href: "/dashboard/courses", icon: GraduationCap, label: "Ensino" },
+  { href: "/dashboard/voluntariado", icon: Handshake, label: "Voluntariado" },
+  // Cuidado e Social
+  { href: "/dashboard/aconselhamento", icon: HeartHandshake, label: "Aconselhamento" },
+  { href: "/dashboard/generosidade", icon: HeartHandshake, label: "Generosidade" },
+  // Administração e Recursos
   { href: "/dashboard/finances", icon: DollarSign, label: "Finanças" },
   { href: "/dashboard/patrimonio", icon: Archive, label: "Patrimônio" },
   { href: "/dashboard/biblioteca", icon: BookOpen, label: "Biblioteca" },
-  { href: "/dashboard/voluntariado", icon: Handshake, label: "Voluntariado" },
-  { href: "/dashboard/hierarchy", icon: Network, label: "Hierarquia" },
 ];
 
 const bottomNavItems = [
