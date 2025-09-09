@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import LeaderDashboardWidget from '@/components/dashboard/LeaderDashboardWidget';
 import SupervisorDashboardWidget from '@/components/dashboard/SupervisorDashboardWidget';
+import CoordinatorDashboardWidget from '@/components/dashboard/CoordinatorDashboardWidget';
 
 const fetchDashboardStats = async () => {
   const today = new Date();
@@ -38,7 +39,15 @@ const DashboardIndex = () => {
     queryKey: ['dashboardStats'],
     queryFn: fetchDashboardStats,
   });
-  const { leaderCells, supervisedCells, isLeader, isSupervisor, isLoading: isLoadingRoles } = useUserRoles();
+  const { 
+    leaderCells, 
+    supervisedCells, 
+    coordinatedSupervisors,
+    isLeader, 
+    isSupervisor,
+    isCoordinator,
+    isLoading: isLoadingRoles 
+  } = useUserRoles();
 
   const isLoading = isLoadingStats || isLoadingRoles;
 
@@ -93,6 +102,7 @@ const DashboardIndex = () => {
       {isLoading ? <Skeleton className="h-64 w-full" /> : (
         <>
           {isSupervisor && <SupervisorDashboardWidget cells={supervisedCells} />}
+          {isCoordinator && <CoordinatorDashboardWidget supervisors={coordinatedSupervisors} />}
         </>
       )}
     </div>
