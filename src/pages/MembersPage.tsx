@@ -30,12 +30,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, BarChart } from "lucide-react";
+import { MoreHorizontal, BarChart, FileDown } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { showSuccess, showError } from "@/utils/toast";
 import MemberForm from "@/components/members/MemberForm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
+import { generateMembersListPDF } from "@/lib/pdfGenerator";
 
 const fetchMembers = async (): Promise<Member[]> => {
   const { data, error } = await supabase.from("members").select("*").order("created_at", { ascending: false });
@@ -164,6 +165,10 @@ const MembersPage = () => {
               <BarChart className="mr-2 h-4 w-4" />
               Painel
             </Link>
+          </Button>
+          <Button variant="outline" onClick={() => generateMembersListPDF(members || [])}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Exportar PDF
           </Button>
           <Dialog open={isDialogOpen} onOpenChange={(open) => {
             setIsDialogOpen(open);

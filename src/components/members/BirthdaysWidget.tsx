@@ -1,7 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Member } from "@/types";
-import { Cake } from "lucide-react";
+import { Cake, FileDown } from "lucide-react";
 import { useMemo } from "react";
+import { Button } from "../ui/button";
+import { generateBirthdaysPDF } from "@/lib/pdfGenerator";
 
 interface BirthdaysWidgetProps {
   members: Member[];
@@ -14,7 +16,6 @@ const BirthdaysWidget = ({ members }: BirthdaysWidgetProps) => {
       .filter(member => {
         if (!member.date_of_birth) return false;
         const birthDate = new Date(member.date_of_birth);
-        // Adiciona 1 ao getMonth() do membro porque o construtor de Date é 0-indexado
         return birthDate.getUTCMonth() === currentMonth;
       })
       .sort((a, b) => {
@@ -25,14 +26,14 @@ const BirthdaysWidget = ({ members }: BirthdaysWidgetProps) => {
   }, [members]);
 
   return (
-    <Card>
+    <Card className="flex flex-col h-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Cake className="h-5 w-5 text-primary" />
           Aniversariantes do Mês
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         {birthdaysThisMonth.length > 0 ? (
           <ul className="space-y-3">
             {birthdaysThisMonth.map(member => (
@@ -50,6 +51,14 @@ const BirthdaysWidget = ({ members }: BirthdaysWidgetProps) => {
           </p>
         )}
       </CardContent>
+      {birthdaysThisMonth.length > 0 && (
+        <CardFooter>
+          <Button variant="outline" size="sm" className="w-full" onClick={() => generateBirthdaysPDF(birthdaysThisMonth)}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Exportar PDF
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 };

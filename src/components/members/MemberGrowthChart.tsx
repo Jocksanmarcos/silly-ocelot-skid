@@ -1,7 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Member } from "@/types";
 import { useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Button } from "../ui/button";
+import { FileDown } from "lucide-react";
+import { generateGrowthChartPDF } from "@/lib/pdfGenerator";
 
 interface MemberGrowthChartProps {
   members: Member[];
@@ -33,11 +36,11 @@ const MemberGrowthChart = ({ members }: MemberGrowthChartProps) => {
   }, [members]);
 
   return (
-    <Card>
+    <Card className="flex flex-col h-full">
       <CardHeader>
         <CardTitle>Crescimento de Membros</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -49,6 +52,14 @@ const MemberGrowthChart = ({ members }: MemberGrowthChartProps) => {
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
+      {chartData.length > 0 && (
+        <CardFooter>
+            <Button variant="outline" size="sm" className="w-full" onClick={() => generateGrowthChartPDF(chartData)}>
+                <FileDown className="mr-2 h-4 w-4" />
+                Exportar Dados para PDF
+            </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 };
