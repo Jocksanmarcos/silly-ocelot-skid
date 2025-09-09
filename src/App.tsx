@@ -45,7 +45,6 @@ import AconselhamentoAdminPage from "./pages/AconselhamentoAdminPage";
 import BibliotecaPage from "./pages/BibliotecaPage";
 import PublicBibliotecaPage from "./pages/PublicBibliotecaPage";
 import VoluntariadoAdminPage from "./pages/VoluntariadoAdminPage";
-import PublicVoluntariadoPage from "./pages/PublicVoluntariadoPage";
 import PortalLayout from "./components/portal/PortalLayout";
 import PortalIndex from "./pages/portal/PortalIndex";
 import PortalCursosPage from "./pages/portal/PortalCursosPage";
@@ -58,16 +57,17 @@ import SettingsLayout from "./components/settings/SettingsLayout";
 import AppearancePage from "./pages/settings/AppearancePage";
 import ProfileSettingsPage from "./pages/settings/ProfileSettingsPage";
 import SecuritySettingsPage from "./pages/settings/SecuritySettingsPage";
-import MuralDaGenerosidadePage from "./pages/MuralDaGenerosidadePage";
-import PedirAjudaPage from "./pages/PedirAjudaPage";
 import GenerosidadeAdminPage from "./pages/GenerosidadeAdminPage";
-import HallDaGenerosidadePage from "./pages/HallDaGenerosidadePage";
 import LouvorPage from "./pages/LouvorPage";
 import EscalasPage from "./pages/EscalasPage";
 import EscalaDetailPage from "./pages/EscalaDetailPage";
 import Galeria from "./pages/Galeria";
 import Semear from "./pages/Semear";
 import EditorPage from "./pages/EditorPage";
+import PortalVoluntariadoPage from "./pages/portal/PortalVoluntariadoPage";
+import MuralDaGenerosidadePage from "./pages/portal/MuralDaGenerosidadePage";
+import HallDaGenerosidadePage from "./pages/portal/HallDaGenerosidadePage";
+import PedirAjudaPage from "./pages/portal/PedirAjudaPage";
 
 const queryClient = new QueryClient();
 
@@ -90,7 +90,6 @@ const App = () => (
                 <Route path="/agenda" element={<PublicAgendaPage />} />
                 <Route path="/aconselhamento" element={<AconselhamentoPage />} />
                 <Route path="/biblioteca" element={<PublicBibliotecaPage />} />
-                <Route path="/voluntariado" element={<PublicVoluntariadoPage />} />
                 <Route path="/galeria" element={<Galeria />} />
                 <Route path="/semear" element={<Semear />} />
                 <Route path="/contato" element={<Contato />} />
@@ -107,9 +106,6 @@ const App = () => (
                 <Route element={<Layout />}>
                   <Route path="/cursos/:id" element={<CourseStudentViewPage />} />
                   <Route path="/cursos/:courseId/aula/:lessonId" element={<CoursePlayerPage />} />
-                  <Route path="/mural-da-generosidade" element={<MuralDaGenerosidadePage />} />
-                  <Route path="/hall-da-generosidade" element={<HallDaGenerosidadePage />} />
-                  <Route path="/pedir-ajuda" element={<PedirAjudaPage />} />
                 </Route>
 
                 <Route element={<PortalLayout />}>
@@ -117,6 +113,10 @@ const App = () => (
                   <Route path="/portal/cursos" element={<PortalCursosPage />} />
                   <Route path="/portal/celula" element={<PortalCelulaPage />} />
                   <Route path="/portal/perfil" element={<PortalPerfilPage />} />
+                  <Route path="/portal/voluntariado" element={<PortalVoluntariadoPage />} />
+                  <Route path="/portal/mural" element={<MuralDaGenerosidadePage />} />
+                  <Route path="/portal/mural/hall-da-fama" element={<HallDaGenerosidadePage />} />
+                  <Route path="/portal/mural/pedir-ajuda" element={<PedirAjudaPage />} />
                 </Route>
 
                 <Route element={<DashboardLayout />}>

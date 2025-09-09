@@ -1,4 +1,4 @@
-import { Church, Menu, User, LogOut, HeartHandshake } from "lucide-react";
+import { Church, Menu, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Link, useNavigate } from "react-router-dom";
@@ -53,7 +53,6 @@ const Header = () => {
     { href: "/celulas", label: "Células" },
     { href: "/agenda", label: "Agenda" },
     { href: "/cursos", label: "Cursos" },
-    { href: "/voluntariado", label: "Voluntariado" },
     { href: "/biblioteca", label: "Biblioteca" },
     { href: "/aconselhamento", label: "Aconselhamento" },
     { href: "/galeria", label: "Galeria" },
@@ -112,9 +111,6 @@ const Header = () => {
                   <ListItemLink to="/cursos" title="Cursos">
                     Invista no seu crescimento espiritual.
                   </ListItemLink>
-                  <ListItemLink to="/voluntariado" title="Voluntariado">
-                    Encontre um lugar para usar seus dons.
-                  </ListItemLink>
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
@@ -142,14 +138,6 @@ const Header = () => {
         </NavigationMenu>
 
         <div className="flex flex-1 items-center justify-end space-x-4">
-          {session && (
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/mural-da-generosidade">
-                <HeartHandshake className="h-4 w-4 mr-2" />
-                Mural
-              </Link>
-            </Button>
-          )}
           {session ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

@@ -1,9 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, GraduationCap, Users, User } from "lucide-react";
+import { LayoutDashboard, GraduationCap, Users, User, HeartHandshake } from "lucide-react";
 
 const navItems = [
   { href: "/portal", icon: LayoutDashboard, label: "Painel" },
   { href: "/portal/cursos", icon: GraduationCap, label: "Cursos" },
+  { href: "/portal/mural", icon: HeartHandshake, label: "Mural" },
   { href: "/portal/celula", icon: Users, label: "Célula" },
   { href: "/portal/perfil", icon: User, label: "Perfil" },
 ];
@@ -13,7 +14,7 @@ const BottomNav = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-background border-t h-16 md:hidden">
-      <nav className="grid h-full grid-cols-4">
+      <nav className="grid h-full grid-cols-5">
         {navItems.map((item) => (
           <Link
             key={item.href}

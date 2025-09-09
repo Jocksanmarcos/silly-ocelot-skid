@@ -68,7 +68,7 @@ const PedirAjudaPage = () => {
                   Agradecemos por sua confiança. Nossa equipe analisará sua solicitação com todo o cuidado e entrará em contato de forma discreta.
                 </p>
                 <Button asChild>
-                  <Link to="/mural-da-generosidade">Voltar ao Mural</Link>
+                  <Link to="/portal/mural">Voltar ao Mural</Link>
                 </Button>
               </div>
             ) : (

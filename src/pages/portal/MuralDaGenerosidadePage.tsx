@@ -171,13 +171,13 @@ const MuralDaGenerosidadePage = () => {
           </TabsList>
           <div className="flex items-center gap-2">
             <Button variant="outline" asChild>
-              <Link to="/hall-da-generosidade">
+              <Link to="/portal/mural/hall-da-fama">
                 <Trophy className="mr-2 h-4 w-4" />
                 Hall da Fama
               </Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link to="/pedir-ajuda">
+              <Link to="/portal/mural/pedir-ajuda">
                 <ShieldQuestion className="mr-2 h-4 w-4" />
                 Pedir Ajuda
               </Link>

@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/AuthProvider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, Home } from "lucide-react";
+import { GraduationCap, Home, Handshake, HeartHandshake } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useMemberCell } from "@/hooks/useMemberCell";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -69,6 +69,42 @@ const PortalIndex = () => {
                 </CardContent>
             </Card>
         )}
+
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <HeartHandshake className="h-5 w-5 text-primary" />
+                    Mural da Generosidade
+                </CardTitle>
+                <CardDescription>Abençoe e seja abençoado.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <p className="text-sm text-muted-foreground">
+                    Doe itens ou encontre algo que você precisa em nossa comunidade.
+                </p>
+                <Link to="/portal/mural" className="text-sm font-semibold text-primary mt-4 block">
+                    Acessar o Mural &rarr;
+                </Link>
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Handshake className="h-5 w-5 text-primary" />
+                    Voluntariado
+                </CardTitle>
+                <CardDescription>Encontre um lugar para servir.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <p className="text-sm text-muted-foreground">
+                    Use seus dons para fazer a diferença em nossos ministérios.
+                </p>
+                <Link to="/portal/voluntariado" className="text-sm font-semibold text-primary mt-4 block">
+                    Ver oportunidades &rarr;
+                </Link>
+            </CardContent>
+        </Card>
       </div>
     </div>
   );

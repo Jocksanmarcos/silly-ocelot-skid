@@ -52,7 +52,7 @@ const HallDaGenerosidadePage = () => {
 
   return (
     <div className="container py-12">
-      <Link to="/mural-da-generosidade" className="flex items-center gap-2 text-sm text-muted-foreground hover:underline mb-4">
+      <Link to="/portal/mural" className="flex items-center gap-2 text-sm text-muted-foreground hover:underline mb-4">
         <ArrowLeft className="h-4 w-4" />
         Voltar para o Mural
       </Link>
