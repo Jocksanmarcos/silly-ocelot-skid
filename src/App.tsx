@@ -22,6 +22,7 @@ import PaymentStatusPage from "./pages/PaymentStatusPage";
 import RegistrationConfirmationPage from "./pages/RegistrationConfirmationPage";
 import EventRegistrationsPage from "./pages/EventRegistrationsPage";
 import CellsPage from "./pages/CellsPage";
+import PublicCellsPage from "./pages/PublicCellsPage";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
             <Route element={<Layout />}>
               <Route path="/" element={<Index />} />
               <Route path="/sobre" element={<Sobre />} />
+              <Route path="/celulas" element={<PublicCellsPage />} />
               <Route path="/eventos" element={<Eventos />} />
               <Route path="/eventos/:id" element={<EventDetailPage />} />
               <Route path="/contato" element={<Contato />} />
