@@ -50,6 +50,8 @@ import PortalIndex from "./pages/portal/PortalIndex";
 import PortalCursosPage from "./pages/portal/PortalCursosPage";
 import PortalCelulaPage from "./pages/portal/PortalCelulaPage";
 import PortalPerfilPage from "./pages/portal/PortalPerfilPage";
+import AssetDetailPage from "./pages/AssetDetailPage";
+import PatrimonioSettingsPage from "./pages/PatrimonioSettingsPage";
 
 const queryClient = new QueryClient();
 
@@ -116,6 +118,8 @@ const App = () => (
                 <Route path="/dashboard/courses" element={<CoursesPage />} />
                 <Route path="/dashboard/courses/:id/lessons" element={<LessonsPage />} />
                 <Route path="/dashboard/patrimonio" element={<PatrimonioPage />} />
+                <Route path="/dashboard/patrimonio/settings" element={<PatrimonioSettingsPage />} />
+                <Route path="/dashboard/patrimonio/:id" element={<AssetDetailPage />} />
                 <Route path="/dashboard/biblioteca" element={<BibliotecaPage />} />
                 <Route path="/dashboard/voluntariado" element={<VoluntariadoAdminPage />} />
               </Route>

@@ -7,11 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PlusCircle, Archive, MoreHorizontal } from "lucide-react";
+import { PlusCircle, Archive, MoreHorizontal, Settings, Wrench } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { showSuccess, showError } from "@/utils/toast";
 import AssetForm from "@/components/patrimonio/AssetForm";
+import { Link } from "react-router-dom";
 
 const fetchAssets = async (): Promise<Asset[]> => {
   const { data, error } = await supabase.from("assets").select("*, asset_categories(name), asset_locations(name), profiles(full_name)").order("created_at", { ascending: false });
@@ -69,13 +70,18 @@ const PatrimonioPage = () => {
           <h1 className="text-3xl font-bold">Gestão de Patrimônio</h1>
           <p className="mt-2 text-muted-foreground">Cadastre e gerencie os ativos e bens da sua igreja.</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) setSelectedAsset(null); }}>
-          <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Adicionar Item</Button></DialogTrigger>
-          <DialogContent className="sm:max-w-2xl">
-            <DialogHeader><DialogTitle>{selectedAsset ? "Editar Item" : "Adicionar Novo Item"}</DialogTitle></DialogHeader>
-            {relatedData && <AssetForm onSubmit={handleSubmit} defaultValues={selectedAsset || undefined} isSubmitting={mutation.isPending} {...relatedData} />}
-          </DialogContent>
-        </Dialog>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" asChild>
+            <Link to="/dashboard/patrimonio/settings"><Settings className="mr-2 h-4 w-4" /> Configurações</Link>
+          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) setSelectedAsset(null); }}>
+            <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Adicionar Item</Button></DialogTrigger>
+            <DialogContent className="sm:max-w-2xl">
+              <DialogHeader><DialogTitle>{selectedAsset ? "Editar Item" : "Adicionar Novo Item"}</DialogTitle></DialogHeader>
+              {relatedData && <AssetForm onSubmit={handleSubmit} defaultValues={selectedAsset || undefined} isSubmitting={mutation.isPending} {...relatedData} />}
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -102,8 +108,8 @@ const PatrimonioPage = () => {
                       <DropdownMenuTrigger asChild><Button variant="ghost" className="h-8 w-8 p-0"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => handleEdit(asset)}>Editar</DropdownMenuItem>
-                        {/* Futura ação de manutenção aqui */}
+                        <DropdownMenuItem asChild><Link to={`/dashboard/patrimonio/${asset.id}`} className="cursor-pointer"><Wrench className="mr-2 h-4 w-4" /> Ver Detalhes / Manutenção</Link></DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleEdit(asset)}>Editar Item</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
