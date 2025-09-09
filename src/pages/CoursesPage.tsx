@@ -80,9 +80,11 @@ const CoursesPage = () => {
           <DropdownMenuTrigger asChild><Button variant="ghost" className="h-8 w-8 p-0"><span className="sr-only">Abrir menu</span><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
-            <DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to={`/dashboard/courses/${row.original.id}/lessons`} className="flex items-center cursor-pointer">
                 <BookOpen className="mr-2 h-4 w-4" />
                 Gerenciar Aulas
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleEdit(row.original)}>Editar Curso</DropdownMenuItem>
             <DropdownMenuSeparator />

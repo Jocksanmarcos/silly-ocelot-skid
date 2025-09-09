@@ -112,3 +112,20 @@ export const courseSchema = z.object({
 });
 
 export type CourseFormValues = z.infer<typeof courseSchema>;
+
+export const lessonSchema = z.object({
+  title: z.string().min(3, { message: "O título da aula é obrigatório." }),
+  content_type: z.enum(["video", "pdf"], { required_error: "Selecione o tipo de conteúdo." }),
+  content_url: z.string().optional(),
+  pdf_file: z.any().optional(),
+}).refine(data => {
+    if (data.content_type === 'video') {
+        return data.content_url && z.string().url().safeParse(data.content_url).success;
+    }
+    return true;
+}, {
+    message: "A URL do vídeo é obrigatória e deve ser válida.",
+    path: ["content_url"],
+});
+
+export type LessonFormValues = z.infer<typeof lessonSchema>;
