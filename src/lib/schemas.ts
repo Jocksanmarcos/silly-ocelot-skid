@@ -276,3 +276,18 @@ export const generosityRequestSchema = z.object({
 });
 
 export type GenerosityRequestFormValues = z.infer<typeof generosityRequestSchema>;
+
+// Schema para a Central de Louvor
+export const songSchema = z.object({
+  title: z.string().min(3, { message: "O título é obrigatório." }),
+  artist: z.string().optional(),
+  song_key: z.string().optional(),
+  bpm: z.preprocess(
+    (a) => a ? parseInt(String(a), 10) : undefined,
+    z.number().int().min(0).optional()
+  ),
+  lyrics_chords: z.string().optional(),
+  youtube_url: z.string().url({ message: "URL do YouTube inválida." }).optional().or(z.literal('')),
+});
+
+export type SongFormValues = z.infer<typeof songSchema>;

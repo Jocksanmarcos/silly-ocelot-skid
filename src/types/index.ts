@@ -284,3 +284,27 @@ export interface GenerosityItem {
   profiles?: { full_name: string; avatar_url?: string | null } | null;
   reserved_by?: { full_name: string } | null;
 }
+
+// Tipos para a Central de Louvor
+export interface WorshipTeam {
+  id: string;
+  name: string;
+}
+
+export interface WorshipMember {
+  id: string;
+  user_id: string;
+  team_id: string;
+  role: string;
+  profiles?: { full_name: string } | null;
+}
+
+export interface Song {
+  id: string;
+  title: string;
+  artist?: string | null;
+  song_key?: string | null;
+  bpm?: number | null;
+  lyrics_chords?: string | null;
+  youtube_url?: string | null;
+}

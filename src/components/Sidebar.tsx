@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Church, Users, Calendar, DollarSign, LayoutDashboard, LogOut, Home, Sitemap, HeartHandshake, GraduationCap, Handshake, TrendingUp, Archive, BookOpen, Settings } from "lucide-react";
+import { Church, Users, Calendar, DollarSign, LayoutDashboard, LogOut, Home, Sitemap, HeartHandshake, GraduationCap, Handshake, TrendingUp, Archive, BookOpen, Settings, Music } from "lucide-react";
 import { Button } from "./ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -13,6 +13,7 @@ const navItems = [
   { href: "/dashboard/journey", icon: TrendingUp, label: "Jornada" },
   { href: "/dashboard/families", icon: HeartHandshake, label: "Famílias" },
   { href: "/dashboard/cells", icon: Home, label: "Células" },
+  { href: "/dashboard/louvor", icon: Music, label: "Louvor" },
   { href: "/dashboard/events", icon: Calendar, label: "Eventos" },
   { href: "/dashboard/courses", icon: GraduationCap, label: "Ensino" },
   { href: "/dashboard/finances", icon: DollarSign, label: "Finanças" },
