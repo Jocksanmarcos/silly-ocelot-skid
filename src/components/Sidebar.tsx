@@ -17,6 +17,7 @@ const navItems = [
   { href: "/dashboard/finances", icon: DollarSign, label: "Finanças" },
   { href: "/dashboard/patrimonio", icon: Archive, label: "Patrimônio" },
   { href: "/dashboard/biblioteca", icon: BookOpen, label: "Biblioteca" },
+  { href: "/dashboard/voluntariado", icon: Handshake, label: "Voluntariado" },
   { href: "/dashboard/hierarchy", icon: Sitemap, label: "Hierarquia" },
 ];
 

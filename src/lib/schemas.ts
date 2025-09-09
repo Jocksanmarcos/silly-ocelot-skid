@@ -232,3 +232,12 @@ export const loanSchema = z.object({
 });
 
 export type LoanFormValues = z.infer<typeof loanSchema>;
+
+// Schema para o Módulo de Voluntariado
+export const ministrySchema = z.object({
+  name: z.string().min(3, { message: "O nome do ministério é obrigatório." }),
+  description: z.string().optional(),
+  contact_person_id: z.string().uuid({ message: "Selecione um contato válido." }).optional(),
+});
+
+export type MinistryFormValues = z.infer<typeof ministrySchema>;

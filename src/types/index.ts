@@ -245,3 +245,24 @@ export interface Loan {
   books?: { title: string } | null;
   profiles?: { full_name: string } | null;
 }
+
+// Tipos para o Módulo de Voluntariado
+export interface Ministry {
+  id: string;
+  name: string;
+  description?: string | null;
+  contact_person_id?: string | null;
+  created_at: string;
+  profiles?: { full_name: string } | null;
+}
+
+export interface Volunteer {
+  id: string;
+  user_id: string;
+  ministry_id: string;
+  status: 'pending' | 'approved' | 'inactive';
+  notes?: string | null;
+  created_at: string;
+  profiles?: { full_name: string } | null;
+  ministries?: { name: string } | null;
+}
