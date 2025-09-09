@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthProvider";
@@ -6,12 +6,14 @@ import { GenerosityItem } from "@/types";
 import { DonationFormValues } from "@/lib/schemas";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PlusCircle, HeartHandshake } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import ItemCard from "@/components/mural/ItemCard";
 import DonationForm from "@/components/mural/DonationForm";
+import MyDonationsTab from "@/components/mural/MyDonationsTab";
 
 const fetchItems = async (): Promise<GenerosityItem[]> => {
   const { data, error } = await supabase
@@ -26,17 +28,25 @@ const MuralDaGenerosidadePage = () => {
   const { session } = useAuth();
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<GenerosityItem | null>(null);
 
   const { data: items, isLoading } = useQuery({
     queryKey: ["generosity_items"],
     queryFn: fetchItems,
   });
 
+  const myItems = useMemo(() => {
+    if (!items || !session) return [];
+    return items.filter(item => item.user_id === session.user.id);
+  }, [items, session]);
+
   const mutation = useMutation({
-    mutationFn: async (formData: DonationFormValues) => {
+    mutationFn: async (formData: { data: DonationFormValues, id?: string }) => {
+      const { data, id } = formData;
       let imageUrls: string[] = [];
-      if (formData.images && formData.images.length > 0) {
-        const uploadPromises = Array.from(formData.images).map(async (file: any) => {
+      if (data.images && data.images.length > 0) {
+        const uploadPromises = Array.from(data.images).map(async (file: any) => {
           const fileExt = file.name.split('.').pop();
           const fileName = `${session!.user.id}/${Date.now()}.${fileExt}`;
           const { error: uploadError } = await supabase.storage.from('generosity_items').upload(fileName, file);
@@ -47,25 +57,66 @@ const MuralDaGenerosidadePage = () => {
         imageUrls = await Promise.all(uploadPromises);
       }
 
-      const { error } = await supabase.from("generosity_items").insert({
+      const itemData = {
         user_id: session!.user.id,
-        title: formData.title,
-        description: formData.description,
-        category: formData.category,
-        image_urls: imageUrls,
-      });
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        ...(imageUrls.length > 0 && { image_urls: imageUrls }),
+      };
+
+      const { error } = id
+        ? await supabase.from("generosity_items").update(itemData).eq("id", id)
+        : await supabase.from("generosity_items").insert(itemData);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["generosity_items"] });
-      showSuccess("Sua doação foi publicada. Obrigado por sua generosidade!");
+      showSuccess(`Item ${selectedItem ? 'atualizado' : 'publicado'} com sucesso!`);
       setIsDialogOpen(false);
+      setSelectedItem(null);
     },
     onError: (error: Error) => showError(error.message),
   });
 
+  const statusMutation = useMutation({
+    mutationFn: async ({ itemId, status }: { itemId: string, status: GenerosityItem['status'] }) => {
+      const { error } = await supabase.from("generosity_items").update({ status }).eq("id", itemId);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["generosity_items"] });
+      showSuccess("Status do item atualizado!");
+    },
+    onError: (error: Error) => showError(error.message),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (itemId: string) => {
+      const { error } = await supabase.from("generosity_items").delete().eq("id", itemId);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["generosity_items"] });
+      showSuccess("Item removido com sucesso.");
+      setIsAlertOpen(false);
+      setSelectedItem(null);
+    },
+    onError: (error: Error) => showError(error.message),
+  });
+
+  const handleEdit = (item: GenerosityItem) => {
+    setSelectedItem(item);
+    setIsDialogOpen(true);
+  };
+
+  const handleDelete = (item: GenerosityItem) => {
+    setSelectedItem(item);
+    setIsAlertOpen(true);
+  };
+
   const handleSubmit = (data: DonationFormValues) => {
-    mutation.mutate(data);
+    mutation.mutate({ data, id: selectedItem?.id });
   };
 
   return (
@@ -81,15 +132,15 @@ const MuralDaGenerosidadePage = () => {
       <Tabs defaultValue="doacoes">
         <div className="flex justify-between items-center mb-6">
           <TabsList>
-            <TabsTrigger value="doacoes">Itens para Doar</TabsTrigger>
-            <TabsTrigger value="necessidades" disabled>Necessidades da Comunidade</TabsTrigger>
+            <TabsTrigger value="doacoes">Todas as Doações</TabsTrigger>
+            <TabsTrigger value="meus-itens">Minhas Doações</TabsTrigger>
           </TabsList>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) setSelectedItem(null); }}>
             <DialogTrigger asChild>
               <Button><PlusCircle className="mr-2 h-4 w-4" /> Oferecer Doação</Button>
             </DialogTrigger>
             <DialogContent>
-              <DialogHeader><DialogTitle>Oferecer um item para doação</DialogTitle></DialogHeader>
+              <DialogHeader><DialogTitle>{selectedItem ? 'Editar Item' : 'Oferecer um item para doação'}</DialogTitle></DialogHeader>
               <DonationForm onSubmit={handleSubmit} isSubmitting={mutation.isPending} />
             </DialogContent>
           </Dialog>
@@ -108,7 +159,32 @@ const MuralDaGenerosidadePage = () => {
             )}
           </div>
         </TabsContent>
+        <TabsContent value="meus-itens">
+            <MyDonationsTab 
+                items={myItems}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onStatusChange={(itemId, status) => statusMutation.mutate({ itemId, status })}
+            />
+        </TabsContent>
       </Tabs>
+
+      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja remover "{selectedItem?.title}"? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setSelectedItem(null)}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteMutation.mutate(selectedItem!.id)} disabled={deleteMutation.isPending}>
+              {deleteMutation.isPending ? "Removendo..." : "Confirmar"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
