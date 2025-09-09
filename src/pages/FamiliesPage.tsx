@@ -162,7 +162,7 @@ const FamiliesPage = () => {
         <AlertDialogContent>
           <AlertDialogHeader><AlertDialogTitle>Você tem certeza?</AlertDialogTitle><AlertDialogDescription>Esta ação não pode ser desfeita. Isso removerá permanentemente a família.</AlertDialogDescription></AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setSelectedFamily(null)}>Cancelar</Cancel>
+            <AlertDialogCancel onClick={() => setSelectedFamily(null)}>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={() => selectedFamily && deleteMutation.mutate(selectedFamily.id)} disabled={deleteMutation.isPending}>{deleteMutation.isPending ? "Removendo..." : "Remover"}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
