@@ -142,3 +142,40 @@ export interface Visitor {
   follow_up_status: 'Novo' | 'Em acompanhamento' | 'Decidiu por Cristo' | 'Aguardando Batismo' | 'Integrado como Membro';
   created_at: string;
 }
+
+// Tipos para o Módulo de Patrimônio
+export interface AssetCategory {
+  id: string;
+  name: string;
+}
+
+export interface AssetLocation {
+  id: string;
+  name: string;
+}
+
+export interface Asset {
+  id: string;
+  name: string;
+  description?: string | null;
+  category_id?: string | null;
+  location_id?: string | null;
+  purchase_date?: string | null;
+  purchase_price?: number | null;
+  current_value?: number | null;
+  status: string;
+  serial_number?: string | null;
+  assigned_to?: string | null;
+  asset_categories?: { name: string } | null;
+  asset_locations?: { name: string } | null;
+  profiles?: { full_name: string } | null;
+}
+
+export interface AssetMaintenance {
+  id: string;
+  asset_id: string;
+  maintenance_date: string;
+  description: string;
+  cost?: number | null;
+  provider?: string | null;
+}

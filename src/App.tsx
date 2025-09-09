@@ -36,6 +36,7 @@ import CourseStudentViewPage from "./pages/CourseStudentViewPage";
 import CoursePlayerPage from "./pages/CoursePlayerPage";
 import VisitorsPage from "./pages/VisitorsPage";
 import MemberJourneyPage from "./pages/MemberJourneyPage";
+import PatrimonioPage from "./pages/PatrimonioPage";
 
 const queryClient = new QueryClient();
 
@@ -85,6 +86,7 @@ const App = () => (
                 <Route path="/dashboard/families/tree" element={<FamilyTreeViewPage />} />
                 <Route path="/dashboard/courses" element={<CoursesPage />} />
                 <Route path="/dashboard/courses/:id/lessons" element={<LessonsPage />} />
+                <Route path="/dashboard/patrimonio" element={<PatrimonioPage />} />
               </Route>
             </Route>
 

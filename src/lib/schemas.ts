@@ -141,3 +141,37 @@ export const visitorSchema = z.object({
 });
 
 export type VisitorFormValues = z.infer<typeof visitorSchema>;
+
+// Schemas para o Módulo de Patrimônio
+export const assetSchema = z.object({
+  name: z.string().min(3, { message: "O nome do item é obrigatório." }),
+  description: z.string().optional(),
+  category_id: z.string().optional(),
+  location_id: z.string().optional(),
+  purchase_date: z.string().optional(),
+  purchase_price: z.preprocess(
+    (a) => a ? parseFloat(z.string().parse(a)) : undefined,
+    z.number().min(0).optional()
+  ),
+  current_value: z.preprocess(
+    (a) => a ? parseFloat(z.string().parse(a)) : undefined,
+    z.number().min(0).optional()
+  ),
+  status: z.string().min(1, { message: "O status é obrigatório." }),
+  serial_number: z.string().optional(),
+  assigned_to: z.string().optional(),
+});
+
+export type AssetFormValues = z.infer<typeof assetSchema>;
+
+export const maintenanceSchema = z.object({
+    maintenance_date: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Data inválida." }),
+    description: z.string().min(3, { message: "A descrição é obrigatória." }),
+    cost: z.preprocess(
+      (a) => a ? parseFloat(z.string().parse(a)) : undefined,
+      z.number().min(0).optional()
+    ),
+    provider: z.string().optional(),
+});
+
+export type MaintenanceFormValues = z.infer<typeof maintenanceSchema>;
