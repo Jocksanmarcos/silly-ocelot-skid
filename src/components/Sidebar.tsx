@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Church, Users, Calendar, DollarSign, LayoutDashboard, LogOut, Home, Sitemap, HeartHandshake, GraduationCap, Handshake, TrendingUp, Archive, BookOpen, Settings, Music } from "lucide-react";
+import { Church, Users, Calendar, DollarSign, LayoutDashboard, LogOut, Home, Network, HeartHandshake, GraduationCap, Handshake, TrendingUp, Archive, BookOpen, Settings, Music } from "lucide-react";
 import { Button } from "./ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -20,7 +20,7 @@ const navItems = [
   { href: "/dashboard/patrimonio", icon: Archive, label: "Patrimônio" },
   { href: "/dashboard/biblioteca", icon: BookOpen, label: "Biblioteca" },
   { href: "/dashboard/voluntariado", icon: Handshake, label: "Voluntariado" },
-  { href: "/dashboard/hierarchy", icon: Sitemap, label: "Hierarquia" },
+  { href: "/dashboard/hierarchy", icon: Network, label: "Hierarquia" },
 ];
 
 const bottomNavItems = [
