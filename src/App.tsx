@@ -45,6 +45,9 @@ import BibliotecaPage from "./pages/BibliotecaPage";
 import PublicBibliotecaPage from "./pages/PublicBibliotecaPage";
 import VoluntariadoAdminPage from "./pages/VoluntariadoAdminPage";
 import PublicVoluntariadoPage from "./pages/PublicVoluntariadoPage";
+import PortalLayout from "./components/portal/PortalLayout";
+import PortalIndex from "./pages/portal/PortalIndex";
+import PortalCursosPage from "./pages/portal/PortalCursosPage";
 
 const queryClient = new QueryClient();
 
@@ -81,6 +84,15 @@ const App = () => (
                 <Route path="/cursos/:id" element={<CourseStudentViewPage />} />
                 <Route path="/cursos/:courseId/aula/:lessonId" element={<CoursePlayerPage />} />
               </Route>
+
+              {/* Rotas do Portal do Membro */}
+              <Route element={<PortalLayout />}>
+                <Route path="/portal" element={<PortalIndex />} />
+                <Route path="/portal/cursos" element={<PortalCursosPage />} />
+                {/* Adicionar outras rotas do portal aqui (célula, perfil, etc) */}
+              </Route>
+
+              {/* Rotas do Painel Administrativo */}
               <Route element={<DashboardLayout />}>
                 <Route path="/dashboard" element={<DashboardIndex />} />
                 <Route path="/dashboard/agenda" element={<PastoralAgendaPage />} />

@@ -45,7 +45,7 @@ const Header = () => {
         <div className="flex flex-1 items-center justify-end space-x-4">
           {session ? (
             <Button asChild className="hidden sm:inline-flex">
-              <Link to="/dashboard">Painel</Link>
+              <Link to="/portal">Meu Portal</Link>
             </Button>
           ) : (
             <Button asChild className="hidden sm:inline-flex">
@@ -77,6 +77,3 @@ const Header = () => {
       </div>
     </header>
   );
-};
-
-export default Header;
