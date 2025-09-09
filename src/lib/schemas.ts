@@ -147,20 +147,20 @@ export type VisitorFormValues = z.infer<typeof visitorSchema>;
 export const assetSchema = z.object({
   name: z.string().min(3, { message: "O nome do item é obrigatório." }),
   description: z.string().optional(),
-  category_id: z.string().optional(),
-  location_id: z.string().optional(),
-  purchase_date: z.string().optional(),
+  category_id: z.string().uuid({ message: "Selecione uma categoria." }).optional().nullable(),
+  location_id: z.string().uuid({ message: "Selecione uma localização." }).optional().nullable(),
+  purchase_date: z.string().optional().nullable(),
   purchase_price: z.preprocess(
-    (a) => a ? parseFloat(z.string().parse(a)) : undefined,
-    z.number().min(0).optional()
+    (a) => a ? parseFloat(z.string().parse(a)) : null,
+    z.number().min(0).optional().nullable()
   ),
   current_value: z.preprocess(
-    (a) => a ? parseFloat(z.string().parse(a)) : undefined,
-    z.number().min(0).optional()
+    (a) => a ? parseFloat(z.string().parse(a)) : null,
+    z.number().min(0).optional().nullable()
   ),
   status: z.string().min(1, { message: "O status é obrigatório." }),
-  serial_number: z.string().optional(),
-  assigned_to: z.string().optional(),
+  serial_number: z.string().optional().nullable(),
+  assigned_to: z.string().uuid({ message: "Selecione um responsável." }).optional().nullable(),
 });
 
 export type AssetFormValues = z.infer<typeof assetSchema>;
