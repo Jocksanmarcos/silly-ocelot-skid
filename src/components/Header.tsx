@@ -1,4 +1,4 @@
-import { Church, Menu, User, LogOut } from "lucide-react";
+import { Church, Menu, User, LogOut, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Link, useNavigate } from "react-router-dom";
@@ -16,6 +16,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { useTheme } from "@/contexts/ThemeProvider";
 
 // Componente auxiliar para os itens do menu suspenso
 const ListItemLink = ({ to, title, children }: { to: string, title: string, children: React.ReactNode }) => {
@@ -40,6 +41,7 @@ const Header = () => {
   const { session } = useAuth();
   const { data: profile } = useUserProfile();
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -135,7 +137,16 @@ const Header = () => {
           </NavigationMenuList>
         </NavigationMenu>
 
-        <div className="flex flex-1 items-center justify-end space-x-4">
+        <div className="flex flex-1 items-center justify-end space-x-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
+            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <span className="sr-only">Toggle theme</span>
+          </Button>
           {session ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
