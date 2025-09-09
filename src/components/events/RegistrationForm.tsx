@@ -12,6 +12,7 @@ import { showSuccess, showError } from "@/utils/toast";
 import { initMercadoPago, Payment } from '@mercadopago/sdk-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 initMercadoPago(import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY);
 
@@ -24,6 +25,7 @@ const RegistrationForm = ({ event, onFinished }: RegistrationFormProps) => {
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const isFree = !event.price || event.price === 0;
+  const navigate = useNavigate();
 
   const form = useForm<RegistrationFormValues>({
     resolver: zodResolver(registrationSchema),
@@ -32,17 +34,19 @@ const RegistrationForm = ({ event, onFinished }: RegistrationFormProps) => {
 
   const freeRegistrationMutation = useMutation({
     mutationFn: async (data: RegistrationFormValues) => {
-      const { error } = await supabase.from("event_registrations").insert({
+      const { data: newRegistration, error } = await supabase.from("event_registrations").insert({
         event_id: event.id,
         full_name: data.full_name,
         email: data.email,
         status: 'confirmed',
-      });
+      }).select().single();
       if (error) throw new Error(error.message);
+      return newRegistration;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       showSuccess("Inscrição realizada com sucesso!");
       onFinished();
+      navigate(`/inscricao/${data.id}`);
     },
     onError: (error) => {
       showError(`Erro na inscrição: ${error.message}`);
@@ -92,7 +96,6 @@ const RegistrationForm = ({ event, onFinished }: RegistrationFormProps) => {
   };
 
   const onPaymentSubmit = async ({ formData }: any) => {
-    // O backend (webhook) irá confirmar o pagamento, aqui apenas notificamos o usuário.
     console.log("Pagamento submetido:", formData);
   };
 
