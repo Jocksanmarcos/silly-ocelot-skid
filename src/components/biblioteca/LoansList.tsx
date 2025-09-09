@@ -26,22 +26,20 @@ const LoansList = () => {
   });
 
   const returnMutation = useMutation({
-    mutationFn: async (loanId: string) => {
-      const { error } = await supabase
+    mutationFn: async ({ loanId, bookId }: { loanId: string; bookId: string }) => {
+      // 1. Update the loan to mark it as returned
+      const { error: loanError } = await supabase
         .from("loans")
         .update({ return_date: new Date().toISOString() })
         .eq("id", loanId);
-      if (error) throw new Error(error.message);
+      if (loanError) throw new Error(loanError.message);
       
-      // Also update the book status back to 'disponivel'
-      const loan = loans?.find(l => l.id === loanId);
-      if (loan) {
-        const { error: bookError } = await supabase
-          .from("books")
-          .update({ status: 'disponivel' })
-          .eq('id', loan.book_id);
-        if (bookError) throw new Error(`Erro ao atualizar status do livro: ${bookError.message}`);
-      }
+      // 2. Update the book status back to 'disponivel'
+      const { error: bookError } = await supabase
+        .from("books")
+        .update({ status: 'disponivel' })
+        .eq('id', bookId);
+      if (bookError) throw new Error(`Erro ao atualizar status do livro: ${bookError.message}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["loans"] });
@@ -91,7 +89,7 @@ const LoansList = () => {
                   {!loan.return_date && (
                     <Button
                       size="sm"
-                      onClick={() => returnMutation.mutate(loan.id)}
+                      onClick={() => returnMutation.mutate({ loanId: loan.id, bookId: loan.book_id })}
                       disabled={returnMutation.isPending}
                     >
                       Registrar Devolução
