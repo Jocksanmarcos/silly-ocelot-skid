@@ -117,6 +117,7 @@ export interface Lesson {
   content_url?: string | null;
   order: number;
   created_at: string;
+  lesson_progress?: { is_completed: boolean }[];
 }
 
 export interface Enrollment {

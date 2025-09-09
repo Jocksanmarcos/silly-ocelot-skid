@@ -1,16 +1,16 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Course, Enrollment } from "@/types";
+import { Course } from "@/types";
 import { useAuth } from "@/contexts/AuthProvider";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Lock, PlayCircle } from "lucide-react";
+import { Lock, PlayCircle, CheckCircle } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 
 const fetchCourseData = async (courseId: string, userId?: string) => {
-  const coursePromise = supabase.from("courses").select("*, lessons(*, lesson_progress(is_completed))").eq("id", courseId).order('order', { referencedTable: 'lessons' }).single();
+  const coursePromise = supabase.from("courses").select("*, lessons(*, lesson_progress(*))").eq("id", courseId).order('order', { referencedTable: 'lessons' }).single();
   const enrollmentPromise = userId ? supabase.from("enrollments").select("*").eq("user_id", userId).eq("course_id", courseId).single() : Promise.resolve({ data: null, error: null });
 
   const [{ data: course, error: courseError }, { data: enrollment, error: enrollmentError }] = await Promise.all([coursePromise, enrollmentPromise]);
@@ -69,6 +69,7 @@ const CourseStudentViewPage = () => {
 
   const { course, enrollment } = data;
   const isEnrolled = !!enrollment;
+  const firstLessonId = course.lessons?.[0]?.id;
 
   return (
     <div className="container py-12">
@@ -86,20 +87,30 @@ const CourseStudentViewPage = () => {
               <CardTitle>Aulas do Curso</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-3">
-                {course.lessons?.map((lesson, index) => (
-                  <li key={lesson.id} className="flex items-center justify-between">
-                    <span className="flex items-center gap-3">
-                      {isEnrolled ? <PlayCircle className="h-5 w-5 text-primary" /> : <Lock className="h-5 w-5 text-muted-foreground" />}
-                      <span>{index + 1}. {lesson.title}</span>
-                    </span>
-                  </li>
-                ))}
-                {(!course.lessons || course.lessons.length === 0) && <p className="text-sm text-muted-foreground">Nenhuma aula cadastrada ainda.</p>}
+              <ul className="space-y-1">
+                {course.lessons?.map((lesson, index) => {
+                  const isCompleted = isEnrolled && !!lesson.lesson_progress?.find(p => p.is_completed);
+                  const lessonLink = isEnrolled ? `/cursos/${courseId}/aula/${lesson.id}` : `/cursos/${courseId}`;
+                  return (
+                    <li key={lesson.id}>
+                      <Link to={lessonLink} className={`flex items-center gap-3 p-3 rounded-md transition-colors ${!isEnrolled ? 'cursor-default' : 'hover:bg-muted/50'}`}>
+                        {isEnrolled ? (isCompleted ? <CheckCircle className="h-5 w-5 text-green-500" /> : <PlayCircle className="h-5 w-5 text-primary" />) : <Lock className="h-5 w-5 text-muted-foreground" />}
+                        <span>{index + 1}. {lesson.title}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+                {(!course.lessons || course.lessons.length === 0) && <p className="text-sm text-muted-foreground p-3">Nenhuma aula cadastrada ainda.</p>}
               </ul>
             </CardContent>
           </Card>
-          {!isEnrolled && (
+          {isEnrolled ? (
+            <Button asChild size="lg" className="w-full" disabled={!firstLessonId}>
+              <Link to={`/cursos/${courseId}/aula/${firstLessonId}`}>
+                {enrollment.status === 'completed' ? "Revisar Curso" : "Continuar Curso"}
+              </Link>
+            </Button>
+          ) : (
             <Button size="lg" className="w-full" onClick={handleEnroll} disabled={enrollmentMutation.isPending}>
               {enrollmentMutation.isPending ? "Inscrevendo..." : "Inscrever-se no Curso"}
             </Button>

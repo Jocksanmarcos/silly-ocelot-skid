@@ -33,6 +33,7 @@ import CoursesPage from "./pages/CoursesPage";
 import LessonsPage from "./pages/LessonsPage";
 import PublicCoursesPage from "./pages/PublicCoursesPage";
 import CourseStudentViewPage from "./pages/CourseStudentViewPage";
+import CoursePlayerPage from "./pages/CoursePlayerPage";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +64,7 @@ const App = () => (
             <Route element={<ProtectedRoute />}>
               <Route element={<Layout />}>
                 <Route path="/cursos/:id" element={<CourseStudentViewPage />} />
+                <Route path="/cursos/:courseId/aula/:lessonId" element={<CoursePlayerPage />} />
               </Route>
               <Route element={<DashboardLayout />}>
                 <Route path="/dashboard" element={<DashboardIndex />} />
