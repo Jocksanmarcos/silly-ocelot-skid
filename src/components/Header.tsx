@@ -21,13 +21,12 @@ const Header = () => {
   const navLinks = [
     { href: "/", label: "Início" },
     { href: "/sobre", label: "Sobre Nós" },
-    { href: "/celulas", label: "Células" },
-    { href: "/eventos", label: "Eventos" },
-    { href: "/cursos", label: "Cursos" },
-    { href: "/agenda", label: "Agenda" },
     { href: "/biblioteca", label: "Biblioteca" },
-    { href: "/voluntariado", label: "Voluntariado" },
+    { href: "/celulas", label: "Células" },
+    { href: "/agenda", label: "Agenda" },
     { href: "/aconselhamento", label: "Aconselhamento" },
+    { href: "#", label: "Galeria" },
+    { href: "#", label: "Semear & Transformar" },
     { href: "/contato", label: "Contato" },
   ];
 

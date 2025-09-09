@@ -17,9 +17,9 @@ const Footer = () => {
         </div>
         <div className="grid gap-1">
           <h3 className="font-semibold">Recursos</h3>
-          <Link to="/sermoes" className="hover:underline">Sermões</Link>
-          <Link to="/eventos" className="hover:underline">Eventos</Link>
-          <Link to="/doar" className="hover:underline">Doar</Link>
+          <Link to="/biblioteca" className="hover:underline">Biblioteca</Link>
+          <Link to="#" className="hover:underline">Galeria</Link>
+          <Link to="#" className="hover:underline">Semear & Transformar</Link>
         </div>
         <div className="grid gap-1 col-span-2 sm:col-span-1">
           <h3 className="font-semibold">Legal</h3>

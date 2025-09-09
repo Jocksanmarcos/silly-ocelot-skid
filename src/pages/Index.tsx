@@ -1,11 +1,13 @@
 import Hero from "@/components/Hero";
-import ServiceTimes from "@/components/ServiceTimes";
+import Features from "@/components/Features";
+import SermonsHighlight from "@/components/SermonsHighlight";
 
 const Index = () => {
   return (
     <>
       <Hero />
-      <ServiceTimes />
+      <Features />
+      <SermonsHighlight />
     </>
   );
 };
