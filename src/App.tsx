@@ -61,6 +61,7 @@ import SecuritySettingsPage from "./pages/settings/SecuritySettingsPage";
 import MuralDaGenerosidadePage from "./pages/MuralDaGenerosidadePage";
 import PedirAjudaPage from "./pages/PedirAjudaPage";
 import GenerosidadeAdminPage from "./pages/GenerosidadeAdminPage";
+import HallDaGenerosidadePage from "./pages/HallDaGenerosidadePage";
 
 const queryClient = new QueryClient();
 
@@ -98,6 +99,7 @@ const App = () => (
                   <Route path="/cursos/:id" element={<CourseStudentViewPage />} />
                   <Route path="/cursos/:courseId/aula/:lessonId" element={<CoursePlayerPage />} />
                   <Route path="/mural-da-generosidade" element={<MuralDaGenerosidadePage />} />
+                  <Route path="/hall-da-generosidade" element={<HallDaGenerosidadePage />} />
                   <Route path="/pedir-ajuda" element={<PedirAjudaPage />} />
                 </Route>
 

@@ -31,6 +31,7 @@ export interface Profile {
   reports_to_id?: string | null;
   role: UserRole; // Atualizado
   congregation_id?: string | null; // Adicionado
+  generosity_score?: number;
 }
 
 export interface Congregation {

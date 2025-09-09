@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PlusCircle, HeartHandshake, ShieldQuestion } from "lucide-react";
+import { PlusCircle, HeartHandshake, ShieldQuestion, Trophy } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import ItemCard from "@/components/mural/ItemCard";
 import DonationForm from "@/components/mural/DonationForm";
@@ -170,6 +170,12 @@ const MuralDaGenerosidadePage = () => {
             <TabsTrigger value="meus-itens">Minhas Doações</TabsTrigger>
           </TabsList>
           <div className="flex items-center gap-2">
+            <Button variant="outline" asChild>
+              <Link to="/hall-da-generosidade">
+                <Trophy className="mr-2 h-4 w-4" />
+                Hall da Fama
+              </Link>
+            </Button>
             <Button variant="outline" asChild>
               <Link to="/pedir-ajuda">
                 <ShieldQuestion className="mr-2 h-4 w-4" />
