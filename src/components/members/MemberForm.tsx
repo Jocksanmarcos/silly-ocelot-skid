@@ -5,19 +5,22 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Member, Family } from "@/types";
+import { Member, Family, Congregation } from "@/types";
 
 interface MemberFormProps {
   onSubmit: (data: MemberFormValues) => void;
   defaultValues?: Member;
   isSubmitting: boolean;
   families: Family[];
+  congregations: Congregation[];
+  isSuperAdmin: boolean;
+  userCongregationId?: string;
 }
 
 const maritalStatuses = ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)", "Outro"];
 const familyRoles = ["Pai/Responsável", "Mãe", "Cônjuge", "Filho(a)", "Outro"];
 
-const MemberForm = ({ onSubmit, defaultValues, isSubmitting, families }: MemberFormProps) => {
+const MemberForm = ({ onSubmit, defaultValues, isSubmitting, families, congregations, isSuperAdmin, userCongregationId }: MemberFormProps) => {
   const form = useForm<MemberFormValues>({
     resolver: zodResolver(memberSchema),
     defaultValues: {
@@ -31,6 +34,7 @@ const MemberForm = ({ onSubmit, defaultValues, isSubmitting, families }: MemberF
       family_id: defaultValues?.family_id || "",
       marital_status: defaultValues?.marital_status || "",
       family_role: defaultValues?.family_role || "",
+      congregation_id: defaultValues?.congregation_id || (isSuperAdmin ? "" : userCongregationId),
     },
   });
 
@@ -41,6 +45,20 @@ const MemberForm = ({ onSubmit, defaultValues, isSubmitting, families }: MemberF
           <FormField control={form.control} name="first_name" render={({ field }) => (<FormItem><FormLabel>Nome</FormLabel><FormControl><Input placeholder="Nome do membro" {...field} /></FormControl><FormMessage /></FormItem>)} />
           <FormField control={form.control} name="last_name" render={({ field }) => (<FormItem><FormLabel>Sobrenome</FormLabel><FormControl><Input placeholder="Sobrenome do membro" {...field} /></FormControl><FormMessage /></FormItem>)} />
         </div>
+        <FormField
+          control={form.control}
+          name="congregation_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Congregação</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!isSuperAdmin}>
+                <FormControl><SelectTrigger><SelectValue placeholder="Selecione a congregação" /></SelectTrigger></FormControl>
+                <SelectContent>{congregations.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField control={form.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="email@exemplo.com" {...field} /></FormControl><FormMessage /></FormItem>)} />
         <FormField control={form.control} name="phone" render={({ field }) => (<FormItem><FormLabel>Telefone</FormLabel><FormControl><Input placeholder="(00) 00000-0000" {...field} /></FormControl><FormMessage /></FormItem>)} />
         <FormField control={form.control} name="address" render={({ field }) => (<FormItem><FormLabel>Endereço</FormLabel><FormControl><Input placeholder="Rua, número, bairro..." {...field} /></FormControl><FormMessage /></FormItem>)} />

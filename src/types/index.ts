@@ -10,6 +10,7 @@ export interface Member {
   family_id?: string | null;
   marital_status?: string | null;
   family_role?: string | null;
+  congregation_id?: string | null; // Adicionado
   created_at: string;
 }
 
@@ -21,10 +22,19 @@ export interface Family {
   members?: { first_name: string; last_name: string } | null;
 }
 
+export type UserRole = 'super_admin' | 'admin_missao' | 'pastor' | 'lider_celula' | 'membro';
+
 export interface Profile {
   id: string;
   full_name?: string;
   reports_to_id?: string | null;
+  role: UserRole; // Atualizado
+  congregation_id?: string | null; // Adicionado
+}
+
+export interface Congregation {
+  id: string;
+  name: string;
 }
 
 export interface Event {

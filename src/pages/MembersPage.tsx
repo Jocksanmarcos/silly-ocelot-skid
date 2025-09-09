@@ -1,35 +1,13 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Member, Family } from "@/types";
+import { Member, Family, Congregation, Profile } from "@/types";
 import { MemberFormValues } from "@/lib/schemas";
 import { MembersDataTable } from "@/components/members/MembersDataTable";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, BarChart, FileDown } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { showSuccess, showError } from "@/utils/toast";
@@ -37,6 +15,7 @@ import MemberForm from "@/components/members/MemberForm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { generateMembersListPDF } from "@/lib/pdfGenerator";
+import { useAuth } from "@/contexts/AuthProvider";
 
 const fetchMembers = async (): Promise<Member[]> => {
   const { data, error } = await supabase.from("members").select("*").order("created_at", { ascending: false });
@@ -50,21 +29,37 @@ const fetchFamilies = async (): Promise<Family[]> => {
   return data;
 };
 
+const fetchCongregations = async (): Promise<Congregation[]> => {
+  const { data, error } = await supabase.from("congregations").select("id, name").order("name");
+  if (error) throw new Error(error.message);
+  return data;
+};
+
+const fetchUserProfile = async (userId: string): Promise<Profile | null> => {
+  const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single();
+  if (error) {
+    console.error("Erro ao buscar perfil do usuário:", error);
+    return null;
+  }
+  return data;
+};
+
 const MembersPage = () => {
   const queryClient = useQueryClient();
+  const { session } = useAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
 
-  const { data: members, isLoading: isLoadingMembers } = useQuery<Member[]>({
-    queryKey: ["members"],
-    queryFn: fetchMembers,
+  const { data: userProfile, isLoading: isLoadingProfile } = useQuery({
+    queryKey: ["userProfile", session?.user?.id],
+    queryFn: () => fetchUserProfile(session!.user.id),
+    enabled: !!session?.user?.id,
   });
-  
-  const { data: families, isLoading: isLoadingFamilies } = useQuery<Family[]>({
-    queryKey: ["familiesForMembers"],
-    queryFn: fetchFamilies,
-  });
+
+  const { data: members, isLoading: isLoadingMembers } = useQuery<Member[]>({ queryKey: ["members"], queryFn: fetchMembers });
+  const { data: families, isLoading: isLoadingFamilies } = useQuery<Family[]>({ queryKey: ["familiesForMembers"], queryFn: fetchFamilies });
+  const { data: congregations, isLoading: isLoadingCongregations } = useQuery<Congregation[]>({ queryKey: ["congregations"], queryFn: fetchCongregations });
 
   const mutation = useMutation({
     mutationFn: async (formData: { member: MemberFormValues; id?: string }) => {
@@ -80,9 +75,7 @@ const MembersPage = () => {
       setIsDialogOpen(false);
       setSelectedMember(null);
     },
-    onError: (error) => {
-      showError(`Erro: ${error.message}`);
-    },
+    onError: (error) => { showError(`Erro: ${error.message}`); },
   });
 
   const deleteMutation = useMutation({
@@ -96,9 +89,7 @@ const MembersPage = () => {
       setIsAlertOpen(false);
       setSelectedMember(null);
     },
-    onError: (error) => {
-      showError(`Erro: ${error.message}`);
-    },
+    onError: (error) => { showError(`Erro: ${error.message}`); },
   });
 
   const handleEdit = (member: Member) => {
@@ -128,19 +119,12 @@ const MembersPage = () => {
       id: "actions",
       cell: ({ row }) => (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Abrir menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
+          <DropdownMenuTrigger asChild><Button variant="ghost" className="h-8 w-8 p-0"><span className="sr-only">Abrir menu</span><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
             <DropdownMenuItem onClick={() => handleEdit(row.original)}>Editar</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleDelete(row.original)} className="text-red-600">
-              Remover
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDelete(row.original)} className="text-red-600">Remover</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -151,15 +135,13 @@ const MembersPage = () => {
     mutation.mutate({ member: data, id: selectedMember?.id });
   };
 
-  const isLoading = isLoadingMembers || isLoadingFamilies;
+  const isLoading = isLoadingMembers || isLoadingFamilies || isLoadingCongregations || isLoadingProfile;
+  const isSuperAdmin = userProfile?.role === 'super_admin';
 
   if (isLoading) {
     return (
       <div>
-        <div className="flex justify-between items-center mb-4">
-          <Skeleton className="h-10 w-48" />
-          <Skeleton className="h-10 w-32" />
-        </div>
+        <div className="flex justify-between items-center mb-4"><Skeleton className="h-10 w-48" /><Skeleton className="h-10 w-32" /></div>
         <Skeleton className="h-96 w-full" />
       </div>
     );
@@ -173,32 +155,20 @@ const MembersPage = () => {
           <p className="mt-2 text-muted-foreground">Adicione, visualize e gerencie as pessoas da sua igreja.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" asChild>
-            <Link to="/dashboard/members/dashboard">
-              <BarChart className="mr-2 h-4 w-4" />
-              Painel
-            </Link>
-          </Button>
-          <Button variant="outline" onClick={() => generateMembersListPDF(members || [])}>
-            <FileDown className="mr-2 h-4 w-4" />
-            Exportar PDF
-          </Button>
-          <Dialog open={isDialogOpen} onOpenChange={(open) => {
-            setIsDialogOpen(open);
-            if (!open) setSelectedMember(null);
-          }}>
-            <DialogTrigger asChild>
-              <Button>Adicionar Pessoa</Button>
-            </DialogTrigger>
+          <Button variant="outline" asChild><Link to="/dashboard/members/dashboard"><BarChart className="mr-2 h-4 w-4" />Painel</Link></Button>
+          <Button variant="outline" onClick={() => generateMembersListPDF(members || [])}><FileDown className="mr-2 h-4 w-4" />Exportar PDF</Button>
+          <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) setSelectedMember(null); }}>
+            <DialogTrigger asChild><Button>Adicionar Pessoa</Button></DialogTrigger>
             <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{selectedMember ? "Editar Pessoa" : "Adicionar Nova Pessoa"}</DialogTitle>
-              </DialogHeader>
+              <DialogHeader><DialogTitle>{selectedMember ? "Editar Pessoa" : "Adicionar Nova Pessoa"}</DialogTitle></DialogHeader>
               <MemberForm 
                 onSubmit={handleSubmit} 
                 defaultValues={selectedMember || undefined}
                 isSubmitting={mutation.isPending}
                 families={families || []}
+                congregations={congregations || []}
+                isSuperAdmin={isSuperAdmin}
+                userCongregationId={userProfile?.congregation_id}
               />
             </DialogContent>
           </Dialog>
@@ -209,17 +179,10 @@ const MembersPage = () => {
 
       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
         <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta ação não pode ser desfeita. Isso removerá permanentemente a pessoa dos seus registros.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
+          <AlertDialogHeader><AlertDialogTitle>Você tem certeza?</AlertDialogTitle><AlertDialogDescription>Esta ação não pode ser desfeita. Isso removerá permanentemente a pessoa dos seus registros.</AlertDialogDescription></AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setSelectedMember(null)}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={() => selectedMember && deleteMutation.mutate(selectedMember.id)} disabled={deleteMutation.isPending}>
-              {deleteMutation.isPending ? "Removendo..." : "Remover"}
-            </AlertDialogAction>
+            <AlertDialogAction onClick={() => selectedMember && deleteMutation.mutate(selectedMember.id)} disabled={deleteMutation.isPending}>{deleteMutation.isPending ? "Removendo..." : "Remover"}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
