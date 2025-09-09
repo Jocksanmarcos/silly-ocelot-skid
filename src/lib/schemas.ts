@@ -28,3 +28,10 @@ export const eventSchema = z.object({
 });
 
 export type EventFormValues = z.infer<typeof eventSchema>;
+
+export const registrationSchema = z.object({
+  full_name: z.string().min(3, { message: "O nome completo é obrigatório." }),
+  email: z.string().email({ message: "Por favor, insira um email válido." }),
+});
+
+export type RegistrationFormValues = z.infer<typeof registrationSchema>;

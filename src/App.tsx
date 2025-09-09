@@ -17,6 +17,7 @@ import DashboardLayout from "./components/DashboardLayout";
 import MembersPage from "./pages/MembersPage";
 import EventsPage from "./pages/EventsPage";
 import FinancesPage from "./pages/FinancesPage";
+import EventDetailPage from "./pages/EventDetailPage";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/sobre" element={<Sobre />} />
               <Route path="/eventos" element={<Eventos />} />
+              <Route path="/eventos/:id" element={<EventDetailPage />} />
               <Route path="/contato" element={<Contato />} />
             </Route>
             

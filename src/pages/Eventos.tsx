@@ -1,25 +1,27 @@
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Event } from "@/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const events = [
-  {
-    title: "Conferência de Casais",
-    date: "15 de Agosto, 2024",
-    description: "Um final de semana para fortalecer os laços matrimoniais com palestras e dinâmicas.",
-  },
-  {
-    title: "Acampamento de Jovens",
-    date: "05 a 07 de Setembro, 2024",
-    description: "Três dias de muita diversão, louvor e aprendizado da Palavra de Deus para a juventude.",
-  },
-  {
-    title: "Musical de Natal",
-    date: "22 de Dezembro, 2024",
-    description: "Uma celebração especial do nascimento de Jesus com música e teatro.",
-  },
-];
+const fetchEvents = async (): Promise<Event[]> => {
+  const { data, error } = await supabase
+    .from("events")
+    .select("*")
+    .order("event_date", { ascending: true })
+    .gte("event_date", new Date().toISOString()); // Fetch only future events
+  if (error) throw new Error(error.message);
+  return data;
+};
 
 const Eventos = () => {
+  const { data: events, isLoading } = useQuery<Event[]>({
+    queryKey: ["publicEvents"],
+    queryFn: fetchEvents,
+  });
+
   return (
     <section className="w-full py-12 md:py-24 lg:py-32">
       <div className="container px-4 md:px-6">
@@ -30,20 +32,43 @@ const Eventos = () => {
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-12">
-          {events.map((event, index) => (
-            <Card key={index}>
-              <CardHeader>
-                <CardTitle>{event.title}</CardTitle>
-                <p className="text-sm text-muted-foreground">{event.date}</p>
-              </CardHeader>
-              <CardContent>
-                <p>{event.description}</p>
-              </CardContent>
-              <CardFooter>
-                <Button>Saiba Mais</Button>
-              </CardFooter>
-            </Card>
-          ))}
+          {isLoading ? (
+            Array.from({ length: 3 }).map((_, index) => (
+              <Card key={index}>
+                <CardHeader>
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-1/2 mt-2" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-16 w-full" />
+                </CardContent>
+                <CardFooter>
+                  <Skeleton className="h-10 w-28" />
+                </CardFooter>
+              </Card>
+            ))
+          ) : events && events.length > 0 ? (
+            events.map((event) => (
+              <Card key={event.id}>
+                <CardHeader>
+                  <CardTitle>{event.title}</CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(event.event_date).toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric', timeZone: 'UTC' })}
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <p className="line-clamp-3">{event.description || "Veja mais detalhes sobre este evento."}</p>
+                </CardContent>
+                <CardFooter>
+                  <Button asChild>
+                    <Link to={`/eventos/${event.id}`}>Saiba Mais</Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))
+          ) : (
+            <p className="col-span-full text-center text-muted-foreground">Nenhum evento futuro encontrado.</p>
+          )}
         </div>
       </div>
     </section>

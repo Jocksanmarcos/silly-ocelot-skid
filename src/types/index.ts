@@ -20,3 +20,14 @@ export interface Event {
   type: string;
   created_at: string;
 }
+
+export interface EventRegistration {
+  id: string;
+  event_id: string;
+  full_name: string;
+  email: string;
+  status: string;
+  payment_id?: string | null;
+  checked_in: boolean;
+  created_at: string;
+}
