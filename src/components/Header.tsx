@@ -2,8 +2,11 @@ import { Church, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthProvider";
 
 const Header = () => {
+  const { session } = useAuth();
+
   const navLinks = [
     { href: "/", label: "Início" },
     { href: "/sobre", label: "Sobre Nós" },
@@ -35,7 +38,15 @@ const Header = () => {
           ))}
         </nav>
         <div className="flex flex-1 items-center justify-end space-x-4">
-          <Button className="hidden sm:inline-flex">Doe Agora</Button>
+          {session ? (
+            <Button asChild className="hidden sm:inline-flex">
+              <Link to="/dashboard">Painel</Link>
+            </Button>
+          ) : (
+            <Button asChild className="hidden sm:inline-flex">
+              <Link to="/login">Login</Link>
+            </Button>
+          )}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="lg:hidden">
