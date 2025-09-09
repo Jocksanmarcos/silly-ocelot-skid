@@ -12,15 +12,20 @@ import { Users, MapPin, Clock, User } from "lucide-react";
 const fetchActiveCells = async (): Promise<Cell[]> => {
   const { data, error } = await supabase
     .from("cells")
-    .select("*")
+    .select("*, leader_name:profiles!leader_id(full_name)")
     .eq("status", "Ativa")
     .order("name", { ascending: true });
   if (error) throw new Error(error.message);
-  return data;
+  
+  // Aplainando a estrutura para facilitar o acesso
+  return data.map(cell => ({
+    ...cell,
+    leader_name: (cell.leader_name as any)?.full_name || 'A definir',
+  }));
 };
 
 const PublicCellsPage = () => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedCell, setSelectedCell] = useState<Cell | null>(null);
   const { data: cells, isLoading } = useQuery<Cell[]>({
     queryKey: ["publicCells"],
     queryFn: fetchActiveCells,
@@ -54,15 +59,15 @@ const PublicCellsPage = () => {
                   <div className="flex items-center gap-2 text-sm"><Users className="h-4 w-4 text-muted-foreground" /><span>{cell.age_group}</span></div>
                 </CardContent>
                 <CardFooter>
-                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <Dialog open={selectedCell?.id === cell.id} onOpenChange={(isOpen) => !isOpen && setSelectedCell(null)}>
                     <DialogTrigger asChild>
-                      <Button className="w-full">Tenho Interesse</Button>
+                      <Button className="w-full" onClick={() => setSelectedCell(cell)}>Tenho Interesse</Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
                         <DialogTitle>Participar da Célula {cell.name}</DialogTitle>
                       </DialogHeader>
-                      <CellInterestForm cellId={cell.id} onFinished={() => setIsDialogOpen(false)} />
+                      <CellInterestForm cellId={cell.id} onFinished={() => setSelectedCell(null)} />
                     </DialogContent>
                   </Dialog>
                 </CardFooter>

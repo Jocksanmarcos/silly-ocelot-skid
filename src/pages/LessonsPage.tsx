@@ -44,8 +44,8 @@ const LessonsPage = () => {
   };
 
   const mutation = useMutation({
-    mutationFn: async (formData: { data: LessonFormValues; id?: string }) => {
-      const { data, id } = formData;
+    mutationFn: async (formData: { data: LessonFormValues; id?: string; lessons: Lesson[] }) => {
+      const { data, id, lessons } = formData;
       let contentUrl = data.content_url;
 
       if (data.content_type === 'pdf' && data.pdf_file) {
@@ -57,7 +57,7 @@ const LessonsPage = () => {
         title: data.title,
         content_type: data.content_type,
         content_url: contentUrl,
-        order: id ? selectedLesson?.order : (data?.lessons?.length || 0) + 1,
+        order: id ? selectedLesson?.order : (lessons?.length || 0) + 1,
       };
 
       const { error } = id
@@ -92,7 +92,7 @@ const LessonsPage = () => {
           <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Adicionar Aula</Button></DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>{selectedLesson ? 'Editar Aula' : 'Nova Aula'}</DialogTitle></DialogHeader>
-            <LessonForm onSubmit={(formData) => mutation.mutate({ data: formData, id: selectedLesson?.id })} defaultValues={selectedLesson || undefined} isSubmitting={mutation.isPending} />
+            <LessonForm onSubmit={(formData) => mutation.mutate({ data: formData, id: selectedLesson?.id, lessons: data?.lessons || [] })} defaultValues={selectedLesson || undefined} isSubmitting={mutation.isPending} />
           </DialogContent>
         </Dialog>
       </div>

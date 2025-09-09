@@ -75,6 +75,7 @@ export interface Cell {
   age_group?: string | null;
   status: string;
   created_at: string;
+  leader_name?: string; // Adicionado para clareza
   profiles?: { full_name: string } | null;
 }
 

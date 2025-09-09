@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthProvider';
@@ -50,17 +51,26 @@ const PortalPerfilPage = () => {
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
-    values: {
-      full_name: data?.profile?.full_name || '',
-      email: data?.member?.email || session?.user.email || '',
-      phone: data?.member?.phone || '',
-      address: data?.member?.address || '',
-      date_of_birth: data?.member?.date_of_birth ? new Date(data.member.date_of_birth).toISOString().split('T')[0] : '',
-    },
-    resetOptions: {
-        keepDirtyValues: true,
+    defaultValues: {
+      full_name: '',
+      email: session?.user.email || '',
+      phone: '',
+      address: '',
+      date_of_birth: '',
     },
   });
+
+  useEffect(() => {
+    if (data) {
+      form.reset({
+        full_name: data.profile?.full_name || '',
+        email: data.member?.email || session?.user.email || '',
+        phone: data.member?.phone || '',
+        address: data.member?.address || '',
+        date_of_birth: data.member?.date_of_birth ? new Date(data.member.date_of_birth).toISOString().split('T')[0] : '',
+      });
+    }
+  }, [data, form, session]);
 
   const mutation = useMutation({
     mutationFn: async (formData: ProfileFormValues) => {

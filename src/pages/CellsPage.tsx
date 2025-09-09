@@ -16,18 +16,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 
 const fetchCells = async (): Promise<Cell[]> => {
-  // A query precisa ser mais explícita para pegar os nomes de líder e supervisor
   const { data, error } = await supabase
     .from("cells")
     .select("*, leader:profiles!leader_id(full_name), supervisor:profiles!supervisor_id(full_name)")
     .order("created_at", { ascending: false });
     
   if (error) throw new Error(error.message);
-  // O Supabase aninha os resultados, então precisamos achatá-los um pouco
+  
   return data.map(cell => ({
     ...cell,
-    profiles: cell.leader ? { full_name: (cell.leader as any).full_name } : null,
-    supervisor_name: cell.supervisor ? (cell.supervisor as any).full_name : null,
+    leader_name: (cell.leader as any)?.full_name,
+    supervisor_name: (cell.supervisor as any)?.full_name,
   })) as any;
 };
 
@@ -90,13 +89,14 @@ const CellsPage = () => {
   const columns: ColumnDef<Cell & { supervisor_name?: string }>[] = [
     { accessorKey: "name", header: "Nome" },
     { 
+      accessorKey: "leader_name",
       header: "Líder",
-      cell: ({ row }) => row.original.profiles?.full_name || 'Não definido',
+      cell: ({ row }) => (row.original as any).leader_name || 'Não definido',
     },
     { 
       accessorKey: "supervisor_name",
       header: "Supervisor",
-      cell: ({ row }) => row.original.supervisor_name || 'Não definido',
+      cell: ({ row }) => (row.original as any).supervisor_name || 'Não definido',
     },
     { accessorKey: "meeting_day", header: "Dia" },
     { accessorKey: "status", header: "Status" },
