@@ -60,9 +60,9 @@ const Sidebar = () => {
   return (
     <aside className="hidden md:flex flex-col w-64 bg-background border-r">
       <div className="p-4 border-b">
-        <Link to="/" className="flex items-center space-x-2">
-          <Church className="h-6 w-6" />
-          <span className="font-bold">CBN Kerigma Gestão</span>
+        <Link to="/" className="flex items-center">
+          <img src="/logo-light.png" alt="CBN Kerigma Logo" className="h-8 block dark:hidden" />
+          <img src="/logo-dark.png" alt="CBN Kerigma Logo" className="h-8 hidden dark:block" />
         </Link>
       </div>
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">

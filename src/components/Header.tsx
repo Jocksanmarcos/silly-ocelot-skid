@@ -64,11 +64,9 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
         <div className="mr-4 flex items-center">
-          <Link to="/" className="flex items-center space-x-2">
-            <Church className="h-6 w-6" />
-            <span className="font-bold sm:inline-block">
-              CBN Kerigma
-            </span>
+          <Link to="/" className="flex items-center">
+            <img src="/logo-light.png" alt="CBN Kerigma Logo" className="h-10 block dark:hidden" />
+            <img src="/logo-dark.png" alt="CBN Kerigma Logo" className="h-10 hidden dark:block" />
           </Link>
         </div>
         
