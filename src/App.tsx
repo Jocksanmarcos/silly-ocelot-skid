@@ -20,6 +20,7 @@ import FinancesPage from "./pages/FinancesPage";
 import EventDetailPage from "./pages/EventDetailPage";
 import PaymentStatusPage from "./pages/PaymentStatusPage";
 import RegistrationConfirmationPage from "./pages/RegistrationConfirmationPage";
+import EventRegistrationsPage from "./pages/EventRegistrationsPage";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
                 <Route path="/dashboard" element={<DashboardIndex />} />
                 <Route path="/dashboard/members" element={<MembersPage />} />
                 <Route path="/dashboard/events" element={<EventsPage />} />
+                <Route path="/dashboard/events/:id/registrations" element={<EventRegistrationsPage />} />
                 <Route path="/dashboard/finances" element={<FinancesPage />} />
               </Route>
             </Route>

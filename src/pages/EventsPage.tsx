@@ -29,12 +29,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Users } from "lucide-react";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable, getPaginationRowModel } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { showSuccess, showError } from "@/utils/toast";
 import EventForm from "@/components/events/EventForm";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "react-router-dom";
 
 const fetchEvents = async (): Promise<Event[]> => {
   const { data, error } = await supabase.from("events").select("*").order("event_date", { ascending: false });
@@ -183,6 +184,12 @@ const EventsPage = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
+            <DropdownMenuItem asChild>
+              <Link to={`/dashboard/events/${row.original.id}/registrations`} className="flex items-center">
+                <Users className="mr-2 h-4 w-4" />
+                Ver Inscrições
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleEdit(row.original)}>Editar</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => handleDelete(row.original)} className="text-red-600">
