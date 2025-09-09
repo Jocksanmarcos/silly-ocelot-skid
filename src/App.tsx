@@ -29,6 +29,7 @@ import PublicCellsPage from "./pages/PublicCellsPage";
 import CellMembersPage from "./pages/CellMembersPage";
 import CellReportsPage from "./pages/CellReportsPage";
 import HierarchyPage from "./pages/HierarchyPage";
+import CoursesPage from "./pages/CoursesPage";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +70,7 @@ const App = () => (
                 <Route path="/dashboard/hierarchy" element={<HierarchyPage />} />
                 <Route path="/dashboard/families" element={<FamiliesPage />} />
                 <Route path="/dashboard/families/tree" element={<FamilyTreeViewPage />} />
+                <Route path="/dashboard/courses" element={<CoursesPage />} />
               </Route>
             </Route>
 

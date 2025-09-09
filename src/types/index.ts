@@ -98,3 +98,31 @@ export interface Contribution {
   created_at: string;
   members?: { first_name: string; last_name: string; } | null;
 }
+
+// Tipos para o Módulo de Ensino
+export interface Course {
+  id: string;
+  title: string;
+  description?: string | null;
+  thumbnail_url?: string | null;
+  created_at: string;
+}
+
+export interface Lesson {
+  id: string;
+  course_id: string;
+  title: string;
+  content_type: 'video' | 'text' | 'pdf';
+  content_url?: string | null;
+  order: number;
+  created_at: string;
+}
+
+export interface Enrollment {
+  id: string;
+  user_id: string;
+  course_id: string;
+  status: 'in_progress' | 'completed';
+  enrolled_at: string;
+  completed_at?: string | null;
+}

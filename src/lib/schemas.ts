@@ -103,3 +103,12 @@ export const contributionSchema = z.object({
 });
 
 export type ContributionFormValues = z.infer<typeof contributionSchema>;
+
+// Schema para o Módulo de Ensino
+export const courseSchema = z.object({
+  title: z.string().min(3, { message: "O título do curso é obrigatório." }),
+  description: z.string().optional(),
+  thumbnail_url: z.string().url({ message: "Por favor, insira uma URL de imagem válida." }).optional().or(z.literal('')),
+});
+
+export type CourseFormValues = z.infer<typeof courseSchema>;
