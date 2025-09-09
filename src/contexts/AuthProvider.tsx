@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider value={{ session, loading }}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };
