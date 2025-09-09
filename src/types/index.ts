@@ -278,5 +278,8 @@ export interface GenerosityItem {
   image_urls?: string[] | null;
   status: 'Disponível' | 'Reservado' | 'Doado';
   created_at: string;
+  reserved_by_user_id?: string | null;
+  requester_contact?: string | null;
   profiles?: { full_name: string; avatar_url?: string | null } | null;
+  reserved_by?: { full_name: string } | null;
 }

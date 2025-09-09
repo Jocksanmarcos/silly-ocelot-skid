@@ -4,12 +4,17 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { useAuth } from "@/contexts/AuthProvider";
 
 interface ItemCardProps {
   item: GenerosityItem;
+  onInterestClick: (item: GenerosityItem) => void;
 }
 
-const ItemCard = ({ item }: ItemCardProps) => {
+const ItemCard = ({ item, onInterestClick }: ItemCardProps) => {
+  const { session } = useAuth();
+  const isOwner = session?.user.id === item.user_id;
+
   return (
     <Card className="flex flex-col">
       <CardHeader className="flex-row items-center gap-3 space-y-0">
@@ -51,7 +56,11 @@ const ItemCard = ({ item }: ItemCardProps) => {
       </CardContent>
       <CardFooter className="flex justify-between items-center">
         <Badge variant="secondary">{item.category}</Badge>
-        <Button size="sm" disabled={item.status !== 'Disponível'}>
+        <Button 
+          size="sm" 
+          disabled={item.status !== 'Disponível' || isOwner}
+          onClick={() => onInterestClick(item)}
+        >
           {item.status === 'Disponível' ? 'Tenho Interesse' : item.status}
         </Button>
       </CardFooter>

@@ -18,7 +18,7 @@ import MyDonationsTab from "@/components/mural/MyDonationsTab";
 const fetchItems = async (): Promise<GenerosityItem[]> => {
   const { data, error } = await supabase
     .from("generosity_items")
-    .select("*, profiles(full_name, avatar_url)")
+    .select("*, profiles!user_id(full_name, avatar_url), reserved_by:profiles!reserved_by_user_id(full_name)")
     .order("created_at", { ascending: false });
   if (error) throw new Error(error.message);
   return data;
@@ -81,12 +81,45 @@ const MuralDaGenerosidadePage = () => {
 
   const statusMutation = useMutation({
     mutationFn: async ({ itemId, status }: { itemId: string, status: GenerosityItem['status'] }) => {
-      const { error } = await supabase.from("generosity_items").update({ status }).eq("id", itemId);
+      let updateData: Partial<GenerosityItem> = { status };
+      if (status === 'Disponível') {
+        updateData.reserved_by_user_id = null;
+        updateData.requester_contact = null;
+      }
+      const { error } = await supabase.from("generosity_items").update(updateData).eq("id", itemId);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["generosity_items"] });
       showSuccess("Status do item atualizado!");
+    },
+    onError: (error: Error) => showError(error.message),
+  });
+
+  const interestMutation = useMutation({
+    mutationFn: async (item: GenerosityItem) => {
+      const { data: memberData, error: memberError } = await supabase
+        .from('members')
+        .select('phone, email')
+        .eq('user_id', session!.user.id)
+        .single();
+      if (memberError && memberError.code !== 'PGRST116') throw new Error(memberError.message);
+
+      const contactInfo = memberData?.phone || memberData?.email || 'Contato não disponível';
+
+      const { error } = await supabase
+        .from('generosity_items')
+        .update({ 
+          status: 'Reservado',
+          reserved_by_user_id: session!.user.id,
+          requester_contact: contactInfo,
+        })
+        .eq('id', item.id);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["generosity_items"] });
+      showSuccess("Interesse registrado! O doador foi notificado para entrar em contato.");
     },
     onError: (error: Error) => showError(error.message),
   });
@@ -150,7 +183,7 @@ const MuralDaGenerosidadePage = () => {
             {isLoading ? (
               Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-96 w-full" />)
             ) : items && items.length > 0 ? (
-              items.map(item => <ItemCard key={item.id} item={item} />)
+              items.map(item => <ItemCard key={item.id} item={item} onInterestClick={() => interestMutation.mutate(item)} />)
             ) : (
               <div className="col-span-full text-center py-16">
                 <p className="text-muted-foreground">Nenhum item disponível para doação no momento.</p>

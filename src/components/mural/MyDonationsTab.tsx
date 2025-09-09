@@ -36,7 +36,15 @@ const MyDonationsTab = ({ items, onEdit, onDelete, onStatusChange }: MyDonations
         <TableBody>
           {items.map(item => (
             <TableRow key={item.id}>
-              <TableCell className="font-medium">{item.title}</TableCell>
+              <TableCell>
+                <div className="font-medium">{item.title}</div>
+                {item.status === 'Reservado' && (
+                  <div className="text-xs text-muted-foreground mt-1">
+                    <p><strong>Interessado(a):</strong> {item.reserved_by?.full_name}</p>
+                    <p><strong>Contato:</strong> {item.requester_contact}</p>
+                  </div>
+                )}
+              </TableCell>
               <TableCell><Badge variant="secondary">{item.category}</Badge></TableCell>
               <TableCell>{item.status}</TableCell>
               <TableCell className="text-right">
