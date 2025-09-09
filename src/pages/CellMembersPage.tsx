@@ -9,9 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { showSuccess, showError } from '@/utils/toast';
 import { ArrowLeft, Check, Trash2 } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-
-type CellDetails = Pick<Cell, 'name'>;
-type CellMemberWithDetails = CellMember & { cells: CellDetails | null };
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const fetchCellData = async (cellId: string) => {
   const cellPromise = supabase.from('cells').select('name').eq('id', cellId).single();
@@ -43,6 +41,18 @@ const CellMembersPage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cell_members', cellId] });
       showSuccess('Status do membro atualizado!');
+    },
+    onError: (error: Error) => showError(error.message),
+  });
+
+  const updateRoleMutation = useMutation({
+    mutationFn: async ({ memberId, role }: { memberId: string, role: string }) => {
+      const { error } = await supabase.from('cell_members').update({ role }).eq('id', memberId);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cell_members', cellId] });
+      showSuccess('Papel do membro atualizado!');
     },
     onError: (error: Error) => showError(error.message),
   });
@@ -91,9 +101,9 @@ const CellMembersPage = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Nome</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Telefone</TableHead>
+                <TableHead>Contato</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Papel na Célula</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -102,12 +112,22 @@ const CellMembersPage = () => {
                 members.map((member) => (
                   <TableRow key={member.id}>
                     <TableCell>{member.full_name}</TableCell>
-                    <TableCell>{member.email}</TableCell>
-                    <TableCell>{member.phone}</TableCell>
+                    <TableCell>{member.email || member.phone}</TableCell>
                     <TableCell>
                       <span className={`px-2 py-1 text-xs rounded-full ${member.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
                         {member.status === 'approved' ? 'Aprovado' : 'Pendente'}
                       </span>
+                    </TableCell>
+                    <TableCell>
+                      {member.status === 'approved' && member.user_id ? (
+                        <Select value={member.role} onValueChange={(role) => updateRoleMutation.mutate({ memberId: member.id, role })}>
+                          <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Membro">Membro</SelectItem>
+                            <SelectItem value="Líder em Treinamento">Líder em Treinamento</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : member.role}
                     </TableCell>
                     <TableCell className="text-right space-x-2">
                       {member.status === 'pending' && (

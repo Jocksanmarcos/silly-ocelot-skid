@@ -69,6 +69,7 @@ export interface Cell {
 export interface CellMember {
   id: string;
   cell_id: string;
+  user_id?: string | null;
   full_name: string;
   email?: string | null;
   phone?: string | null;

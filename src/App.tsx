@@ -35,6 +35,7 @@ import PublicCoursesPage from "./pages/PublicCoursesPage";
 import CourseStudentViewPage from "./pages/CourseStudentViewPage";
 import CoursePlayerPage from "./pages/CoursePlayerPage";
 import VisitorsPage from "./pages/VisitorsPage";
+import MemberJourneyPage from "./pages/MemberJourneyPage";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +73,7 @@ const App = () => (
                 <Route path="/dashboard/visitors" element={<VisitorsPage />} />
                 <Route path="/dashboard/members" element={<MembersPage />} />
                 <Route path="/dashboard/members/dashboard" element={<MembersDashboardPage />} />
+                <Route path="/dashboard/journey" element={<MemberJourneyPage />} />
                 <Route path="/dashboard/events" element={<EventsPage />} />
                 <Route path="/dashboard/events/:id/registrations" element={<EventRegistrationsPage />} />
                 <Route path="/dashboard/cells" element={<CellsPage />} />
