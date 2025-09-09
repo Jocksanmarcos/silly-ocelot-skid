@@ -3,19 +3,21 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { CellMember, CellReport } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Home, Users, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const fetchCellMembers = async (cellId: string) => {
-  const { data, error } = await supabase.from('cell_members').select('*').eq('cell_id', cellId).order('created_at', { ascending: false });
+  const { data, error } = await supabase.from('cell_members').select('*').eq('cell_id', cellId).order('created_at', { ascending: false }).limit(5);
   if (error) throw new Error(error.message);
   return data;
 };
 
 const fetchCellReports = async (cellId: string) => {
-  const { data, error } = await supabase.from('cell_reports').select('*').eq('cell_id', cellId).order('meeting_date', { ascending: false });
+  const { data, error } = await supabase.from('cell_reports').select('*').eq('cell_id', cellId).order('meeting_date', { ascending: false }).limit(5);
   if (error) throw new Error(error.message);
   return data;
 };
@@ -24,13 +26,13 @@ const LeaderDashboardPage = () => {
   const { cell, isLoading: isLoadingCell, isLeader } = useLeaderCell();
 
   const { data: members, isLoading: isLoadingMembers } = useQuery<CellMember[]>({
-    queryKey: ['cellMembers', cell?.id],
+    queryKey: ['cellMembersDashboard', cell?.id],
     queryFn: () => fetchCellMembers(cell!.id),
     enabled: !!cell,
   });
 
   const { data: reports, isLoading: isLoadingReports } = useQuery<CellReport[]>({
-    queryKey: ['cellReports', cell?.id],
+    queryKey: ['cellReportsDashboard', cell?.id],
     queryFn: () => fetchCellReports(cell!.id),
     enabled: !!cell,
   });
@@ -59,12 +61,12 @@ const LeaderDashboardPage = () => {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
+        <Card className="flex flex-col">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Users /> Membros e Interessados</CardTitle>
-            <CardDescription>Pessoas que fazem parte ou demonstraram interesse na sua célula.</CardDescription>
+            <CardTitle className="flex items-center gap-2"><Users /> Últimos Interessados</CardTitle>
+            <CardDescription>As 5 pessoas mais recentes que demonstraram interesse.</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-grow">
             {isLoadingMembers ? <Skeleton className="h-40 w-full" /> : (
               <Table>
                 <TableHeader><TableRow><TableHead>Nome</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
@@ -72,25 +74,24 @@ const LeaderDashboardPage = () => {
                   {members && members.length > 0 ? members.map(m => (
                     <TableRow key={m.id}>
                       <TableCell>{m.full_name}</TableCell>
-                      <TableCell>
-                        <span className={`px-2 py-1 text-xs rounded-full ${m.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                          {m.status === 'approved' ? 'Aprovado' : 'Pendente'}
-                        </span>
-                      </TableCell>
+                      <TableCell><span className={`px-2 py-1 text-xs rounded-full ${m.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{m.status === 'approved' ? 'Aprovado' : 'Pendente'}</span></TableCell>
                     </TableRow>
                   )) : <TableRow><TableCell colSpan={2} className="text-center">Nenhum membro encontrado.</TableCell></TableRow>}
                 </TableBody>
               </Table>
             )}
           </CardContent>
+          <CardFooter>
+            <Button asChild variant="secondary" className="w-full"><Link to="/leader/members">Gerenciar Todos os Membros</Link></Button>
+          </CardFooter>
         </Card>
 
-        <Card>
+        <Card className="flex flex-col">
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><FileText /> Últimos Relatórios</CardTitle>
-            <CardDescription>Histórico de frequência e anotações dos encontros.</CardDescription>
+            <CardDescription>Os 5 relatórios de encontro mais recentes.</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-grow">
             {isLoadingReports ? <Skeleton className="h-40 w-full" /> : (
               <Table>
                 <TableHeader><TableRow><TableHead>Data</TableHead><TableHead>Presentes</TableHead></TableRow></TableHeader>
@@ -105,6 +106,9 @@ const LeaderDashboardPage = () => {
               </Table>
             )}
           </CardContent>
+          <CardFooter>
+            <Button asChild variant="secondary" className="w-full"><Link to="/leader/reports">Ver e Adicionar Relatórios</Link></Button>
+          </CardFooter>
         </Card>
       </div>
     </div>

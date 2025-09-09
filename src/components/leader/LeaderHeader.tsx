@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Church, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,9 @@ const LeaderHeader = () => {
     navigate('/');
   };
 
+  const getNavLinkClass = ({ isActive }: { isActive: boolean }) =>
+    isActive ? "text-primary" : "text-muted-foreground transition-colors hover:text-primary";
+
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
@@ -21,6 +24,11 @@ const LeaderHeader = () => {
             <Church className="h-6 w-6" />
             <span className="inline-block font-bold">Portal do Líder</span>
           </Link>
+          <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
+            <NavLink to="/leader/dashboard" end className={getNavLinkClass}>Painel</NavLink>
+            <NavLink to="/leader/members" className={getNavLinkClass}>Membros</NavLink>
+            <NavLink to="/leader/reports" className={getNavLinkClass}>Relatórios</NavLink>
+          </nav>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-1">

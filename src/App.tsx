@@ -27,6 +27,8 @@ import CellMembersPage from "./pages/CellMembersPage";
 import CellReportsPage from "./pages/CellReportsPage";
 import LeaderLayout from "./components/leader/LeaderLayout";
 import LeaderDashboardPage from "./pages/leader/LeaderDashboardPage";
+import LeaderMembersPage from "./pages/leader/LeaderMembersPage";
+import LeaderReportsPage from "./pages/leader/LeaderReportsPage";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +69,8 @@ const App = () => (
 
               <Route element={<LeaderLayout />}>
                 <Route path="/leader/dashboard" element={<LeaderDashboardPage />} />
+                <Route path="/leader/members" element={<LeaderMembersPage />} />
+                <Route path="/leader/reports" element={<LeaderReportsPage />} />
               </Route>
             </Route>
 
