@@ -206,3 +206,21 @@ export const counselingRequestSchema = z.object({
 });
 
 export type CounselingRequestFormValues = z.infer<typeof counselingRequestSchema>;
+
+// Schema para o Módulo de Biblioteca
+export const bookSchema = z.object({
+  title: z.string().min(3, { message: "O título é obrigatório." }),
+  author: z.string().optional(),
+  isbn: z.string().optional(),
+  cover_url: z.string().url({ message: "URL da capa inválida." }).optional().or(z.literal('')),
+  description: z.string().optional(),
+  publisher: z.string().optional(),
+  published_date: z.string().optional(),
+  page_count: z.preprocess(
+    (a) => a ? parseInt(String(a), 10) : undefined,
+    z.number().int().min(0).optional()
+  ),
+  status: z.enum(['disponivel', 'emprestado', 'reservado', 'manutencao']),
+});
+
+export type BookFormValues = z.infer<typeof bookSchema>;

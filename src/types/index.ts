@@ -217,3 +217,29 @@ export interface CounselingRequest {
   created_at: string;
   profiles?: { full_name: string } | null;
 }
+
+// Tipos para o Módulo de Biblioteca
+export interface Book {
+  id: string;
+  title: string;
+  author?: string | null;
+  isbn?: string | null;
+  cover_url?: string | null;
+  description?: string | null;
+  publisher?: string | null;
+  published_date?: string | null;
+  page_count?: number | null;
+  status: 'disponivel' | 'emprestado' | 'reservado' | 'manutencao';
+  internal_code: string;
+  created_at: string;
+}
+
+export interface Loan {
+  id: string;
+  book_id: string;
+  user_id: string;
+  loan_date: string;
+  due_date: string;
+  return_date?: string | null;
+  librarian_id: string;
+}
