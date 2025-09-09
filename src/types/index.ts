@@ -7,7 +7,18 @@ export interface Member {
   address?: string | null;
   membership_date?: string | null;
   date_of_birth?: string | null;
+  family_id?: string | null;
+  marital_status?: string | null;
+  family_role?: string | null;
   created_at: string;
+}
+
+export interface Family {
+  id: string;
+  name: string;
+  head_of_family_id?: string | null;
+  created_at: string;
+  members?: { first_name: string; last_name: string } | null;
 }
 
 export interface Profile {

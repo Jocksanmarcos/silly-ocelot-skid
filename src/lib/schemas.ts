@@ -8,9 +8,19 @@ export const memberSchema = z.object({
   address: z.string().optional(),
   membership_date: z.string().optional(),
   date_of_birth: z.string().optional(),
+  family_id: z.string().optional(),
+  marital_status: z.string().optional(),
+  family_role: z.string().optional(),
 });
 
 export type MemberFormValues = z.infer<typeof memberSchema>;
+
+export const familySchema = z.object({
+    name: z.string().min(3, { message: "O nome da família deve ter pelo menos 3 caracteres." }),
+    head_of_family_id: z.string().optional(),
+});
+
+export type FamilyFormValues = z.infer<typeof familySchema>;
 
 export const eventSchema = z.object({
   title: z.string().min(3, { message: "O título deve ter pelo menos 3 caracteres." }),

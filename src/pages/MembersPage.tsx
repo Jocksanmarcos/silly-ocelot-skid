@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Member } from "@/types";
+import { Member, Family } from "@/types";
 import { MemberFormValues } from "@/lib/schemas";
 import { MembersDataTable } from "@/components/members/MembersDataTable";
 import { Button } from "@/components/ui/button";
@@ -44,15 +44,26 @@ const fetchMembers = async (): Promise<Member[]> => {
   return data;
 };
 
+const fetchFamilies = async (): Promise<Family[]> => {
+  const { data, error } = await supabase.from("families").select("id, name").order("name");
+  if (error) throw new Error(error.message);
+  return data;
+};
+
 const MembersPage = () => {
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
 
-  const { data: members, isLoading } = useQuery<Member[]>({
+  const { data: members, isLoading: isLoadingMembers } = useQuery<Member[]>({
     queryKey: ["members"],
     queryFn: fetchMembers,
+  });
+  
+  const { data: families, isLoading: isLoadingFamilies } = useQuery<Family[]>({
+    queryKey: ["familiesForMembers"],
+    queryFn: fetchFamilies,
   });
 
   const mutation = useMutation({
@@ -140,6 +151,8 @@ const MembersPage = () => {
     mutation.mutate({ member: data, id: selectedMember?.id });
   };
 
+  const isLoading = isLoadingMembers || isLoadingFamilies;
+
   if (isLoading) {
     return (
       <div>
@@ -185,6 +198,7 @@ const MembersPage = () => {
                 onSubmit={handleSubmit} 
                 defaultValues={selectedMember || undefined}
                 isSubmitting={mutation.isPending}
+                families={families || []}
               />
             </DialogContent>
           </Dialog>

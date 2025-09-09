@@ -18,6 +18,7 @@ import MembersPage from "./pages/MembersPage";
 import MembersDashboardPage from "./pages/MembersDashboardPage";
 import EventsPage from "./pages/EventsPage";
 import FinancesPage from "./pages/FinancesPage";
+import FamiliesPage from "./pages/FamiliesPage";
 import EventDetailPage from "./pages/EventDetailPage";
 import PaymentStatusPage from "./pages/PaymentStatusPage";
 import RegistrationConfirmationPage from "./pages/RegistrationConfirmationPage";
@@ -65,6 +66,7 @@ const App = () => (
                 <Route path="/dashboard/cells/:id/reports" element={<CellReportsPage />} />
                 <Route path="/dashboard/finances" element={<FinancesPage />} />
                 <Route path="/dashboard/hierarchy" element={<HierarchyPage />} />
+                <Route path="/dashboard/families" element={<FamiliesPage />} />
               </Route>
             </Route>
 
