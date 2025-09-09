@@ -106,6 +106,7 @@ export interface Course {
   description?: string | null;
   thumbnail_url?: string | null;
   created_at: string;
+  lessons?: Lesson[];
 }
 
 export interface Lesson {

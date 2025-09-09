@@ -31,6 +31,8 @@ import CellReportsPage from "./pages/CellReportsPage";
 import HierarchyPage from "./pages/HierarchyPage";
 import CoursesPage from "./pages/CoursesPage";
 import LessonsPage from "./pages/LessonsPage";
+import PublicCoursesPage from "./pages/PublicCoursesPage";
+import CourseStudentViewPage from "./pages/CourseStudentViewPage";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +50,7 @@ const App = () => (
               <Route path="/celulas" element={<PublicCellsPage />} />
               <Route path="/eventos" element={<Eventos />} />
               <Route path="/eventos/:id" element={<EventDetailPage />} />
+              <Route path="/cursos" element={<PublicCoursesPage />} />
               <Route path="/contato" element={<Contato />} />
               <Route path="/inscricao/:id" element={<RegistrationConfirmationPage />} />
               <Route path="/payment/success" element={<PaymentStatusPage />} />
@@ -58,6 +61,9 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             
             <Route element={<ProtectedRoute />}>
+              <Route element={<Layout />}>
+                <Route path="/cursos/:id" element={<CourseStudentViewPage />} />
+              </Route>
               <Route element={<DashboardLayout />}>
                 <Route path="/dashboard" element={<DashboardIndex />} />
                 <Route path="/dashboard/members" element={<MembersPage />} />
