@@ -39,6 +39,8 @@ import MemberJourneyPage from "./pages/MemberJourneyPage";
 import PatrimonioPage from "./pages/PatrimonioPage";
 import PublicAgendaPage from "./pages/PublicAgendaPage";
 import PastoralAgendaPage from "./pages/PastoralAgendaPage";
+import AconselhamentoPage from "./pages/AconselhamentoPage";
+import AconselhamentoAdminPage from "./pages/AconselhamentoAdminPage";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +60,7 @@ const App = () => (
               <Route path="/eventos/:id" element={<EventDetailPage />} />
               <Route path="/cursos" element={<PublicCoursesPage />} />
               <Route path="/agenda" element={<PublicAgendaPage />} />
+              <Route path="/aconselhamento" element={<AconselhamentoPage />} />
               <Route path="/contato" element={<Contato />} />
               <Route path="/inscricao/:id" element={<RegistrationConfirmationPage />} />
               <Route path="/payment/success" element={<PaymentStatusPage />} />
@@ -75,6 +78,7 @@ const App = () => (
               <Route element={<DashboardLayout />}>
                 <Route path="/dashboard" element={<DashboardIndex />} />
                 <Route path="/dashboard/agenda" element={<PastoralAgendaPage />} />
+                <Route path="/dashboard/aconselhamento" element={<AconselhamentoAdminPage />} />
                 <Route path="/dashboard/visitors" element={<VisitorsPage />} />
                 <Route path="/dashboard/members" element={<MembersPage />} />
                 <Route path="/dashboard/members/dashboard" element={<MembersDashboardPage />} />

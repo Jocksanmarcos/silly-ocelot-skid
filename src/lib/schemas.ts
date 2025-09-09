@@ -191,3 +191,17 @@ export const calendarEventSchema = z.object({
 });
 
 export type CalendarEventFormValues = z.infer<typeof calendarEventSchema>;
+
+// Schema para o Módulo de Aconselhamento
+export const counselingRequestSchema = z.object({
+  requester_name: z.string().min(3, { message: "O nome é obrigatório." }),
+  requester_contact_email: z.string().email({ message: "Email inválido." }).optional().or(z.literal('')),
+  requester_contact_phone: z.string().optional(),
+  preferred_contact_method: z.enum(["Email", "Telefone"]),
+  reason_summary: z.string().optional(),
+}).refine(data => !!data.requester_contact_email || !!data.requester_contact_phone, {
+  message: "É necessário fornecer um email ou telefone para contato.",
+  path: ["requester_contact_email"],
+});
+
+export type CounselingRequestFormValues = z.infer<typeof counselingRequestSchema>;

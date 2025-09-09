@@ -192,3 +192,18 @@ export interface CalendarEvent {
   category?: string | null;
   created_by?: string | null;
 }
+
+// Tipos para o Módulo de Aconselhamento
+export interface CounselingRequest {
+  id: string;
+  requester_name: string;
+  requester_contact_email?: string | null;
+  requester_contact_phone?: string | null;
+  preferred_contact_method: string;
+  reason_summary?: string | null;
+  status: string;
+  assigned_to?: string | null;
+  internal_notes?: string | null;
+  created_at: string;
+  profiles?: { full_name: string } | null;
+}

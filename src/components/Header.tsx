@@ -14,6 +14,7 @@ const Header = () => {
     { href: "/eventos", label: "Eventos" },
     { href: "/cursos", label: "Cursos" },
     { href: "/agenda", label: "Agenda" },
+    { href: "/aconselhamento", label: "Aconselhamento" },
     { href: "/contato", label: "Contato" },
   ];
 
