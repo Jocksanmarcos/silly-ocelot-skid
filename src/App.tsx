@@ -41,6 +41,7 @@ import PublicAgendaPage from "./pages/PublicAgendaPage";
 import PastoralAgendaPage from "./pages/PastoralAgendaPage";
 import AconselhamentoPage from "./pages/AconselhamentoPage";
 import AconselhamentoAdminPage from "./pages/AconselhamentoAdminPage";
+import BibliotecaPage from "./pages/BibliotecaPage";
 
 const queryClient = new QueryClient();
 
@@ -95,6 +96,7 @@ const App = () => (
                 <Route path="/dashboard/courses" element={<CoursesPage />} />
                 <Route path="/dashboard/courses/:id/lessons" element={<LessonsPage />} />
                 <Route path="/dashboard/patrimonio" element={<PatrimonioPage />} />
+                <Route path="/dashboard/biblioteca" element={<BibliotecaPage />} />
               </Route>
             </Route>
 
