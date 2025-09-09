@@ -34,6 +34,7 @@ import LessonsPage from "./pages/LessonsPage";
 import PublicCoursesPage from "./pages/PublicCoursesPage";
 import CourseStudentViewPage from "./pages/CourseStudentViewPage";
 import CoursePlayerPage from "./pages/CoursePlayerPage";
+import VisitorsPage from "./pages/VisitorsPage";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,7 @@ const App = () => (
               </Route>
               <Route element={<DashboardLayout />}>
                 <Route path="/dashboard" element={<DashboardIndex />} />
+                <Route path="/dashboard/visitors" element={<VisitorsPage />} />
                 <Route path="/dashboard/members" element={<MembersPage />} />
                 <Route path="/dashboard/members/dashboard" element={<MembersDashboardPage />} />
                 <Route path="/dashboard/events" element={<EventsPage />} />

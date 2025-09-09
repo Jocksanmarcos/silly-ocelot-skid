@@ -129,3 +129,15 @@ export const lessonSchema = z.object({
 });
 
 export type LessonFormValues = z.infer<typeof lessonSchema>;
+
+// Schema para o Módulo de Recepção
+export const visitorSchema = z.object({
+  full_name: z.string().min(3, { message: "O nome completo é obrigatório." }),
+  phone: z.string().min(10, { message: "O telefone é obrigatório." }),
+  email: z.string().email({ message: "Email inválido." }).optional().or(z.literal('')),
+  address: z.string().optional(),
+  invited_by: z.string().optional(),
+  visit_status: z.enum(["Primeira vez", "Retorno"], { required_error: "Selecione o status da visita." }),
+});
+
+export type VisitorFormValues = z.infer<typeof visitorSchema>;

@@ -128,3 +128,16 @@ export interface Enrollment {
   enrolled_at: string;
   completed_at?: string | null;
 }
+
+// Tipos para o Módulo de Recepção
+export interface Visitor {
+  id: string;
+  full_name: string;
+  phone: string;
+  email?: string | null;
+  address?: string | null;
+  invited_by?: string | null;
+  visit_status: 'Primeira vez' | 'Retorno';
+  follow_up_status: 'Novo' | 'Em acompanhamento' | 'Decidiu por Cristo' | 'Aguardando Batismo' | 'Integrado como Membro';
+  created_at: string;
+}
