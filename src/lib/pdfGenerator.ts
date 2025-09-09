@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { Member, Family } from '@/types';
+import { Member, Family, Contribution } from '@/types';
 
 // Definindo um tipo mais específico para a função de famílias
 type FamilyWithDetails = Family & {
@@ -114,4 +114,33 @@ export const generateFamiliesPDF = (families: FamilyWithDetails[]) => {
     });
 
     doc.save('relatorio_familias.pdf');
+};
+
+// Gera o PDF do relatório financeiro
+export const generateFinancialReportPDF = (contributions: Contribution[], startDate: Date, endDate: Date) => {
+    const doc = new jsPDF();
+    const formattedStartDate = formatDate(startDate.toISOString());
+    const formattedEndDate = formatDate(endDate.toISOString());
+    const total = contributions.reduce((sum, c) => sum + c.amount, 0);
+
+    doc.text("Relatório Financeiro", 14, 16);
+    doc.setFontSize(10);
+    doc.text(`Período: ${formattedStartDate} a ${formattedEndDate}`, 14, 22);
+    doc.text(`Total Arrecadado: R$ ${total.toFixed(2).replace('.', ',')}`, 14, 28);
+
+    const tableData = contributions.map(c => [
+        c.members ? `${c.members.first_name} ${c.members.last_name}` : c.contributor_name || 'Anônimo',
+        formatDate(c.contribution_date),
+        `R$ ${c.amount.toFixed(2).replace('.', ',')}`,
+        c.fund,
+        c.payment_method || 'N/A',
+    ]);
+
+    autoTable(doc, {
+        head: [['Contribuinte', 'Data', 'Valor', 'Fundo', 'Método']],
+        body: tableData,
+        startY: 35,
+    });
+
+    doc.save(`relatorio_financeiro_${formattedStartDate}_${formattedEndDate}.pdf`);
 };

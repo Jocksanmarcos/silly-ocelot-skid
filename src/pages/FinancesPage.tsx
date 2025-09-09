@@ -7,12 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, BarChart } from "lucide-react";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable, getPaginationRowModel } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { showSuccess, showError } from "@/utils/toast";
 import ContributionForm from "@/components/finances/ContributionForm";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "react-router-dom";
 
 const fetchContributions = async (): Promise<Contribution[]> => {
   const { data, error } = await supabase.from("contributions").select("*, members(first_name, last_name)").order("contribution_date", { ascending: false });
@@ -139,13 +140,21 @@ const FinancesPage = () => {
           <h1 className="text-3xl font-bold">Gestão Financeira</h1>
           <p className="mt-2 text-muted-foreground">Registre dízimos, ofertas e outras contribuições.</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) setSelectedContribution(null); }}>
-          <DialogTrigger asChild><Button>Adicionar Contribuição</Button></DialogTrigger>
-          <DialogContent className="sm:max-w-[625px]">
-            <DialogHeader><DialogTitle>{selectedContribution ? "Editar Contribuição" : "Adicionar Nova Contribuição"}</DialogTitle></DialogHeader>
-            <ContributionForm onSubmit={handleSubmit} defaultValues={selectedContribution || undefined} isSubmitting={mutation.isPending} members={members || []} />
-          </DialogContent>
-        </Dialog>
+        <div className="flex items-center gap-2">
+            <Button variant="outline" asChild>
+                <Link to="/dashboard/finances/dashboard">
+                    <BarChart className="mr-2 h-4 w-4" />
+                    Painel Financeiro
+                </Link>
+            </Button>
+            <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) setSelectedContribution(null); }}>
+            <DialogTrigger asChild><Button>Adicionar Contribuição</Button></DialogTrigger>
+            <DialogContent className="sm:max-w-[625px]">
+                <DialogHeader><DialogTitle>{selectedContribution ? "Editar Contribuição" : "Adicionar Nova Contribuição"}</DialogTitle></DialogHeader>
+                <ContributionForm onSubmit={handleSubmit} defaultValues={selectedContribution || undefined} isSubmitting={mutation.isPending} members={members || []} />
+            </DialogContent>
+            </Dialog>
+        </div>
       </div>
 
       <div className="rounded-md border">
