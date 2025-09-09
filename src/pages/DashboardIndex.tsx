@@ -1,9 +1,40 @@
 import { useAuth } from '@/contexts/AuthProvider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, Calendar, DollarSign } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const fetchDashboardStats = async () => {
+  const today = new Date();
+  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString();
+
+  const membersPromise = supabase.from('members').select('id', { count: 'exact', head: true });
+  const eventsPromise = supabase.from('events').select('id', { count: 'exact', head: true }).gte('event_date', new Date().toISOString());
+  const contributionsPromise = supabase.from('contributions').select('amount').gte('contribution_date', firstDayOfMonth);
+
+  const [
+    { count: membersCount, error: membersError },
+    { count: eventsCount, error: eventsError },
+    { data: contributions, error: contributionsError }
+  ] = await Promise.all([membersPromise, eventsPromise, contributionsPromise]);
+
+  if (membersError || eventsError || contributionsError) {
+    console.error(membersError || eventsError || contributionsError);
+    throw new Error('Erro ao buscar dados para o painel.');
+  }
+
+  const monthlyTotal = contributions?.reduce((sum, { amount }) => sum + amount, 0) || 0;
+
+  return { membersCount, eventsCount, monthlyTotal };
+};
 
 const DashboardIndex = () => {
   const { session } = useAuth();
+  const { data, isLoading } = useQuery({
+    queryKey: ['dashboardStats'],
+    queryFn: fetchDashboardStats,
+  });
 
   return (
     <div>
@@ -18,8 +49,8 @@ const DashboardIndex = () => {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">Dados serão carregados aqui</p>
+            {isLoading ? <Skeleton className="h-8 w-1/2" /> : <div className="text-2xl font-bold">{data?.membersCount}</div>}
+            <p className="text-xs text-muted-foreground">Membros cadastrados no sistema</p>
           </CardContent>
         </Card>
         <Card>
@@ -28,8 +59,8 @@ const DashboardIndex = () => {
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">Dados serão carregados aqui</p>
+            {isLoading ? <Skeleton className="h-8 w-1/2" /> : <div className="text-2xl font-bold">{data?.eventsCount}</div>}
+            <p className="text-xs text-muted-foreground">Eventos futuros agendados</p>
           </CardContent>
         </Card>
         <Card>
@@ -38,8 +69,8 @@ const DashboardIndex = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">R$ 0,00</div>
-            <p className="text-xs text-muted-foreground">Dados serão carregados aqui</p>
+            {isLoading ? <Skeleton className="h-8 w-1/2" /> : <div className="text-2xl font-bold">R$ {data?.monthlyTotal.toFixed(2).replace('.', ',')}</div>}
+            <p className="text-xs text-muted-foreground">Total arrecadado no mês atual</p>
           </CardContent>
         </Card>
       </div>

@@ -68,3 +68,26 @@ export const cellReportSchema = z.object({
 });
 
 export type CellReportFormValues = z.infer<typeof cellReportSchema>;
+
+export const contributionSchema = z.object({
+  contributor_type: z.enum(["member", "anonymous"]),
+  member_id: z.string().optional(),
+  contributor_name: z.string().optional(),
+  amount: z.preprocess(
+    (a) => parseFloat(z.string().parse(a)),
+    z.number().positive({ message: "O valor deve ser maior que zero." })
+  ),
+  contribution_date: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Data inválida." }),
+  fund: z.string().min(1, { message: "Selecione um fundo." }),
+  payment_method: z.string().min(1, { message: "Selecione um método de pagamento." }),
+  notes: z.string().optional(),
+}).refine(data => {
+    if (data.contributor_type === 'member') return !!data.member_id;
+    if (data.contributor_type === 'anonymous') return !!data.contributor_name && data.contributor_name.length >= 2;
+    return false;
+}, {
+    message: "Selecione um membro ou informe o nome do contribuinte.",
+    path: ["member_id"], // or contributor_name, depending on the logic
+});
+
+export type ContributionFormValues = z.infer<typeof contributionSchema>;

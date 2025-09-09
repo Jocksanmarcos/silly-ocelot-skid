@@ -64,3 +64,16 @@ export interface CellReport {
   notes?: string | null;
   created_at: string;
 }
+
+export interface Contribution {
+  id: string;
+  member_id?: string | null;
+  contributor_name?: string | null;
+  amount: number;
+  contribution_date: string;
+  fund: string;
+  payment_method?: string | null;
+  notes?: string | null;
+  created_at: string;
+  members?: { first_name: string; last_name: string; } | null;
+}
