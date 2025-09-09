@@ -179,3 +179,16 @@ export interface AssetMaintenance {
   cost?: number | null;
   provider?: string | null;
 }
+
+// Tipos para o Módulo de Agenda
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  description?: string | null;
+  start_time: string;
+  end_time: string;
+  is_all_day: boolean;
+  visibility: 'public' | 'private';
+  category?: string | null;
+  created_by?: string | null;
+}

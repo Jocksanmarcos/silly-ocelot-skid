@@ -175,3 +175,19 @@ export const maintenanceSchema = z.object({
 });
 
 export type MaintenanceFormValues = z.infer<typeof maintenanceSchema>;
+
+// Schema para o Módulo de Agenda
+export const calendarEventSchema = z.object({
+  title: z.string().min(3, { message: "O título é obrigatório." }),
+  start_time: z.string(),
+  end_time: z.string(),
+  is_all_day: z.boolean(),
+  visibility: z.enum(["public", "private"]),
+  description: z.string().optional(),
+  category: z.string().optional(),
+}).refine(data => new Date(data.end_time) >= new Date(data.start_time), {
+  message: "A data final deve ser posterior à data inicial.",
+  path: ["end_time"],
+});
+
+export type CalendarEventFormValues = z.infer<typeof calendarEventSchema>;
