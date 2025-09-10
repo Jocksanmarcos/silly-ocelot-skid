@@ -10,8 +10,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, AlertTriangle } from 'lucide-react';
 import { showError, showSuccess } from '@/utils/toast';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const Login = () => {
   const { session } = useAuth();
@@ -20,6 +21,8 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
 
+  const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
@@ -27,6 +30,13 @@ const Login = () => {
 
   const onSubmit = async (data: LoginFormValues) => {
     setIsSubmitting(true);
+    
+    if (!recaptchaSiteKey) {
+      showError("Configuração do reCAPTCHA está faltando. Contate o administrador.");
+      setIsSubmitting(false);
+      return;
+    }
+
     const token = recaptchaRef.current?.getValue();
 
     if (!token) {
@@ -110,12 +120,22 @@ const Login = () => {
                 )}
               />
               <div className="flex justify-center">
-                <ReCAPTCHA
-                  ref={recaptchaRef}
-                  sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
-                />
+                {recaptchaSiteKey ? (
+                  <ReCAPTCHA
+                    ref={recaptchaRef}
+                    sitekey={recaptchaSiteKey}
+                  />
+                ) : (
+                  <Alert variant="destructive">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>Erro de Configuração</AlertTitle>
+                    <AlertDescription>
+                      A chave do site reCAPTCHA não foi configurada. Por favor, adicione VITE_RECAPTCHA_SITE_KEY ao seu ambiente.
+                    </AlertDescription>
+                  </Alert>
+                )}
               </div>
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
+              <Button type="submit" className="w-full" disabled={isSubmitting || !recaptchaSiteKey}>
                 {isSubmitting ? "Entrando..." : "Entrar"}
               </Button>
             </form>
