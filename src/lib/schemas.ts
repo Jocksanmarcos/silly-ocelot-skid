@@ -29,12 +29,12 @@ export const eventSchema = z.object({
   event_date: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Data inválida." }),
   location: z.string().optional(),
   price: z.preprocess(
-    (a) => (a === "" || a === null || a === undefined) ? null : parseFloat(z.string().parse(a)),
-    z.number().min(0, { message: "O preço não pode ser negativo." }).nullable().optional()
+    (val) => (val === "" || val == null ? null : Number(val)),
+    z.number().min(0, "O preço não pode ser negativo.").nullable().optional()
   ),
   capacity: z.preprocess(
-    (a) => (a === "" || a === null || a === undefined) ? null : parseInt(z.string().parse(a), 10),
-    z.number().int().min(0, { message: "A capacidade não pode ser negativa." }).nullable().optional()
+    (val) => (val === "" || val == null ? null : Number(val)),
+    z.number().int("A capacidade deve ser um número inteiro.").min(0, "A capacidade não pode ser negativa.").nullable().optional()
   ),
   type: z.enum(["interno", "externo"]),
   image_file: z.any().optional(),

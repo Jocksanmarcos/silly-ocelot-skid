@@ -35,8 +35,8 @@ const EventForm = ({ onSubmit, defaultValues, isSubmitting }: EventFormProps) =>
       description: defaultValues?.description || "",
       event_date: defaultValues?.event_date ? new Date(defaultValues.event_date).toISOString().slice(0, 16) : "",
       location: defaultValues?.location || "",
-      price: defaultValues?.price || undefined,
-      capacity: defaultValues?.capacity || undefined,
+      price: defaultValues?.price ?? undefined,
+      capacity: defaultValues?.capacity ?? undefined,
       type: (defaultValues?.type as "interno" | "externo") || "interno",
     },
   });
