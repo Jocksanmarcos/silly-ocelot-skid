@@ -2,6 +2,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Users, Calendar, DollarSign, LayoutDashboard, LogOut, Home, Network, HeartHandshake, GraduationCap, Handshake, TrendingUp, Archive, BookOpen, Settings, Music, LayoutTemplate } from "lucide-react";
 import { Button } from "./ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { Skeleton } from "./ui/skeleton";
 
 const mainNavItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Painel" },
@@ -40,11 +42,16 @@ const bottomNavItems = [
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { data: profile, isLoading } = useUserProfile();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/');
   };
+
+  const userRole = profile?.role;
+  const isSuperAdmin = userRole === 'super_admin';
+  const isAdmin = isSuperAdmin || userRole === 'admin_missao' || userRole === 'pastor';
 
   const renderLink = (item: typeof mainNavItems[0]) => (
     <Link
@@ -68,8 +75,18 @@ const Sidebar = () => {
     </div>
   );
 
+  if (isLoading) {
+    return (
+        <aside className="flex flex-col w-64 bg-background border-r p-4 space-y-4">
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-20 w-full" />
+        </aside>
+    )
+  }
+
   return (
-    <aside className="hidden md:flex flex-col w-64 bg-background border-r">
+    <aside className="flex flex-col w-64 bg-background border-r">
       <div className="p-4 border-b h-16 flex items-center">
         <Link to="/" className="flex items-center gap-2">
           <img src="/logo-light.png" alt="CBN Kerigma Logo" className="h-8 block dark:hidden" />
@@ -77,14 +94,15 @@ const Sidebar = () => {
         </Link>
       </div>
       <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
-        {renderSection("Geral", mainNavItems)}
-        {renderSection("Comunidade", communityNavItems)}
-        {renderSection("Recursos", resourcesNavItems)}
-        {renderSection("Administração", adminNavItems)}
+        {isAdmin && renderSection("Geral", mainNavItems)}
+        {isAdmin && renderSection("Comunidade", communityNavItems)}
+        {isAdmin && renderSection("Recursos", resourcesNavItems)}
+        {isSuperAdmin && renderSection("Administração", adminNavItems)}
       </nav>
       <div className="p-4 border-t">
         <nav className="space-y-1">
-            {bottomNavItems.map(renderLink)}
+            {isSuperAdmin && renderLink(bottomNavItems[0])}
+            {renderLink(bottomNavItems[1])}
         </nav>
         <Button variant="ghost" className="w-full justify-start mt-2 text-muted-foreground hover:text-primary" onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />

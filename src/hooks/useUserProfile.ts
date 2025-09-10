@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthProvider';
 const fetchUserProfile = async (userId: string) => {
   const { data, error } = await supabase
     .from('profiles')
-    .select('full_name, avatar_url')
+    .select('full_name, avatar_url, role')
     .eq('id', userId)
     .single();
 
