@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { generateMembersListPDF } from "@/lib/pdfGenerator";
 import { useAuth } from "@/contexts/AuthProvider";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const fetchMembers = async (): Promise<Member[]> => {
   const { data, error } = await supabase.from("members").select("*").order("created_at", { ascending: false });
@@ -64,10 +65,10 @@ const MembersPage = () => {
   const mutation = useMutation({
     mutationFn: async (formData: { member: MemberFormValues; id?: string }) => {
       const { member, id } = formData;
-      
-      // Converte strings vazias para null para campos opcionais
+      const { avatar_file, ...memberData } = member;
+
       const submissionData = {
-        ...member,
+        ...memberData,
         email: member.email || null,
         phone: member.phone || null,
         address: member.address || null,
@@ -78,10 +79,32 @@ const MembersPage = () => {
         family_role: member.family_role || null,
       };
 
-      const { error } = id
-        ? await supabase.from("members").update(submissionData).eq("id", id)
-        : await supabase.from("members").insert(submissionData);
-      if (error) throw new Error(error.message);
+      let avatarUrl = selectedMember?.avatar_url;
+
+      const handleUpload = async (file: File, targetId: string) => {
+        const fileExt = file.name.split('.').pop();
+        const filePath = `${targetId}/avatar.${fileExt}`;
+        const { error: uploadError } = await supabase.storage.from('member_photos').upload(filePath, file, { upsert: true });
+        if (uploadError) throw new Error(`Erro no upload: ${uploadError.message}`);
+        const { data: { publicUrl } } = supabase.storage.from('member_photos').getPublicUrl(filePath);
+        return `${publicUrl}?t=${new Date().getTime()}`;
+      };
+
+      if (id) { // UPDATE
+        if (avatar_file?.[0]) {
+          avatarUrl = await handleUpload(avatar_file[0], id);
+        }
+        const { error } = await supabase.from("members").update({ ...submissionData, avatar_url: avatarUrl }).eq("id", id);
+        if (error) throw error;
+      } else { // CREATE
+        const { data: newMember, error } = await supabase.from("members").insert(submissionData).select().single();
+        if (error) throw error;
+        if (avatar_file?.[0]) {
+          avatarUrl = await handleUpload(avatar_file[0], newMember.id);
+          const { error: updateError } = await supabase.from("members").update({ avatar_url: avatarUrl }).eq("id", newMember.id);
+          if (updateError) throw updateError;
+        }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["members"] });
@@ -117,6 +140,16 @@ const MembersPage = () => {
   };
 
   const columns: ColumnDef<Member>[] = [
+    {
+      id: "avatar",
+      header: "",
+      cell: ({ row }) => (
+        <Avatar>
+          <AvatarImage src={row.original.avatar_url || undefined} />
+          <AvatarFallback>{row.original.first_name?.charAt(0)}{row.original.last_name?.charAt(0)}</AvatarFallback>
+        </Avatar>
+      ),
+    },
     {
       accessorKey: "first_name",
       header: "Nome",

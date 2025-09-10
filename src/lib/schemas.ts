@@ -12,6 +12,7 @@ export const memberSchema = z.object({
   marital_status: z.string().optional(),
   family_role: z.string().optional(),
   congregation_id: z.string().min(1, { message: "É obrigatório selecionar uma Missão/Sede." }),
+  avatar_file: z.any().optional(),
 });
 
 export type MemberFormValues = z.infer<typeof memberSchema>;

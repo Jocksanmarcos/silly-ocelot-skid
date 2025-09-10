@@ -12,6 +12,7 @@ export interface Member {
   family_role?: string | null;
   congregation_id?: string | null; // Adicionado
   created_at: string;
+  avatar_url?: string | null;
 }
 
 export interface Family {

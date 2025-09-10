@@ -6,6 +6,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Member, Family, Congregation } from "@/types";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface MemberFormProps {
   onSubmit: (data: MemberFormValues) => void;
@@ -41,6 +42,25 @@ const MemberForm = ({ onSubmit, defaultValues, isSubmitting, families, congregat
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="avatar_file"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Foto</FormLabel>
+              <div className="flex items-center gap-4">
+                <Avatar className="h-16 w-16">
+                  <AvatarImage src={defaultValues?.avatar_url || undefined} />
+                  <AvatarFallback>{defaultValues?.first_name?.charAt(0) || '?'}{defaultValues?.last_name?.charAt(0) || ''}</AvatarFallback>
+                </Avatar>
+                <FormControl>
+                  <Input type="file" accept="image/*" onChange={(e) => field.onChange(e.target.files)} />
+                </FormControl>
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField control={form.control} name="first_name" render={({ field }) => (<FormItem><FormLabel>Nome</FormLabel><FormControl><Input placeholder="Nome do membro" {...field} /></FormControl><FormMessage /></FormItem>)} />
           <FormField control={form.control} name="last_name" render={({ field }) => (<FormItem><FormLabel>Sobrenome</FormLabel><FormControl><Input placeholder="Sobrenome do membro" {...field} /></FormControl><FormMessage /></FormItem>)} />
