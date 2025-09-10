@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Contribution, Member, Congregation, Profile } from "@/types";
@@ -7,14 +7,21 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, BarChart } from "lucide-react";
+import { MoreHorizontal, FileDown, PlusCircle } from "lucide-react";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable, getPaginationRowModel } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { showSuccess, showError } from "@/utils/toast";
 import ContributionForm from "@/components/finances/ContributionForm";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "react-router-dom";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DateRange } from "react-day-picker";
+import { DatePickerWithRange } from "@/components/ui/date-range-picker";
+import { addDays, startOfMonth } from "date-fns";
+import FinancialSummary from "@/components/finances/FinancialSummary";
+import ContributionsByFundChart from "@/components/finances/ContributionsByFundChart";
+import ContributionsOverTimeChart from "@/components/finances/ContributionsOverTimeChart";
+import { generateFinancialReportPDF } from "@/lib/pdfGenerator";
 
 const fetchContributions = async (): Promise<Contribution[]> => {
   const { data, error } = await supabase.from("contributions").select("*, members(first_name, last_name)").order("contribution_date", { ascending: false });
@@ -40,10 +47,27 @@ const FinancesPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [selectedContribution, setSelectedContribution] = useState<Contribution | null>(null);
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: startOfMonth(new Date()),
+    to: new Date(),
+  });
 
   const { data: contributions, isLoading: isLoadingContributions } = useQuery<Contribution[]>({ queryKey: ["contributions"], queryFn: fetchContributions });
   const { data: members, isLoading: isLoadingMembers } = useQuery<Member[]>({ queryKey: ["membersForFinances"], queryFn: fetchMembers });
   const { data: congregations, isLoading: isLoadingCongregations } = useQuery<Congregation[]>({ queryKey: ["congregations"], queryFn: fetchCongregations });
+
+  const filteredContributions = useMemo(() => {
+    if (!contributions || !date?.from) return [];
+    const toDate = date.to || date.from;
+    return contributions.filter(c => {
+      const contributionDate = new Date(c.contribution_date);
+      return contributionDate >= date.from! && contributionDate <= addDays(toDate, 1);
+    });
+  }, [contributions, date]);
+
+  const totalRevenue = useMemo(() => {
+    return filteredContributions.reduce((sum, c) => sum + c.amount, 0);
+  }, [filteredContributions]);
 
   const mutation = useMutation({
     mutationFn: async (formData: { data: ContributionFormValues; id?: string }) => {
@@ -137,32 +161,24 @@ const FinancesPage = () => {
   const isLoading = isLoadingContributions || isLoadingMembers || isLoadingProfile || isLoadingCongregations;
   const isSuperAdmin = userProfile?.role === 'super_admin';
 
-  if (isLoading) {
-    return (
-      <div>
-        <div className="flex justify-between items-center mb-4"><Skeleton className="h-10 w-48" /><Skeleton className="h-10 w-32" /></div>
-        <Skeleton className="h-96 w-full" />
-      </div>
-    );
-  }
-
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h1 className="text-3xl font-bold">Gestão Financeira</h1>
-          <p className="mt-2 text-muted-foreground">Registre dízimos, ofertas e outras contribuições.</p>
-        </div>
-        <div className="flex items-center gap-2">
-            <Button variant="outline" asChild>
-                <Link to="/dashboard/finances/dashboard">
-                    <BarChart className="mr-2 h-4 w-4" />
-                    Painel Financeiro
-                </Link>
-            </Button>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold">Gestão Financeira</h1>
+        <p className="mt-2 text-muted-foreground">Registre, visualize e analise as contribuições da sua comunidade.</p>
+      </div>
+
+      <Tabs defaultValue="lancamentos">
+        <TabsList>
+          <TabsTrigger value="lancamentos">Lançamentos</TabsTrigger>
+          <TabsTrigger value="dashboard">Painel</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="lancamentos" className="mt-4">
+          <div className="flex justify-end mb-4">
             <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) setSelectedContribution(null); }}>
-            <DialogTrigger asChild><Button>Adicionar Contribuição</Button></DialogTrigger>
-            <DialogContent className="sm:max-w-[625px]">
+              <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Adicionar Contribuição</Button></DialogTrigger>
+              <DialogContent className="sm:max-w-[625px]">
                 <DialogHeader><DialogTitle>{selectedContribution ? "Editar Contribuição" : "Adicionar Nova Contribuição"}</DialogTitle></DialogHeader>
                 <ContributionForm 
                     onSubmit={handleSubmit} 
@@ -173,25 +189,49 @@ const FinancesPage = () => {
                     isSuperAdmin={isSuperAdmin}
                     userCongregationId={userProfile?.congregation_id}
                 />
-            </DialogContent>
+              </DialogContent>
             </Dialog>
-        </div>
-      </div>
+          </div>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>{table.getHeaderGroups().map(hg => <TableRow key={hg.id}>{hg.headers.map(h => <TableHead key={h.id}>{flexRender(h.column.columnDef.header, h.getContext())}</TableHead>)}</TableRow>)}</TableHeader>
+              <TableBody>
+                {isLoading ? <TableRow><TableCell colSpan={columns.length} className="h-24 text-center"><Skeleton className="h-8 w-full" /></TableCell></TableRow> :
+                 table.getRowModel().rows?.length ? table.getRowModel().rows.map(row => (
+                  <TableRow key={row.id}>{row.getVisibleCells().map(cell => <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>)}</TableRow>
+                )) : <TableRow><TableCell colSpan={columns.length} className="h-24 text-center">Nenhuma contribuição encontrada.</TableCell></TableRow>}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="flex items-center justify-end space-x-2 py-4">
+            <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>Anterior</Button>
+            <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>Próximo</Button>
+          </div>
+        </TabsContent>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>{table.getHeaderGroups().map(hg => <TableRow key={hg.id}>{hg.headers.map(h => <TableHead key={h.id}>{flexRender(h.column.columnDef.header, h.getContext())}</TableHead>)}</TableRow>)}</TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? table.getRowModel().rows.map(row => (
-              <TableRow key={row.id}>{row.getVisibleCells().map(cell => <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>)}</TableRow>
-            )) : <TableRow><TableCell colSpan={columns.length} className="h-24 text-center">Nenhuma contribuição encontrada.</TableCell></TableRow>}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>Anterior</Button>
-        <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>Próximo</Button>
-      </div>
+        <TabsContent value="dashboard" className="mt-4 space-y-6">
+          <div className="flex justify-end items-center gap-2">
+            <DatePickerWithRange date={date} setDate={setDate} />
+            <Button 
+              variant="outline" 
+              onClick={() => generateFinancialReportPDF(filteredContributions, date?.from!, date?.to || date?.from!)}
+              disabled={filteredContributions.length === 0}
+            >
+              <FileDown className="mr-2 h-4 w-4" />
+              Exportar PDF
+            </Button>
+          </div>
+          {isLoading ? <Skeleton className="h-96 w-full" /> : (
+            <>
+              <FinancialSummary totalRevenue={totalRevenue} totalContributions={filteredContributions.length} />
+              <div className="grid gap-4 md:grid-cols-2">
+                <ContributionsByFundChart contributions={filteredContributions} />
+                <ContributionsOverTimeChart contributions={contributions || []} />
+              </div>
+            </>
+          )}
+        </TabsContent>
+      </Tabs>
 
       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
         <AlertDialogContent>

@@ -51,7 +51,6 @@ import PortalCelulaPage from "./pages/portal/PortalCelulaPage";
 import PortalPerfilPage from "./pages/portal/PortalPerfilPage";
 import AssetDetailPage from "./pages/AssetDetailPage";
 import PatrimonioSettingsPage from "./pages/PatrimonioSettingsPage";
-import FinancesDashboardPage from "./pages/FinancesDashboardPage";
 import SettingsLayout from "./components/settings/SettingsLayout";
 import AppearancePage from "./pages/settings/AppearancePage";
 import ProfileSettingsPage from "./pages/settings/ProfileSettingsPage";
@@ -136,7 +135,6 @@ const App = () => (
                   <Route path="/dashboard/cells/:id/members" element={<CellMembersPage />} />
                   <Route path="/dashboard/cells/:id/reports" element={<CellReportsPage />} />
                   <Route path="/dashboard/finances" element={<FinancesPage />} />
-                  <Route path="/dashboard/finances/dashboard" element={<FinancesDashboardPage />} />
                   <Route path="/dashboard/hierarchy" element={<HierarchyPage />} />
                   <Route path="/dashboard/families" element={<FamiliesPage />} />
                   <Route path="/dashboard/families/tree" element={<FamilyTreeViewPage />} />
