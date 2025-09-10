@@ -5,14 +5,12 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PlayCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Button } from "./ui/button";
 
-const fetchRecentSermons = async (): Promise<Sermon[]> => {
+const fetchSermons = async (): Promise<Sermon[]> => {
   const { data, error } = await supabase
     .from("sermons")
     .select("*, profiles(full_name)")
-    .order("sermon_date", { ascending: false })
-    .limit(3);
+    .order("sermon_date", { ascending: false });
   if (error) throw new Error(error.message);
   return data;
 };
@@ -22,26 +20,24 @@ const getYouTubeThumbnail = (url: string) => {
   return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
 };
 
-const SermonsHighlight = () => {
+const PublicSermonsPage = () => {
   const { data: sermons, isLoading } = useQuery({
-    queryKey: ["recentSermons"],
-    queryFn: fetchRecentSermons,
+    queryKey: ["publicSermons"],
+    queryFn: fetchSermons,
   });
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
+    <section className="w-full py-12 md:py-24 lg:py-32">
       <div className="container px-4 md:px-6">
-        <div className="flex flex-col items-center justify-center space-y-4 text-center">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Mensagens que Inspiram</h2>
-            <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Acesse nossa biblioteca de sermões e seja edificado pela Palavra de Deus.
-            </p>
-          </div>
+        <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
+          <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl">Nossas Mensagens</h1>
+          <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">
+            Acesse nossa biblioteca de sermões e seja edificado pela Palavra de Deus a qualquer momento.
+          </p>
         </div>
-        <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3 mt-12">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {isLoading ? (
-            Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="h-64" />)
+            Array.from({ length: 6 }).map((_, index) => <Skeleton key={index} className="h-64" />)
           ) : sermons && sermons.length > 0 ? (
             sermons.map((sermon) => (
               <Link to={sermon.video_url || '#'} key={sermon.id} target="_blank" rel="noopener noreferrer">
@@ -67,14 +63,9 @@ const SermonsHighlight = () => {
             <p className="col-span-full text-center text-muted-foreground">Nenhum sermão encontrado.</p>
           )}
         </div>
-        <div className="flex justify-center mt-12">
-            <Button asChild>
-                <Link to="/pregacoes">Ver todas as pregações</Link>
-            </Button>
-        </div>
       </div>
     </section>
   );
 };
 
-export default SermonsHighlight;
+export default PublicSermonsPage;

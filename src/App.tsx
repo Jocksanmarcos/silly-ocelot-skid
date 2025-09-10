@@ -66,6 +66,7 @@ import HallDaGenerosidadePage from "./pages/portal/HallDaGenerosidadePage";
 import PedirAjudaPage from "./pages/portal/PedirAjudaPage";
 import CongregationsPage from "./pages/CongregationsPage";
 import SermonsPage from "./pages/SermonsPage";
+import PublicSermonsPage from "./pages/PublicSermonsPage";
 
 const queryClient = new QueryClient();
 
@@ -91,6 +92,7 @@ const App = () => (
                 <Route path="/galeria" element={<Galeria />} />
                 <Route path="/semear" element={<Semear />} />
                 <Route path="/contato" element={<Contato />} />
+                <Route path="/pregacoes" element={<PublicSermonsPage />} />
                 <Route path="/inscricao/:id" element={<RegistrationConfirmationPage />} />
                 <Route path="/payment/success" element={<PaymentStatusPage />} />
                 <Route path="/payment/failure" element={<PaymentStatusPage />} />

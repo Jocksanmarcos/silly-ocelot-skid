@@ -338,3 +338,16 @@ export interface WorshipEventMember {
   member_id: string;
   status: 'pending' | 'confirmed' | 'declined';
 }
+
+// Tipos para o Módulo de Sermões
+export interface Sermon {
+  id: string;
+  title: string;
+  description?: string | null;
+  preacher_id?: string | null;
+  sermon_date: string;
+  video_url?: string | null;
+  thumbnail_url?: string | null;
+  created_at: string;
+  profiles?: { full_name: string } | null;
+}
