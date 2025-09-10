@@ -116,9 +116,38 @@ const EventsPage = () => {
   const mutation = useMutation({
     mutationFn: async (formData: { event: EventFormValues; id?: string }) => {
       const { event, id } = formData;
+      const { image_file, gallery_files, ...eventData } = event;
+
+      let imageUrl = selectedEvent?.image_url;
+      let galleryUrls = selectedEvent?.gallery_urls || [];
+
+      if (image_file?.[0]) {
+        const file = image_file[0];
+        const fileExt = file.name.split('.').pop();
+        const filePath = `public/${id || crypto.randomUUID()}/cover.${fileExt}`;
+        const { error: uploadError } = await supabase.storage.from('event_images').upload(filePath, file, { upsert: true });
+        if (uploadError) throw new Error(`Upload da imagem principal falhou: ${uploadError.message}`);
+        const { data: { publicUrl } } = supabase.storage.from('event_images').getPublicUrl(filePath);
+        imageUrl = `${publicUrl}?t=${new Date().getTime()}`;
+      }
+
+      if (gallery_files && gallery_files.length > 0) {
+        const uploadPromises = Array.from(gallery_files).map(async (file: any, index: number) => {
+          const fileExt = file.name.split('.').pop();
+          const filePath = `public/${id || crypto.randomUUID()}/gallery_${index}_${Date.now()}.${fileExt}`;
+          const { error: uploadError } = await supabase.storage.from('event_images').upload(filePath, file);
+          if (uploadError) throw new Error(`Upload da galeria falhou: ${uploadError.message}`);
+          const { data: { publicUrl } } = supabase.storage.from('event_images').getPublicUrl(filePath);
+          return `${publicUrl}?t=${new Date().getTime()}`;
+        });
+        galleryUrls = await Promise.all(uploadPromises);
+      }
+
+      const submissionData = { ...eventData, image_url: imageUrl, gallery_urls: galleryUrls };
+
       const { error } = id
-        ? await supabase.from("events").update(event).eq("id", id)
-        : await supabase.from("events").insert(event);
+        ? await supabase.from("events").update(submissionData).eq("id", id)
+        : await supabase.from("events").insert(submissionData);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {

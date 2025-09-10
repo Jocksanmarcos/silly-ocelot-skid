@@ -35,8 +35,8 @@ const EventForm = ({ onSubmit, defaultValues, isSubmitting }: EventFormProps) =>
       description: defaultValues?.description || "",
       event_date: defaultValues?.event_date ? new Date(defaultValues.event_date).toISOString().slice(0, 16) : "",
       location: defaultValues?.location || "",
-      price: defaultValues?.price || 0,
-      capacity: defaultValues?.capacity || 0,
+      price: defaultValues?.price || undefined,
+      capacity: defaultValues?.capacity || undefined,
       type: (defaultValues?.type as "interno" | "externo") || "interno",
     },
   });
@@ -73,6 +73,34 @@ const EventForm = ({ onSubmit, defaultValues, isSubmitting }: EventFormProps) =>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
+            name="image_file"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Imagem Principal do Evento</FormLabel>
+                <FormControl>
+                  <Input type="file" accept="image/*" onChange={(e) => field.onChange(e.target.files)} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="gallery_files"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Galeria de Imagens</FormLabel>
+                <FormControl>
+                  <Input type="file" accept="image/*" multiple onChange={(e) => field.onChange(e.target.files)} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
             name="event_date"
             render={({ field }) => (
               <FormItem>
@@ -106,7 +134,7 @@ const EventForm = ({ onSubmit, defaultValues, isSubmitting }: EventFormProps) =>
               <FormItem>
                 <FormLabel>Preço (R$)</FormLabel>
                 <FormControl>
-                  <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                  <Input type="number" step="0.01" placeholder="Deixe em branco se for gratuito" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

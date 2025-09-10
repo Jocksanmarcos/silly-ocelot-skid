@@ -49,6 +49,8 @@ export interface Event {
   capacity?: number | null;
   type: string;
   created_at: string;
+  image_url?: string | null;
+  gallery_urls?: string[] | null;
 }
 
 export interface EventRegistration {

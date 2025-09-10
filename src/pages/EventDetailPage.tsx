@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useState } from "react";
 import RegistrationForm from "@/components/events/RegistrationForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 const fetchEvent = async (id: string): Promise<Event> => {
   const { data, error } = await supabase.from("events").select("*").eq("id", id).single();
@@ -59,11 +60,29 @@ const EventDetailPage = () => {
 
       <div className="grid md:grid-cols-3 gap-8">
         <div className="md:col-span-2 space-y-6">
-          <img src="/placeholder.svg" alt={event.title} className="w-full h-auto aspect-video object-cover rounded-lg" />
+          <img src={event.image_url || "/placeholder.svg"} alt={event.title} className="w-full h-auto aspect-video object-cover rounded-lg" />
           <div>
             <h2 className="text-2xl font-bold mb-2">Sobre o Evento</h2>
             <p className="text-muted-foreground">{event.description || "Nenhuma descrição fornecida."}</p>
           </div>
+          {event.gallery_urls && event.gallery_urls.length > 0 && (
+            <div>
+              <h2 className="text-2xl font-bold mb-4">Galeria</h2>
+              <Carousel className="w-full max-w-full">
+                <CarouselContent>
+                  {event.gallery_urls.map((url, index) => (
+                    <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                      <div className="p-1">
+                        <img src={url} alt={`Galeria do evento ${index + 1}`} className="aspect-square w-full object-cover rounded-lg" />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
+            </div>
+          )}
         </div>
         <div className="space-y-4">
           <Card>
