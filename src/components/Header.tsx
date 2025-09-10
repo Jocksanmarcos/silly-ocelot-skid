@@ -21,6 +21,7 @@ const Header = () => {
     { href: "/sobre", label: "A Igreja" },
     { href: "/celulas", label: "Células" },
     { href: "/agenda", label: "Agenda" },
+    { href: "/eventos", label: "Eventos" },
     { href: "/pregacoes", label: "Pregações" },
     { href: "/cursos", label: "Cursos" },
     { href: "/semear", label: "Contribua" },
@@ -50,7 +51,7 @@ const Header = () => {
           </Sheet>
           <NavigationMenu className="hidden lg:flex">
             <NavigationMenuList>
-              {navLinks.slice(0, 3).map(link => (
+              {navLinks.slice(0, 4).map(link => (
                 <NavigationMenuItem key={link.href}>
                   <Link to={link.href}>
                     <NavigationMenuLink className={navigationMenuTriggerStyle()}>
@@ -75,7 +76,7 @@ const Header = () => {
         <div className="flex items-center justify-end gap-2 lg:w-1/3">
           <NavigationMenu className="hidden lg:flex">
             <NavigationMenuList>
-              {navLinks.slice(3).map(link => (
+              {navLinks.slice(4).map(link => (
                 <NavigationMenuItem key={link.href}>
                   <Link to={link.href}>
                     <NavigationMenuLink className={navigationMenuTriggerStyle()}>
