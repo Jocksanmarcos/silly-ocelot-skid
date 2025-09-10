@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Users, Calendar, DollarSign, LayoutDashboard, LogOut, Home, Network, HeartHandshake, GraduationCap, Handshake, TrendingUp, Archive, BookOpen, Settings, Music, LayoutTemplate, Building, Video } from "lucide-react";
+import { Users, Calendar, DollarSign, LayoutDashboard, LogOut, Home, Network, HeartHandshake, GraduationCap, Handshake, TrendingUp, Archive, BookOpen, Settings, Music, LayoutTemplate, Building, Video, Shield } from "lucide-react";
 import { Button } from "./ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserProfile } from "@/hooks/useUserProfile";
@@ -18,7 +18,6 @@ const communityNavItems = [
   { href: "/dashboard/cells", icon: Home, label: "Células" },
   { href: "/dashboard/visitors", icon: Handshake, label: "Recepção" },
   { href: "/dashboard/journey", icon: TrendingUp, label: "Jornada" },
-  { href: "/dashboard/hierarchy", icon: Network, label: "Hierarquia" },
 ];
 
 const resourcesNavItems = [
@@ -34,6 +33,10 @@ const adminNavItems = [
   { href: "/dashboard/finances", icon: DollarSign, label: "Finanças" },
   { href: "/dashboard/patrimonio", icon: Archive, label: "Patrimônio" },
   { href: "/dashboard/congregations", icon: Building, label: "Missões/Sedes" },
+];
+
+const governanceNavItems = [
+    { href: "/dashboard/governance", icon: Shield, label: "Governança" },
 ];
 
 const bottomNavItems = [
@@ -100,6 +103,7 @@ const Sidebar = () => {
         {isAdmin && renderSection("Comunidade", communityNavItems)}
         {isAdmin && renderSection("Recursos", resourcesNavItems)}
         {isSuperAdmin && renderSection("Administração", adminNavItems)}
+        {isSuperAdmin && renderSection("Governança", governanceNavItems)}
       </nav>
       <div className="p-4 border-t">
         <nav className="space-y-1">

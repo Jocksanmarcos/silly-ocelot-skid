@@ -26,7 +26,6 @@ import RegistrationConfirmationPage from "./pages/RegistrationConfirmationPage";
 import EventRegistrationsPage from "./pages/EventRegistrationsPage";
 import CellsPage from "./pages/CellsPage";
 import PublicCellsPage from "./pages/PublicCellsPage";
-import HierarchyPage from "./pages/HierarchyPage";
 import CoursesPage from "./pages/CoursesPage";
 import LessonsPage from "./pages/LessonsPage";
 import PublicCoursesPage from "./pages/PublicCoursesPage";
@@ -52,7 +51,6 @@ import PatrimonioSettingsPage from "./pages/PatrimonioSettingsPage";
 import SettingsLayout from "./components/settings/SettingsLayout";
 import AppearancePage from "./pages/settings/AppearancePage";
 import ProfileSettingsPage from "./pages/settings/ProfileSettingsPage";
-import SecuritySettingsPage from "./pages/settings/SecuritySettingsPage";
 import GenerosidadeAdminPage from "./pages/GenerosidadeAdminPage";
 import LouvorPage from "./pages/LouvorPage";
 import EscalasPage from "./pages/EscalasPage";
@@ -68,6 +66,11 @@ import CongregationsPage from "./pages/CongregationsPage";
 import SermonsPage from "./pages/SermonsPage";
 import PublicSermonsPage from "./pages/PublicSermonsPage";
 import BibliaPage from "./pages/BibliaPage";
+import GovernanceLayout from "./components/governance/GovernanceLayout";
+import PermissionsPage from "./pages/governance/PermissionsPage";
+import HierarchyPage from "./pages/governance/HierarchyPage";
+import SecurityPage from "./pages/governance/SecurityPage";
+import AuditLogPage from "./pages/governance/AuditLogPage";
 
 const queryClient = new QueryClient();
 
@@ -136,7 +139,6 @@ const App = () => (
                   <Route path="/dashboard/events/:id/registrations" element={<EventRegistrationsPage />} />
                   <Route path="/dashboard/cells" element={<CellsPage />} />
                   <Route path="/dashboard/finances" element={<FinancesPage />} />
-                  <Route path="/dashboard/hierarchy" element={<HierarchyPage />} />
                   <Route path="/dashboard/families" element={<FamiliesPage />} />
                   <Route path="/dashboard/families/tree" element={<FamilyTreeViewPage />} />
                   <Route path="/dashboard/courses" element={<CoursesPage />} />
@@ -153,7 +155,14 @@ const App = () => (
                     <Route index element={<Navigate to="appearance" replace />} />
                     <Route path="appearance" element={<AppearancePage />} />
                     <Route path="profile" element={<ProfileSettingsPage />} />
-                    <Route path="security" element={<SecuritySettingsPage />} />
+                  </Route>
+
+                  <Route path="/dashboard/governance" element={<GovernanceLayout />}>
+                    <Route index element={<Navigate to="permissions" replace />} />
+                    <Route path="permissions" element={<PermissionsPage />} />
+                    <Route path="hierarchy" element={<HierarchyPage />} />
+                    <Route path="security" element={<SecurityPage />} />
+                    <Route path="audit-logs" element={<AuditLogPage />} />
                   </Route>
                 </Route>
               </Route>
