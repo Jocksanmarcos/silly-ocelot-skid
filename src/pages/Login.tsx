@@ -4,11 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthProvider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useTheme } from '@/contexts/ThemeProvider';
 
 const Login = () => {
   const { session } = useAuth();
-  const { theme } = useTheme();
 
   if (session) {
     return <Navigate to="/portal" replace />;
@@ -40,7 +38,6 @@ const Login = () => {
               },
             }}
             providers={[]}
-            theme={theme === 'system' ? undefined : theme}
             localization={{
               variables: {
                 sign_in: {
