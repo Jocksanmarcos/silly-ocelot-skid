@@ -102,3 +102,10 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+@layer utilities {
+  /* Força a cor do texto do input do Supabase Auth no modo escuro */
+  .dark div[class*="supabase-auth-ui"] input {
+    color: white !important;
+  }
+}
