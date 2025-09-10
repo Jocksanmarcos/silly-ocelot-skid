@@ -64,9 +64,23 @@ const MembersPage = () => {
   const mutation = useMutation({
     mutationFn: async (formData: { member: MemberFormValues; id?: string }) => {
       const { member, id } = formData;
+      
+      // Converte strings vazias para null para campos opcionais
+      const submissionData = {
+        ...member,
+        email: member.email || null,
+        phone: member.phone || null,
+        address: member.address || null,
+        membership_date: member.membership_date || null,
+        date_of_birth: member.date_of_birth || null,
+        family_id: member.family_id || null,
+        marital_status: member.marital_status || null,
+        family_role: member.family_role || null,
+      };
+
       const { error } = id
-        ? await supabase.from("members").update(member).eq("id", id)
-        : await supabase.from("members").insert(member);
+        ? await supabase.from("members").update(submissionData).eq("id", id)
+        : await supabase.from("members").insert(submissionData);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
