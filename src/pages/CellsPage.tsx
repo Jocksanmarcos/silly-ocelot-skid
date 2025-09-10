@@ -7,13 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Users, FileText } from "lucide-react";
+import { MoreHorizontal, Eye } from "lucide-react";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable, getPaginationRowModel } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { showSuccess, showError } from "@/utils/toast";
 import CellForm from "@/components/cells/CellForm";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "react-router-dom";
+import CellDetailsDialog from "@/components/cells/CellDetailsDialog";
 
 const fetchCells = async (): Promise<Cell[]> => {
   const { data, error } = await supabase
@@ -46,7 +46,8 @@ const fetchProfilesForSelection = async (): Promise<Profile[]> => {
 
 const CellsPage = () => {
   const queryClient = useQueryClient();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isFormDialogOpen, setIsFormDialogOpen] = useState(false);
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [selectedCell, setSelectedCell] = useState<Cell | null>(null);
 
@@ -64,7 +65,7 @@ const CellsPage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cells"] });
       showSuccess(`Célula ${selectedCell ? 'atualizada' : 'criada'} com sucesso!`);
-      setIsDialogOpen(false);
+      setIsFormDialogOpen(false);
       setSelectedCell(null);
     },
     onError: (error) => { showError(`Erro: ${error.message}`); },
@@ -84,14 +85,11 @@ const CellsPage = () => {
     onError: (error) => { showError(`Erro: ${error.message}`); },
   });
 
-  const handleEdit = (cell: Cell) => {
+  const handleOpenDialog = (type: 'form' | 'details' | 'alert', cell: Cell) => {
     setSelectedCell(cell);
-    setIsDialogOpen(true);
-  };
-
-  const handleDelete = (cell: Cell) => {
-    setSelectedCell(cell);
-    setIsAlertOpen(true);
+    if (type === 'form') setIsFormDialogOpen(true);
+    if (type === 'details') setIsDetailsDialogOpen(true);
+    if (type === 'alert') setIsAlertOpen(true);
   };
 
   const columns: ColumnDef<Cell & { supervisor_name?: string }>[] = [
@@ -115,21 +113,10 @@ const CellsPage = () => {
           <DropdownMenuTrigger asChild><Button variant="ghost" className="h-8 w-8 p-0"><span className="sr-only">Abrir menu</span><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
-            <DropdownMenuItem asChild>
-              <Link to={`/dashboard/cells/${row.original.id}/members`} className="flex items-center">
-                <Users className="mr-2 h-4 w-4" />
-                Ver Membros
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to={`/dashboard/cells/${row.original.id}/reports`} className="flex items-center">
-                <FileText className="mr-2 h-4 w-4" />
-                Ver Relatórios
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleEdit(row.original)}>Editar</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleOpenDialog('details', row.original)}><Eye className="mr-2 h-4 w-4" /> Ver Detalhes</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleOpenDialog('form', row.original)}>Editar</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleDelete(row.original)} className="text-red-600">Remover</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleOpenDialog('alert', row.original)} className="text-red-600">Remover</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -163,7 +150,7 @@ const CellsPage = () => {
           <h1 className="text-3xl font-bold">Gestão de Células</h1>
           <p className="mt-2 text-muted-foreground">Crie e gerencie os pequenos grupos da sua igreja.</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) setSelectedCell(null); }}>
+        <Dialog open={isFormDialogOpen} onOpenChange={(open) => { setIsFormDialogOpen(open); if (!open) setSelectedCell(null); }}>
           <DialogTrigger asChild><Button>Adicionar Célula</Button></DialogTrigger>
           <DialogContent className="sm:max-w-[625px]">
             <DialogHeader><DialogTitle>{selectedCell ? "Editar Célula" : "Adicionar Nova Célula"}</DialogTitle></DialogHeader>
@@ -187,12 +174,11 @@ const CellsPage = () => {
         <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>Próximo</Button>
       </div>
 
+      <CellDetailsDialog cellId={selectedCell?.id || null} isOpen={isDetailsDialogOpen} onOpenChange={setIsDetailsDialogOpen} />
+
       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
         <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
-            <AlertDialogDescription>Esta ação não pode ser desfeita. Isso removerá permanentemente a célula.</AlertDialogDescription>
-          </AlertDialogHeader>
+          <AlertDialogHeader><AlertDialogTitle>Você tem certeza?</AlertDialogTitle><AlertDialogDescription>Esta ação não pode ser desfeita. Isso removerá permanentemente a célula.</AlertDialogDescription></AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setSelectedCell(null)}>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={() => selectedCell && deleteMutation.mutate(selectedCell.id)} disabled={deleteMutation.isPending}>
