@@ -18,13 +18,13 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: var(--primary-hue) 100% 61%; /* #3A7DFF */
+    --primary: var(--primary-hue) 100% 61%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: var(--secondary-hue) 100% 61%; /* #FF8A3A */
+    --secondary: var(--secondary-hue) 100% 61%;
     --secondary-foreground: 25 85% 5%;
 
-    --destructive: var(--destructive-hue) 65% 45%; /* #C1272D */
+    --destructive: var(--destructive-hue) 65% 45%;
     --destructive-foreground: 210 40% 98%;
 
     --muted: 210 40% 96.1%;
@@ -52,13 +52,13 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 224 71.4% 4.1%;
     --foreground: 210 40% 98%;
 
-    --card: 224 71% 4%;
+    --card: 224 71.4% 4.1%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 224 71.4% 4.1%;
     --popover-foreground: 210 40% 98%;
 
     --primary: var(--primary-hue) 100% 61%;

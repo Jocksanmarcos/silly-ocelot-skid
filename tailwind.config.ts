@@ -70,7 +70,7 @@ export default {
         'kerigma-lg': 'var(--shadow-kerigma-lg)',
       },
       backgroundImage: {
-        'kerigma-gradient': 'linear-gradient(135deg, hsl(var(--primary-hue)) 0%, hsl(50, 95%, 55%) 100%)', // Blue to Gold
+        'kerigma-gradient': 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(50, 95%, 55%) 100%)',
       },
       keyframes: {
         "accordion-down": {
