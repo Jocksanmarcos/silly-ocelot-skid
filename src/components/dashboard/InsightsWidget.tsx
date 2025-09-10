@@ -57,7 +57,7 @@ const InsightsWidget = () => {
   const insights = [
     { count: data?.newVisitorsCount, text: "novo(s) visitante(s) esta semana.", icon: Users, link: "/dashboard/visitors" },
     { count: data?.openCounselingCount, text: "pedido(s) de aconselhamento pendente(s).", icon: HeartHandshake, link: "/dashboard/aconselhamento" },
-    { count: data?.upcomingBirthdays, text: "aniversariante(s) esta semana.", icon: Cake, link: "/dashboard/members/dashboard" },
+    { count: data?.upcomingBirthdays, text: "aniversariante(s) esta semana.", icon: Cake, link: "/dashboard/members" },
   ];
 
   const activeInsights = insights.filter(i => i.count && i.count > 0);

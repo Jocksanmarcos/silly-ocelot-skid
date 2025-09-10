@@ -16,7 +16,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import DashboardLayout from "./components/DashboardLayout";
 import MembersPage from "./pages/MembersPage";
-import MembersDashboardPage from "./pages/MembersDashboardPage";
 import EventsPage from "./pages/EventsPage";
 import FinancesPage from "./pages/FinancesPage";
 import FamiliesPage from "./pages/FamiliesPage";
@@ -130,7 +129,6 @@ const App = () => (
                   <Route path="/dashboard/generosidade" element={<GenerosidadeAdminPage />} />
                   <Route path="/dashboard/visitors" element={<VisitorsPage />} />
                   <Route path="/dashboard/members" element={<MembersPage />} />
-                  <Route path="/dashboard/members/dashboard" element={<MembersDashboardPage />} />
                   <Route path="/dashboard/journey" element={<MemberJourneyPage />} />
                   <Route path="/dashboard/events" element={<EventsPage />} />
                   <Route path="/dashboard/events/:id/registrations" element={<EventRegistrationsPage />} />
