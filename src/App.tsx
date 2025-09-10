@@ -68,6 +68,7 @@ import PortalVoluntariadoPage from "./pages/portal/PortalVoluntariadoPage";
 import MuralDaGenerosidadePage from "./pages/portal/MuralDaGenerosidadePage";
 import HallDaGenerosidadePage from "./pages/portal/HallDaGenerosidadePage";
 import PedirAjudaPage from "./pages/portal/PedirAjudaPage";
+import CongregationsPage from "./pages/CongregationsPage";
 
 const queryClient = new QueryClient();
 
@@ -148,6 +149,7 @@ const App = () => (
                   <Route path="/dashboard/patrimonio/:id" element={<AssetDetailPage />} />
                   <Route path="/dashboard/biblioteca" element={<BibliotecaPage />} />
                   <Route path="/dashboard/voluntariado" element={<VoluntariadoAdminPage />} />
+                  <Route path="/dashboard/congregations" element={<CongregationsPage />} />
                   
                   <Route path="/dashboard/settings" element={<SettingsLayout />}>
                     <Route index element={<Navigate to="appearance" replace />} />

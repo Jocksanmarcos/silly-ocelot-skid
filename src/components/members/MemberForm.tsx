@@ -50,9 +50,9 @@ const MemberForm = ({ onSubmit, defaultValues, isSubmitting, families, congregat
           name="congregation_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Congregação</FormLabel>
+              <FormLabel>Missão/Sede</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!isSuperAdmin}>
-                <FormControl><SelectTrigger><SelectValue placeholder="Selecione a congregação" /></SelectTrigger></FormControl>
+                <FormControl><SelectTrigger><SelectValue placeholder="Selecione a Missão/Sede" /></SelectTrigger></FormControl>
                 <SelectContent>{congregations.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
               </Select>
               <FormMessage />

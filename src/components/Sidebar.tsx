@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Users, Calendar, DollarSign, LayoutDashboard, LogOut, Home, Network, HeartHandshake, GraduationCap, Handshake, TrendingUp, Archive, BookOpen, Settings, Music, LayoutTemplate } from "lucide-react";
+import { Users, Calendar, DollarSign, LayoutDashboard, LogOut, Home, Network, HeartHandshake, GraduationCap, Handshake, TrendingUp, Archive, BookOpen, Settings, Music, LayoutTemplate, Building } from "lucide-react";
 import { Button } from "./ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserProfile } from "@/hooks/useUserProfile";
@@ -32,6 +32,7 @@ const resourcesNavItems = [
 const adminNavItems = [
   { href: "/dashboard/finances", icon: DollarSign, label: "Finanças" },
   { href: "/dashboard/patrimonio", icon: Archive, label: "Patrimônio" },
+  { href: "/dashboard/congregations", icon: Building, label: "Missões/Sedes" },
 ];
 
 const bottomNavItems = [
