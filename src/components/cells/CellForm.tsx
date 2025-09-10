@@ -75,9 +75,15 @@ const CellForm = ({ onSubmit, defaultValues, isSubmitting, profiles }: CellFormP
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl><SelectTrigger><SelectValue placeholder="Selecione o líder" /></SelectTrigger></FormControl>
                   <SelectContent>
-                    {profiles.map(profile => (
-                      <SelectItem key={profile.id} value={profile.id}>{profile.full_name || profile.id}</SelectItem>
-                    ))}
+                    {profiles.length > 0 ? (
+                      profiles.map(profile => (
+                        <SelectItem key={profile.id} value={profile.id}>{profile.full_name || profile.id}</SelectItem>
+                      ))
+                    ) : (
+                      <div className="p-4 text-center text-sm text-muted-foreground">
+                        Nenhum líder encontrado.
+                      </div>
+                    )}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -93,9 +99,15 @@ const CellForm = ({ onSubmit, defaultValues, isSubmitting, profiles }: CellFormP
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl><SelectTrigger><SelectValue placeholder="Selecione o supervisor" /></SelectTrigger></FormControl>
                   <SelectContent>
-                    {profiles.map(profile => (
-                      <SelectItem key={profile.id} value={profile.id}>{profile.full_name || profile.id}</SelectItem>
-                    ))}
+                    {profiles.length > 0 ? (
+                      profiles.map(profile => (
+                        <SelectItem key={profile.id} value={profile.id}>{profile.full_name || profile.id}</SelectItem>
+                      ))
+                    ) : (
+                      <div className="p-4 text-center text-sm text-muted-foreground">
+                        Nenhum supervisor encontrado.
+                      </div>
+                    )}
                   </SelectContent>
                 </Select>
                 <FormMessage />
