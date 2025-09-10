@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { Member, Contribution } from "@/types";
+import { Member, Contribution, Congregation } from "@/types";
 import { useEffect } from "react";
 
 interface ContributionFormProps {
@@ -15,12 +15,15 @@ interface ContributionFormProps {
   defaultValues?: Contribution;
   isSubmitting: boolean;
   members: Member[];
+  congregations: Congregation[];
+  isSuperAdmin: boolean;
+  userCongregationId?: string;
 }
 
 const funds = ["Dízimo", "Oferta", "Missões", "Oferta Especial", "Outro"];
 const paymentMethods = ["PIX", "Cartão de Crédito/Débito", "Dinheiro", "Transferência Bancária"];
 
-const ContributionForm = ({ onSubmit, defaultValues, isSubmitting, members }: ContributionFormProps) => {
+const ContributionForm = ({ onSubmit, defaultValues, isSubmitting, members, congregations, isSuperAdmin, userCongregationId }: ContributionFormProps) => {
   const form = useForm<ContributionFormValues>({
     resolver: zodResolver(contributionSchema),
     defaultValues: {
@@ -32,6 +35,7 @@ const ContributionForm = ({ onSubmit, defaultValues, isSubmitting, members }: Co
       fund: defaultValues?.fund || "",
       payment_method: defaultValues?.payment_method || "",
       notes: defaultValues?.notes || "",
+      congregation_id: defaultValues?.congregation_id || (isSuperAdmin ? "" : userCongregationId),
     },
   });
 
@@ -48,6 +52,20 @@ const ContributionForm = ({ onSubmit, defaultValues, isSubmitting, members }: Co
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="congregation_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Missão/Sede</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!isSuperAdmin}>
+                <FormControl><SelectTrigger><SelectValue placeholder="Selecione a Missão/Sede de origem" /></SelectTrigger></FormControl>
+                <SelectContent>{congregations.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="contributor_type"

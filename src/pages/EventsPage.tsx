@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Event } from "@/types";
+import { Event, Profile } from "@/types";
 import { EventFormValues } from "@/lib/schemas";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +36,8 @@ import { showSuccess, showError } from "@/utils/toast";
 import EventForm from "@/components/events/EventForm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthProvider";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 const fetchEvents = async (): Promise<Event[]> => {
   const { data, error } = await supabase.from("events").select("*").order("event_date", { ascending: false });
@@ -104,11 +106,12 @@ function EventsDataTable({ columns, data }: DataTableProps) {
 
 const EventsPage = () => {
   const queryClient = useQueryClient();
+  const { data: userProfile, isLoading: isLoadingProfile } = useUserProfile();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
-  const { data: events, isLoading } = useQuery<Event[]>({
+  const { data: events, isLoading: isLoadingEvents } = useQuery<Event[]>({
     queryKey: ["events"],
     queryFn: fetchEvents,
   });
@@ -143,7 +146,12 @@ const EventsPage = () => {
         galleryUrls = await Promise.all(uploadPromises);
       }
 
-      const submissionData = { ...eventData, image_url: imageUrl, gallery_urls: galleryUrls };
+      const submissionData = { 
+        ...eventData, 
+        image_url: imageUrl, 
+        gallery_urls: galleryUrls,
+        congregation_id: userProfile?.congregation_id,
+      };
 
       const { error } = id
         ? await supabase.from("events").update(submissionData).eq("id", id)
@@ -233,6 +241,8 @@ const EventsPage = () => {
   const handleSubmit = (data: EventFormValues) => {
     mutation.mutate({ event: data, id: selectedEvent?.id });
   };
+
+  const isLoading = isLoadingEvents || isLoadingProfile;
 
   if (isLoading) {
     return (

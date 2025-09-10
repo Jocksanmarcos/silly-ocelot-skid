@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Contribution, Member } from "@/types";
+import { Contribution, Member, Congregation, Profile } from "@/types";
 import { ContributionFormValues } from "@/lib/schemas";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -14,6 +14,7 @@ import { showSuccess, showError } from "@/utils/toast";
 import ContributionForm from "@/components/finances/ContributionForm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 const fetchContributions = async (): Promise<Contribution[]> => {
   const { data, error } = await supabase.from("contributions").select("*, members(first_name, last_name)").order("contribution_date", { ascending: false });
@@ -27,14 +28,22 @@ const fetchMembers = async (): Promise<Member[]> => {
   return data;
 };
 
+const fetchCongregations = async (): Promise<Congregation[]> => {
+    const { data, error } = await supabase.from("congregations").select("id, name").order("name");
+    if (error) throw new Error(error.message);
+    return data;
+};
+
 const FinancesPage = () => {
   const queryClient = useQueryClient();
+  const { data: userProfile, isLoading: isLoadingProfile } = useUserProfile();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [selectedContribution, setSelectedContribution] = useState<Contribution | null>(null);
 
   const { data: contributions, isLoading: isLoadingContributions } = useQuery<Contribution[]>({ queryKey: ["contributions"], queryFn: fetchContributions });
   const { data: members, isLoading: isLoadingMembers } = useQuery<Member[]>({ queryKey: ["membersForFinances"], queryFn: fetchMembers });
+  const { data: congregations, isLoading: isLoadingCongregations } = useQuery<Congregation[]>({ queryKey: ["congregations"], queryFn: fetchCongregations });
 
   const mutation = useMutation({
     mutationFn: async (formData: { data: ContributionFormValues; id?: string }) => {
@@ -47,6 +56,7 @@ const FinancesPage = () => {
         fund: data.fund,
         payment_method: data.payment_method,
         notes: data.notes,
+        congregation_id: data.congregation_id,
       };
       const { error } = id
         ? await supabase.from("contributions").update(submissionData).eq("id", id)
@@ -124,7 +134,10 @@ const FinancesPage = () => {
     mutation.mutate({ data, id: selectedContribution?.id });
   };
 
-  if (isLoadingContributions || isLoadingMembers) {
+  const isLoading = isLoadingContributions || isLoadingMembers || isLoadingProfile || isLoadingCongregations;
+  const isSuperAdmin = userProfile?.role === 'super_admin';
+
+  if (isLoading) {
     return (
       <div>
         <div className="flex justify-between items-center mb-4"><Skeleton className="h-10 w-48" /><Skeleton className="h-10 w-32" /></div>
@@ -151,7 +164,15 @@ const FinancesPage = () => {
             <DialogTrigger asChild><Button>Adicionar Contribuição</Button></DialogTrigger>
             <DialogContent className="sm:max-w-[625px]">
                 <DialogHeader><DialogTitle>{selectedContribution ? "Editar Contribuição" : "Adicionar Nova Contribuição"}</DialogTitle></DialogHeader>
-                <ContributionForm onSubmit={handleSubmit} defaultValues={selectedContribution || undefined} isSubmitting={mutation.isPending} members={members || []} />
+                <ContributionForm 
+                    onSubmit={handleSubmit} 
+                    defaultValues={selectedContribution || undefined} 
+                    isSubmitting={mutation.isPending} 
+                    members={members || []}
+                    congregations={congregations || []}
+                    isSuperAdmin={isSuperAdmin}
+                    userCongregationId={userProfile?.congregation_id}
+                />
             </DialogContent>
             </Dialog>
         </div>

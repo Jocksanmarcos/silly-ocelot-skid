@@ -51,6 +51,7 @@ export interface Event {
   created_at: string;
   image_url?: string | null;
   gallery_urls?: string[] | null;
+  congregation_id?: string | null;
 }
 
 export interface EventRegistration {
@@ -113,6 +114,7 @@ export interface Contribution {
   notes?: string | null;
   created_at: string;
   members?: { first_name: string; last_name: string; } | null;
+  congregation_id?: string | null;
 }
 
 // Tipos para o Módulo de Ensino
