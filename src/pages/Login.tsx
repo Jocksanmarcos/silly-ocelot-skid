@@ -4,13 +4,20 @@ import { supabase } from '@/integrations/supabase/client';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthProvider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTheme } from '@/contexts/ThemeProvider';
 
 const Login = () => {
   const { session } = useAuth();
+  const { theme } = useTheme();
 
   if (session) {
     return <Navigate to="/portal" replace />;
   }
+
+  // The Supabase Auth component theme prop accepts 'light', 'dark'. 
+  // If not provided, it defaults to the system theme.
+  // Our 'system' theme does the same. So we can map 'system' to not passing the prop.
+  const authThemeProps = theme === 'system' ? {} : { theme: theme };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -28,7 +35,7 @@ const Login = () => {
             supabaseClient={supabase}
             appearance={{ theme: ThemeSupa }}
             providers={[]}
-            theme="light"
+            {...authThemeProps}
             localization={{
               variables: {
                 sign_in: {
