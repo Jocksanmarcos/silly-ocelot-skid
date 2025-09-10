@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Event, Profile } from "@/types";
+import { Event } from "@/types";
 import { EventFormValues } from "@/lib/schemas";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,7 +36,6 @@ import { showSuccess, showError } from "@/utils/toast";
 import EventForm from "@/components/events/EventForm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthProvider";
 import { useUserProfile } from "@/hooks/useUserProfile";
 
 const fetchEvents = async (): Promise<Event[]> => {
@@ -121,13 +120,40 @@ const EventsPage = () => {
       const { event, id } = formData;
       const { image_file, gallery_files, ...eventData } = event;
 
-      let imageUrl = selectedEvent?.image_url;
-      let galleryUrls = selectedEvent?.gallery_urls || [];
+      // Se for uma edição
+      if (id) {
+        let imageUrl = selectedEvent?.image_url;
+        if (image_file?.[0]) {
+          const file = image_file[0];
+          const filePath = `public/${id}/cover.${file.name.split('.').pop()}`;
+          const { error: uploadError } = await supabase.storage.from('event_images').upload(filePath, file, { upsert: true });
+          if (uploadError) throw new Error(`Upload da imagem principal falhou: ${uploadError.message}`);
+          const { data: { publicUrl } } = supabase.storage.from('event_images').getPublicUrl(filePath);
+          imageUrl = `${publicUrl}?t=${new Date().getTime()}`;
+        }
+        const { error } = await supabase.from("events").update({ ...eventData, image_url: imageUrl }).eq("id", id);
+        if (error) throw error;
+        return;
+      }
 
+      // Se for um novo evento
+      // 1. Insere os dados do evento para obter um ID
+      const { data: newEvent, error: insertError } = await supabase
+        .from("events")
+        .insert({ ...eventData, congregation_id: userProfile?.congregation_id })
+        .select()
+        .single();
+      
+      if (insertError) throw new Error(`Erro ao criar evento: ${insertError.message}`);
+
+      const newEventId = newEvent.id;
+      let imageUrl: string | null = null;
+      let galleryUrls: string[] = [];
+
+      // 2. Faz o upload das imagens usando o ID do evento
       if (image_file?.[0]) {
         const file = image_file[0];
-        const fileExt = file.name.split('.').pop();
-        const filePath = `public/${id || crypto.randomUUID()}/cover.${fileExt}`;
+        const filePath = `public/${newEventId}/cover.${file.name.split('.').pop()}`;
         const { error: uploadError } = await supabase.storage.from('event_images').upload(filePath, file, { upsert: true });
         if (uploadError) throw new Error(`Upload da imagem principal falhou: ${uploadError.message}`);
         const { data: { publicUrl } } = supabase.storage.from('event_images').getPublicUrl(filePath);
@@ -136,8 +162,7 @@ const EventsPage = () => {
 
       if (gallery_files && gallery_files.length > 0) {
         const uploadPromises = Array.from(gallery_files).map(async (file: any, index: number) => {
-          const fileExt = file.name.split('.').pop();
-          const filePath = `public/${id || crypto.randomUUID()}/gallery_${index}_${Date.now()}.${fileExt}`;
+          const filePath = `public/${newEventId}/gallery_${index}_${Date.now()}.${file.name.split('.').pop()}`;
           const { error: uploadError } = await supabase.storage.from('event_images').upload(filePath, file);
           if (uploadError) throw new Error(`Upload da galeria falhou: ${uploadError.message}`);
           const { data: { publicUrl } } = supabase.storage.from('event_images').getPublicUrl(filePath);
@@ -146,17 +171,13 @@ const EventsPage = () => {
         galleryUrls = await Promise.all(uploadPromises);
       }
 
-      const submissionData = { 
-        ...eventData, 
-        image_url: imageUrl, 
-        gallery_urls: galleryUrls,
-        congregation_id: userProfile?.congregation_id,
-      };
+      // 3. Atualiza o evento com as URLs das imagens
+      const { error: updateError } = await supabase
+        .from("events")
+        .update({ image_url: imageUrl, gallery_urls: galleryUrls })
+        .eq("id", newEventId);
 
-      const { error } = id
-        ? await supabase.from("events").update(submissionData).eq("id", id)
-        : await supabase.from("events").insert(submissionData);
-      if (error) throw new Error(error.message);
+      if (updateError) throw new Error(`Erro ao salvar URLs das imagens: ${updateError.message}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["events"] });
