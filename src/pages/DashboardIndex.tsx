@@ -8,6 +8,8 @@ import { useUserRoles } from '@/hooks/useUserRoles';
 import LeaderDashboardWidget from '@/components/dashboard/LeaderDashboardWidget';
 import SupervisorDashboardWidget from '@/components/dashboard/SupervisorDashboardWidget';
 import CoordinatorDashboardWidget from '@/components/dashboard/CoordinatorDashboardWidget';
+import QuickActionsWidget from '@/components/dashboard/QuickActionsWidget';
+import InsightsWidget from '@/components/dashboard/InsightsWidget';
 
 const fetchDashboardStats = async () => {
   const today = new Date();
@@ -56,10 +58,15 @@ const DashboardIndex = () => {
       <div>
         <h1 className="text-3xl font-bold">Painel de Gestão</h1>
         <p className="mt-2 text-muted-foreground">
-          Bem-vindo, {session?.user?.email}!
+          Bem-vindo, {session?.user?.user_metadata?.full_name || session?.user?.email}!
         </p>
       </div>
       
+      <div className="grid gap-4 md:grid-cols-3">
+        <QuickActionsWidget />
+        <InsightsWidget />
+      </div>
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {isLoading ? <Skeleton className="h-48 col-span-full" /> : (
           <>
