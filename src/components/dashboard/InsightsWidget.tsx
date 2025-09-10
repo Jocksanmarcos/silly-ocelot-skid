@@ -1,66 +1,29 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Users, HeartHandshake, Cake, ArrowRight } from "lucide-react";
-import { startOfWeek, endOfWeek, format } from "date-fns";
 import { Link } from "react-router-dom";
 
-const fetchInsights = async () => {
-  const today = new Date();
-  const start = startOfWeek(today, { weekStartsOn: 1 }).toISOString();
-  
-  const visitorsPromise = supabase
-    .from('visitors')
-    .select('id', { count: 'exact', head: true })
-    .gte('created_at', start);
+interface InsightsWidgetProps {
+  insights?: {
+    newVisitorsCount: number | null;
+    openCounselingCount: number | null;
+    upcomingBirthdays: number;
+  };
+  isLoading: boolean;
+}
 
-  const counselingPromise = supabase
-    .from('counseling_requests')
-    .select('id', { count: 'exact', head: true })
-    .in('status', ['Pendente', 'Em Análise']);
-
-  const birthdaysPromise = supabase
-    .from('members')
-    .select('first_name, last_name, date_of_birth')
-    .limit(5); // Limit to avoid fetching all members
-
-  const [
-    { count: newVisitorsCount },
-    { count: openCounselingCount },
-    { data: members }
-  ] = await Promise.all([visitorsPromise, counselingPromise, birthdaysPromise]);
-
-  // Manual filtering for birthdays this week
-  const startD = startOfWeek(today, { weekStartsOn: 1 });
-  const endD = endOfWeek(today, { weekStartsOn: 1 });
-  const upcomingBirthdays = members?.filter(m => {
-    if (!m.date_of_birth) return false;
-    const birthDate = new Date(m.date_of_birth);
-    const birthDayThisYear = new Date(today.getFullYear(), birthDate.getUTCMonth(), birthDate.getUTCDate());
-    return birthDayThisYear >= startD && birthDayThisYear <= endD;
-  }).length || 0;
-
-  return { newVisitorsCount, openCounselingCount, upcomingBirthdays };
-};
-
-const InsightsWidget = () => {
-  const { data, isLoading } = useQuery({
-    queryKey: ['dashboardInsights'],
-    queryFn: fetchInsights,
-  });
-
+const InsightsWidget = ({ insights, isLoading }: InsightsWidgetProps) => {
   if (isLoading) {
     return <Skeleton className="h-48 col-span-full md:col-span-2" />;
   }
 
-  const insights = [
-    { count: data?.newVisitorsCount, text: "novo(s) visitante(s) esta semana.", icon: Users, link: "/dashboard/visitors" },
-    { count: data?.openCounselingCount, text: "pedido(s) de aconselhamento pendente(s).", icon: HeartHandshake, link: "/dashboard/aconselhamento" },
-    { count: data?.upcomingBirthdays, text: "aniversariante(s) esta semana.", icon: Cake, link: "/dashboard/members" },
+  const insightItems = [
+    { count: insights?.newVisitorsCount, text: "novo(s) visitante(s) esta semana.", icon: Users, link: "/dashboard/visitors" },
+    { count: insights?.openCounselingCount, text: "pedido(s) de aconselhamento pendente(s).", icon: HeartHandshake, link: "/dashboard/aconselhamento" },
+    { count: insights?.upcomingBirthdays, text: "aniversariante(s) esta semana.", icon: Cake, link: "/dashboard/members" },
   ];
 
-  const activeInsights = insights.filter(i => i.count && i.count > 0);
+  const activeInsights = insightItems.filter(i => i.count && i.count > 0);
 
   return (
     <Card className="col-span-full md:col-span-2">
