@@ -52,11 +52,17 @@ const FamilyForm = ({ onSubmit, defaultValues, isSubmitting, members }: FamilyFo
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {members.map(member => (
-                    <SelectItem key={member.id} value={member.id}>
-                      {`${member.first_name} ${member.last_name}`}
-                    </SelectItem>
-                  ))}
+                  {members.length > 0 ? (
+                    members.map(member => (
+                      <SelectItem key={member.id} value={member.id}>
+                        {`${member.first_name} ${member.last_name}`}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <div className="p-4 text-center text-sm text-muted-foreground">
+                      Nenhum membro encontrado. Cadastre pessoas primeiro.
+                    </div>
+                  )}
                 </SelectContent>
               </Select>
               <FormMessage />

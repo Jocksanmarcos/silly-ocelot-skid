@@ -14,11 +14,12 @@ import { showSuccess, showError } from "@/utils/toast";
 import FamilyForm from "@/components/families/FamilyForm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 const fetchFamilies = async (): Promise<Family[]> => {
-  const { data, error } = await supabase.from("families").select("*, members(first_name, last_name)").order("name", { ascending: true });
+  const { data, error } = await supabase.from("families").select("*, head:members!head_of_family_id(first_name, last_name)").order("name", { ascending: true });
   if (error) throw new Error(error.message);
-  return data;
+  return data as any;
 };
 
 const fetchMembers = async (): Promise<Member[]> => {
@@ -29,6 +30,7 @@ const fetchMembers = async (): Promise<Member[]> => {
 
 const FamiliesPage = () => {
   const queryClient = useQueryClient();
+  const { data: userProfile, isLoading: isLoadingProfile } = useUserProfile();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [selectedFamily, setSelectedFamily] = useState<Family | null>(null);
@@ -39,9 +41,14 @@ const FamiliesPage = () => {
   const mutation = useMutation({
     mutationFn: async (formData: { data: FamilyFormValues; id?: string }) => {
       const { data, id } = formData;
+      const submissionData = {
+        ...data,
+        head_of_family_id: data.head_of_family_id || null,
+        congregation_id: userProfile?.congregation_id,
+      };
       const { error } = id
-        ? await supabase.from("families").update(data).eq("id", id)
-        : await supabase.from("families").insert(data);
+        ? await supabase.from("families").update(submissionData).eq("id", id)
+        : await supabase.from("families").insert(submissionData);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
@@ -77,11 +84,11 @@ const FamiliesPage = () => {
     setIsAlertOpen(true);
   };
 
-  const columns: ColumnDef<Family>[] = [
+  const columns: ColumnDef<Family & { head?: { first_name: string, last_name: string } }>[] = [
     { accessorKey: "name", header: "Nome da Família" },
     {
       header: "Responsável",
-      cell: ({ row }) => row.original.members ? `${row.original.members.first_name} ${row.original.members.last_name}` : 'Não definido',
+      cell: ({ row }) => row.original.head ? `${row.original.head.first_name} ${row.original.head.last_name}` : 'Não definido',
     },
     {
       id: "actions",
@@ -110,7 +117,7 @@ const FamiliesPage = () => {
     mutation.mutate({ data, id: selectedFamily?.id });
   };
 
-  if (isLoadingFamilies || isLoadingMembers) {
+  if (isLoadingFamilies || isLoadingMembers || isLoadingProfile) {
     return (
       <div>
         <div className="flex justify-between items-center mb-4"><Skeleton className="h-10 w-48" /><Skeleton className="h-10 w-32" /></div>
