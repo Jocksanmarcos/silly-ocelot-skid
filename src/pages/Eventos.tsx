@@ -10,8 +10,9 @@ const fetchEvents = async (): Promise<Event[]> => {
   const { data, error } = await supabase
     .from("events")
     .select("*")
+    .eq('type', 'externo') // Apenas eventos públicos
     .order("event_date", { ascending: true })
-    .gte("event_date", new Date().toISOString()); // Fetch only future events
+    .gte("event_date", new Date().toISOString()); // Apenas eventos futuros
   if (error) throw new Error(error.message);
   return data;
 };
