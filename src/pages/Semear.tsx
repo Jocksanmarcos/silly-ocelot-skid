@@ -58,8 +58,9 @@ const Semear = () => {
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
                 <p>Você pode entregar seu dízimo ou oferta durante nossos cultos de celebração.</p>
-                <p className="font-semibold mt-4">Rua da Fé, 123</p>
-                <p>Cidade da Esperança</p>
+                <p className="font-semibold mt-4">Estrada de Ribamar, Km 2, Nº 5 - Aurora</p>
+                <p className="text-xs">(em frente do Centro do Pop da Prefeitura)</p>
+                <p>São Luís - Maranhão</p>
               </CardContent>
             </Card>
           </div>

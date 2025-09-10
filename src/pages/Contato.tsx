@@ -18,9 +18,13 @@ const Contato = () => {
           <div className="space-y-8">
             <div className="space-y-2">
               <h2 className="text-2xl font-bold">Informações de Contato</h2>
-              <div className="flex items-center gap-4">
-                <MapPin className="h-6 w-6 text-primary" />
-                <p>Rua da Fé, 123, Cidade da Esperança</p>
+              <div className="flex items-start gap-4">
+                <MapPin className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
+                <div>
+                  <p>Estrada de Ribamar, Km 2, Nº 5 - Aurora</p>
+                  <p className="text-sm text-muted-foreground">(em frente do Centro do Pop da Prefeitura)</p>
+                  <p className="text-sm text-muted-foreground">São Luís - Maranhão</p>
+                </div>
               </div>
               <div className="flex items-center gap-4">
                 <Phone className="h-6 w-6 text-primary" />
