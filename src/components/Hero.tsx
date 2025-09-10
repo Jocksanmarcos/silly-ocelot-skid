@@ -3,21 +3,21 @@ import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
-    <section className="relative w-full h-[60vh] md:h-[80vh] flex items-center justify-center text-white">
+    <section className="relative w-full h-[70vh] md:h-[80vh] flex items-center justify-center text-white overflow-hidden">
       {/* Background Image */}
       <div
-        className="absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-in-out hover:scale-105"
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1454942901704-3c44c11b2ad1?q=80&w=2070&auto=format&fit=crop')" }}
       />
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/50" />
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
       
       {/* Content */}
       <div className="relative z-10 container px-4 md:px-6 text-center space-y-6">
-        <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl/none">
+        <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl/none text-shadow-lg">
           Encontre o seu Lugar
         </h1>
-        <p className="max-w-[700px] mx-auto text-lg text-gray-200 md:text-xl">
+        <p className="max-w-[700px] mx-auto text-lg text-gray-200 md:text-xl text-shadow-md">
           Uma igreja onde cada pessoa é valorizada e encontra sua família em Cristo
         </p>
         <div className="flex flex-col gap-4 min-[400px]:flex-row justify-center">
