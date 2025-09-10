@@ -30,13 +30,18 @@ const fetchCells = async (): Promise<Cell[]> => {
   })) as any;
 };
 
-const fetchProfiles = async (): Promise<Profile[]> => {
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("id, full_name")
-    .order("full_name");
-  if (error) throw new Error(error.message);
-  return data as Profile[];
+const fetchProfilesForSelection = async (): Promise<Profile[]> => {
+  const { data, error } = await supabase.rpc('get_all_users_for_selection');
+    
+  if (error) {
+    console.error("Error fetching profiles for selection:", error);
+    throw new Error(error.message);
+  }
+  
+  return data.map((user: { id: string; display_name: string }) => ({
+      id: user.id,
+      full_name: user.display_name
+  })) as Profile[];
 };
 
 const CellsPage = () => {
@@ -46,7 +51,7 @@ const CellsPage = () => {
   const [selectedCell, setSelectedCell] = useState<Cell | null>(null);
 
   const { data: cells, isLoading: isLoadingCells } = useQuery<Cell[]>({ queryKey: ["cells"], queryFn: fetchCells });
-  const { data: profiles, isLoading: isLoadingProfiles } = useQuery<Profile[]>({ queryKey: ["profiles"], queryFn: fetchProfiles });
+  const { data: profiles, isLoading: isLoadingProfiles } = useQuery<Profile[]>({ queryKey: ["profilesForSelection"], queryFn: fetchProfilesForSelection });
 
   const mutation = useMutation({
     mutationFn: async (formData: { cell: CellFormValues; id?: string }) => {
