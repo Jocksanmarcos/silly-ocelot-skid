@@ -303,3 +303,14 @@ export const scaleSchema = z.object({
 });
 
 export type ScaleFormValues = z.infer<typeof scaleSchema>;
+
+// Schema para o Módulo de Sermões
+export const sermonSchema = z.object({
+  title: z.string().min(3, { message: "O título é obrigatório." }),
+  preacher_id: z.string().uuid({ message: "Selecione um pregador." }),
+  sermon_date: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Data inválida." }),
+  video_url: z.string().url({ message: "Por favor, insira uma URL de vídeo válida." }).optional().or(z.literal('')),
+  description: z.string().optional(),
+});
+
+export type SermonFormValues = z.infer<typeof sermonSchema>;

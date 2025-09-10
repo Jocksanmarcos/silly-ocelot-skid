@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Users, Calendar, DollarSign, LayoutDashboard, LogOut, Home, Network, HeartHandshake, GraduationCap, Handshake, TrendingUp, Archive, BookOpen, Settings, Music, LayoutTemplate, Building } from "lucide-react";
+import { Users, Calendar, DollarSign, LayoutDashboard, LogOut, Home, Network, HeartHandshake, GraduationCap, Handshake, TrendingUp, Archive, BookOpen, Settings, Music, LayoutTemplate, Building, Video } from "lucide-react";
 import { Button } from "./ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserProfile } from "@/hooks/useUserProfile";
@@ -22,6 +22,7 @@ const communityNavItems = [
 ];
 
 const resourcesNavItems = [
+  { href: "/dashboard/sermoes", icon: Video, label: "Sermões" },
   { href: "/dashboard/courses", icon: GraduationCap, label: "Ensino" },
   { href: "/dashboard/voluntariado", icon: Handshake, label: "Voluntariado" },
   { href: "/dashboard/aconselhamento", icon: HeartHandshake, label: "Aconselhamento" },
