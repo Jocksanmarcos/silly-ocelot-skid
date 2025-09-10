@@ -31,7 +31,10 @@ const fetchCells = async (): Promise<Cell[]> => {
 };
 
 const fetchProfiles = async (): Promise<Profile[]> => {
-  const { data, error } = await supabase.rpc('get_selectable_profiles');
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, full_name")
+    .order("full_name");
   if (error) throw new Error(error.message);
   return data as Profile[];
 };
