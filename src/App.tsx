@@ -67,6 +67,7 @@ import PedirAjudaPage from "./pages/portal/PedirAjudaPage";
 import CongregationsPage from "./pages/CongregationsPage";
 import SermonsPage from "./pages/SermonsPage";
 import PublicSermonsPage from "./pages/PublicSermonsPage";
+import BibliaPage from "./pages/BibliaPage";
 
 const queryClient = new QueryClient();
 
@@ -93,6 +94,7 @@ const App = () => (
                 <Route path="/semear" element={<Semear />} />
                 <Route path="/contato" element={<Contato />} />
                 <Route path="/pregacoes" element={<PublicSermonsPage />} />
+                <Route path="/biblia" element={<BibliaPage />} />
                 <Route path="/inscricao/:id" element={<RegistrationConfirmationPage />} />
                 <Route path="/payment/success" element={<PaymentStatusPage />} />
                 <Route path="/payment/failure" element={<PaymentStatusPage />} />

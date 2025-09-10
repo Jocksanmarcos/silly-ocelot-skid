@@ -89,10 +89,10 @@ const Header = () => {
 
           {/* Global Actions */}
           <Button variant="ghost" size="icon" asChild>
-            <a href="https://www.bible.com/pt" target="_blank" rel="noopener noreferrer">
+            <Link to="/biblia">
               <Book className="h-5 w-5" />
               <span className="sr-only">Consulta Bíblica</span>
-            </a>
+            </Link>
           </Button>
           <Button variant="ghost" size="icon">
             <Bell className="h-5 w-5" />
