@@ -88,9 +88,11 @@ const Header = () => {
           </NavigationMenu>
 
           {/* Global Actions */}
-          <Button variant="ghost" size="icon">
-            <Book className="h-5 w-5" />
-            <span className="sr-only">Consulta Bíblica</span>
+          <Button variant="ghost" size="icon" asChild>
+            <a href="https://www.bible.com/pt" target="_blank" rel="noopener noreferrer">
+              <Book className="h-5 w-5" />
+              <span className="sr-only">Consulta Bíblica</span>
+            </a>
           </Button>
           <Button variant="ghost" size="icon">
             <Bell className="h-5 w-5" />
