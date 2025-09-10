@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MemberFormValues, memberSchema } from "@/lib/schemas";
@@ -7,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Member, Family, Congregation } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import ImageCropperDialog from "./ImageCropperDialog";
 
 interface MemberFormProps {
   onSubmit: (data: MemberFormValues) => void;
@@ -22,6 +24,9 @@ const maritalStatuses = ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)
 const familyRoles = ["Pai/Responsável", "Mãe", "Cônjuge", "Filho(a)", "Outro"];
 
 const MemberForm = ({ onSubmit, defaultValues, isSubmitting, families, congregations, isSuperAdmin, userCongregationId }: MemberFormProps) => {
+  const [isCropperOpen, setIsCropperOpen] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
+
   const form = useForm<MemberFormValues>({
     resolver: zodResolver(memberSchema),
     defaultValues: {
@@ -39,76 +44,104 @@ const MemberForm = ({ onSubmit, defaultValues, isSubmitting, families, congregat
     },
   });
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.addEventListener('load', () => {
+        setImageToCrop(reader.result as string);
+        setIsCropperOpen(true);
+      });
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSaveCrop = (blob: Blob) => {
+    const croppedFile = new File([blob], "avatar.png", { type: "image/png" });
+    const fileList = new DataTransfer();
+    fileList.items.add(croppedFile);
+    form.setValue('avatar_file', fileList.files);
+    setIsCropperOpen(false);
+  };
+
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="avatar_file"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Foto</FormLabel>
-              <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={defaultValues?.avatar_url || undefined} />
-                  <AvatarFallback>{defaultValues?.first_name?.charAt(0) || '?'}{defaultValues?.last_name?.charAt(0) || ''}</AvatarFallback>
-                </Avatar>
-                <FormControl>
-                  <Input type="file" accept="image/*" onChange={(e) => field.onChange(e.target.files)} />
-                </FormControl>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField control={form.control} name="first_name" render={({ field }) => (<FormItem><FormLabel>Nome</FormLabel><FormControl><Input placeholder="Nome do membro" {...field} /></FormControl><FormMessage /></FormItem>)} />
-          <FormField control={form.control} name="last_name" render={({ field }) => (<FormItem><FormLabel>Sobrenome</FormLabel><FormControl><Input placeholder="Sobrenome do membro" {...field} /></FormControl><FormMessage /></FormItem>)} />
-        </div>
-        <FormField
-          control={form.control}
-          name="congregation_id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Missão/Sede</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!isSuperAdmin}>
-                <FormControl><SelectTrigger><SelectValue placeholder="Selecione a Missão/Sede" /></SelectTrigger></FormControl>
-                <SelectContent>{congregations.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField control={form.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="email@exemplo.com" {...field} /></FormControl><FormMessage /></FormItem>)} />
-        <FormField control={form.control} name="phone" render={({ field }) => (<FormItem><FormLabel>Telefone</FormLabel><FormControl><Input placeholder="(00) 00000-0000" {...field} /></FormControl><FormMessage /></FormItem>)} />
-        <FormField control={form.control} name="address" render={({ field }) => (<FormItem><FormLabel>Endereço</FormLabel><FormControl><Input placeholder="Rua, número, bairro..." {...field} /></FormControl><FormMessage /></FormItem>)} />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField control={form.control} name="membership_date" render={({ field }) => (<FormItem><FormLabel>Data de Admissão</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>)} />
-          <FormField control={form.control} name="date_of_birth" render={({ field }) => (<FormItem><FormLabel>Data de Nascimento</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>)} />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField control={form.control} name="marital_status" render={({ field }) => (<FormItem><FormLabel>Estado Civil</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger></FormControl><SelectContent>{maritalStatuses.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
-            <FormField control={form.control} name="family_role" render={({ field }) => (<FormItem><FormLabel>Vínculo Familiar</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger></FormControl><SelectContent>{familyRoles.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
-        </div>
-        <FormField
+    <>
+      <ImageCropperDialog
+        isOpen={isCropperOpen}
+        onClose={() => setIsCropperOpen(false)}
+        imageSrc={imageToCrop}
+        onSave={handleSaveCrop}
+      />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
             control={form.control}
-            name="family_id"
+            name="avatar_file"
+            render={() => (
+              <FormItem>
+                <FormLabel>Foto</FormLabel>
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage src={defaultValues?.avatar_url || undefined} />
+                    <AvatarFallback>{defaultValues?.first_name?.charAt(0) || '?'}{defaultValues?.last_name?.charAt(0) || ''}</AvatarFallback>
+                  </Avatar>
+                  <FormControl>
+                    <Input type="file" accept="image/*" onChange={handleFileChange} />
+                  </FormControl>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField control={form.control} name="first_name" render={({ field }) => (<FormItem><FormLabel>Nome</FormLabel><FormControl><Input placeholder="Nome do membro" {...field} /></FormControl><FormMessage /></FormItem>)} />
+            <FormField control={form.control} name="last_name" render={({ field }) => (<FormItem><FormLabel>Sobrenome</FormLabel><FormControl><Input placeholder="Sobrenome do membro" {...field} /></FormControl><FormMessage /></FormItem>)} />
+          </div>
+          <FormField
+            control={form.control}
+            name="congregation_id"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Família</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl><SelectTrigger><SelectValue placeholder="Associe a uma família" /></SelectTrigger></FormControl>
-                  <SelectContent>{families.map(f => <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>)}</SelectContent>
+                <FormLabel>Missão/Sede</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!isSuperAdmin}>
+                  <FormControl><SelectTrigger><SelectValue placeholder="Selecione a Missão/Sede" /></SelectTrigger></FormControl>
+                  <SelectContent>{congregations.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                 </Select>
                 <FormMessage />
               </FormItem>
             )}
           />
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Salvando..." : "Salvar"}
-        </Button>
-      </form>
-    </Form>
+          <FormField control={form.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="email@exemplo.com" {...field} /></FormControl><FormMessage /></FormItem>)} />
+          <FormField control={form.control} name="phone" render={({ field }) => (<FormItem><FormLabel>Telefone</FormLabel><FormControl><Input placeholder="(00) 00000-0000" {...field} /></FormControl><FormMessage /></FormItem>)} />
+          <FormField control={form.control} name="address" render={({ field }) => (<FormItem><FormLabel>Endereço</FormLabel><FormControl><Input placeholder="Rua, número, bairro..." {...field} /></FormControl><FormMessage /></FormItem>)} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField control={form.control} name="membership_date" render={({ field }) => (<FormItem><FormLabel>Data de Admissão</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>)} />
+            <FormField control={form.control} name="date_of_birth" render={({ field }) => (<FormItem><FormLabel>Data de Nascimento</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>)} />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField control={form.control} name="marital_status" render={({ field }) => (<FormItem><FormLabel>Estado Civil</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger></FormControl><SelectContent>{maritalStatuses.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="family_role" render={({ field }) => (<FormItem><FormLabel>Vínculo Familiar</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger></FormControl><SelectContent>{familyRoles.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+          </div>
+          <FormField
+              control={form.control}
+              name="family_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Família</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl><SelectTrigger><SelectValue placeholder="Associe a uma família" /></SelectTrigger></FormControl>
+                    <SelectContent>{families.map(f => <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>)}</SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Salvando..." : "Salvar"}
+          </Button>
+        </form>
+      </Form>
+    </>
   );
 };
 
