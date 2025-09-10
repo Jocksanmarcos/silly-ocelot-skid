@@ -1,7 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { QrCode, Landmark, Building } from "lucide-react";
+import PixQRCode from "@/components/PixQRCode";
 
 const Semear = () => {
+  const pixCnpj = "10.472.815/0001-27";
+
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
       <div className="container px-4 md:px-6">
@@ -27,10 +30,12 @@ const Semear = () => {
                 <CardDescription>Rápido e seguro</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
-                <div className="w-40 h-40 bg-gray-200 mx-auto flex items-center justify-center rounded-md">
-                  <p className="text-sm text-gray-500">QR Code aqui</p>
-                </div>
-                <p className="text-sm text-center"><strong>Chave:</strong> 12.345.678/0001-90 (CNPJ)</p>
+                <PixQRCode 
+                  pixKey={pixCnpj}
+                  merchantName="CBN Kerigma"
+                  merchantCity="BRASILIA"
+                />
+                <p className="text-sm text-center"><strong>Chave:</strong> {pixCnpj} (CNPJ)</p>
               </CardContent>
             </Card>
             <Card>
@@ -42,7 +47,7 @@ const Semear = () => {
                 <p><strong>Banco:</strong> Banco Exemplo (001)</p>
                 <p><strong>Agência:</strong> 1234</p>
                 <p><strong>Conta Corrente:</strong> 56789-0</p>
-                <p><strong>CNPJ:</strong> 12.345.678/0001-90</p>
+                <p><strong>CNPJ:</strong> {pixCnpj}</p>
                 <p><strong>Favorecido:</strong> CBN Kerigma</p>
               </CardContent>
             </Card>
