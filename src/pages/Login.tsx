@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import ReCAPTCHA from 'react-google-recaptcha';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthProvider';
 import { loginSchema, LoginFormValues } from '@/lib/schemas';
@@ -9,14 +10,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, AlertTriangle } from 'lucide-react';
 import { showError, showSuccess } from '@/utils/toast';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const Login = () => {
   const { session } = useAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
+
+  const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -25,11 +30,30 @@ const Login = () => {
 
   const onSubmit = async (data: LoginFormValues) => {
     setIsSubmitting(true);
+    
+    if (!recaptchaSiteKey) {
+      showError("Configuração do reCAPTCHA está faltando. Contate o administrador.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const token = recaptchaRef.current?.getValue();
+
+    if (!token) {
+      showError("Por favor, complete o reCAPTCHA.");
+      setIsSubmitting(false);
+      return;
+    }
 
     const { error } = await supabase.auth.signInWithPassword({
       email: data.email,
       password: data.password,
+      options: {
+        captchaToken: token,
+      },
     });
+
+    recaptchaRef.current?.reset();
 
     if (error) {
       showError(error.message);
@@ -95,7 +119,23 @@ const Login = () => {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
+              <div className="flex justify-center">
+                {recaptchaSiteKey ? (
+                  <ReCAPTCHA
+                    ref={recaptchaRef}
+                    sitekey={recaptchaSiteKey}
+                  />
+                ) : (
+                  <Alert variant="destructive">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>Erro de Configuração</AlertTitle>
+                    <AlertDescription>
+                      A chave do site reCAPTCHA não foi configurada. Por favor, adicione VITE_RECAPTCHA_SITE_KEY ao seu ambiente.
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+              <Button type="submit" className="w-full" disabled={isSubmitting || !recaptchaSiteKey}>
                 {isSubmitting ? "Entrando..." : "Entrar"}
               </Button>
             </form>
