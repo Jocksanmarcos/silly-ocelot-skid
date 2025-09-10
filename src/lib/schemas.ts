@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+export const loginSchema = z.object({
+  email: z.string().email({ message: "Por favor, insira um email válido." }),
+  password: z.string().min(6, { message: "A senha deve ter pelo menos 6 caracteres." }),
+});
+
+export type LoginFormValues = z.infer<typeof loginSchema>;
+
 export const memberSchema = z.object({
   first_name: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres." }),
   last_name: z.string().min(2, { message: "O sobrenome deve ter pelo menos 2 caracteres." }),

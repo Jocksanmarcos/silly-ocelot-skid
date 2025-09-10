@@ -1,14 +1,58 @@
-import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
+import { useState, useRef } from 'react';
+import { useNavigate, Navigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import ReCAPTCHA from 'react-google-recaptcha';
 import { supabase } from '@/integrations/supabase/client';
-import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthProvider';
+import { loginSchema, LoginFormValues } from '@/lib/schemas';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useTheme } from '@/contexts/ThemeProvider';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Eye, EyeOff } from 'lucide-react';
+import { showError, showSuccess } from '@/utils/toast';
 
 const Login = () => {
   const { session } = useAuth();
-  const { theme } = useTheme();
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
+
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '' },
+  });
+
+  const onSubmit = async (data: LoginFormValues) => {
+    setIsSubmitting(true);
+    const token = recaptchaRef.current?.getValue();
+
+    if (!token) {
+      showError("Por favor, complete o reCAPTCHA.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: data.email,
+      password: data.password,
+      options: {
+        captchaToken: token,
+      },
+    });
+
+    recaptchaRef.current?.reset();
+
+    if (error) {
+      showError(error.message);
+    } else {
+      showSuccess("Login realizado com sucesso!");
+      navigate('/dashboard');
+    }
+    setIsSubmitting(false);
+  };
 
   if (session) {
     return <Navigate to="/portal" replace />;
@@ -26,48 +70,56 @@ const Login = () => {
           <CardDescription>Acesse o painel de gestão da sua comunidade.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Auth
-            supabaseClient={supabase}
-            appearance={{
-              theme: ThemeSupa,
-              variables: {
-                dark: {
-                  colors: {
-                    inputText: '#FFFFFF',
-                    inputLabelText: '#9CA3AF',
-                  },
-                },
-              },
-            }}
-            providers={[]}
-            theme={theme === 'system' ? undefined : theme}
-            localization={{
-              variables: {
-                sign_in: {
-                  email_label: 'Endereço de e-mail',
-                  password_label: 'Sua senha',
-                  email_input_placeholder: 'Seu endereço de e-mail',
-                  password_input_placeholder: 'Sua senha',
-                  button_label: 'Entrar',
-                  link_text: 'Já tem uma conta? Entre',
-                },
-                sign_up: {
-                    email_label: 'Endereço de e-mail',
-                    password_label: 'Crie uma senha',
-                    email_input_placeholder: 'Seu endereço de e-mail',
-                    password_input_placeholder: 'Crie uma senha',
-                    button_label: 'Registrar',
-                    link_text: 'Não tem uma conta? Registre-se',
-                },
-                forgotten_password: {
-                    email_label: 'Endereço de e-mail',
-                    email_input_placeholder: 'Seu endereço de e-mail',
-                    button_label: 'Enviar instruções de recuperação',
-                    link_text: 'Esqueceu sua senha?',
-                },
-              },
-            }}
-          />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="seu@email.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Senha</FormLabel>
+                    <div className="relative">
+                      <FormControl>
+                        <Input type={showPassword ? 'text' : 'password'} placeholder="Sua senha" {...field} />
+                      </FormControl>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-0 right-0 h-full px-3"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-center">
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? "Entrando..." : "Entrar"}
+              </Button>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>
