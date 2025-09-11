@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { CalendarEvent } from '@/types';
@@ -17,10 +17,20 @@ import { showSuccess, showError } from '@/utils/toast';
 import EventForm from '@/components/agenda/EventForm';
 import { useAuth } from '@/contexts/AuthProvider';
 
-const fetchAllEvents = async (): Promise<CalendarEvent[]> => {
+const fetchSupabaseEvents = async (): Promise<CalendarEvent[]> => {
   const { data, error } = await supabase.from("calendar_events").select("*");
   if (error) throw new Error(error.message);
   return data;
+};
+
+const fetchGoogleEvents = async (): Promise<any[]> => {
+  const { data, error } = await supabase.functions.invoke('fetch-google-calendar-events');
+  if (error) {
+    console.error("Failed to fetch Google Calendar events:", error.message);
+    showError("Não foi possível carregar os eventos do Google Calendar.");
+    return [];
+  }
+  return data || [];
 };
 
 const PastoralAgendaPage = () => {
@@ -30,10 +40,17 @@ const PastoralAgendaPage = () => {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [selectedEventInfo, setSelectedEventInfo] = useState<Partial<CalendarEventFormValues> & { id?: string } | null>(null);
 
-  const { data: events, isLoading } = useQuery({
+  const { data: supabaseEvents, isLoading: isLoadingSupabase } = useQuery({
     queryKey: ["allCalendarEvents"],
-    queryFn: fetchAllEvents,
+    queryFn: fetchSupabaseEvents,
   });
+
+  const { data: googleEvents, isLoading: isLoadingGoogle } = useQuery({
+    queryKey: ["googleCalendarEvents"],
+    queryFn: fetchGoogleEvents,
+  });
+
+  const isLoading = isLoadingSupabase || isLoadingGoogle;
 
   const mutation = useMutation({
     mutationFn: async (formData: { event: CalendarEventFormValues; id?: string }) => {
@@ -78,6 +95,10 @@ const PastoralAgendaPage = () => {
   };
 
   const handleEventClick = (clickInfo: EventClickArg) => {
+    if (clickInfo.event.extendedProps.googleEvent) {
+      showError("Eventos do Google Calendar são somente leitura e não podem ser editados aqui.");
+      return;
+    }
     const event = clickInfo.event;
     setSelectedEventInfo({
       id: event.id,
@@ -93,6 +114,11 @@ const PastoralAgendaPage = () => {
   };
   
   const handleEventChange = (changeInfo: EventChangeArg) => {
+    if (changeInfo.event.extendedProps.googleEvent) {
+        showError("Eventos do Google Calendar não podem ser movidos aqui.");
+        changeInfo.revert();
+        return;
+    }
     mutation.mutate({
       id: changeInfo.event.id,
       event: {
@@ -111,19 +137,24 @@ const PastoralAgendaPage = () => {
     mutation.mutate({ event: data, id: selectedEventInfo?.id });
   };
 
-  const formattedEvents = events?.map(event => ({
-    id: event.id,
-    title: event.title,
-    start: event.start_time,
-    end: event.end_time,
-    allDay: event.is_all_day,
-    extendedProps: {
-        description: event.description,
-        visibility: event.visibility,
-        category: event.category,
-    },
-    color: event.visibility === 'private' ? '#6b7280' : (event.category === 'Feriado' ? '#ef4444' : '#3b82f6'),
-  }));
+  const formattedEvents = useMemo(() => {
+    const supabaseFormatted = supabaseEvents?.map(event => ({
+      id: event.id,
+      title: event.title,
+      start: event.start_time,
+      end: event.end_time,
+      allDay: event.is_all_day,
+      extendedProps: {
+          description: event.description,
+          visibility: event.visibility,
+          category: event.category,
+          googleEvent: false,
+      },
+      color: event.visibility === 'private' ? '#6b7280' : (event.category === 'Feriado' ? '#ef4444' : '#3b82f6'),
+    })) || [];
+
+    return [...supabaseFormatted, ...(googleEvents || [])];
+  }, [supabaseEvents, googleEvents]);
 
   return (
     <div className="space-y-6">
