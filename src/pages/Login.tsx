@@ -1,8 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthProvider';
 import { loginSchema, LoginFormValues } from '@/lib/schemas';
@@ -18,36 +17,18 @@ const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
 
-  const onSubmit = useCallback(async (data: LoginFormValues) => {
+  const onSubmit = async (data: LoginFormValues) => {
     setIsSubmitting(true);
-
-    if (!executeRecaptcha) {
-      showError("reCAPTCHA não está pronto. Tente novamente em alguns segundos.");
-      setIsSubmitting(false);
-      return;
-    }
-
-    const token = await executeRecaptcha('login');
-
-    if (!token) {
-      showError("Não foi possível obter o token do reCAPTCHA. Tente novamente.");
-      setIsSubmitting(false);
-      return;
-    }
 
     const { error } = await supabase.auth.signInWithPassword({
       email: data.email,
       password: data.password,
-      options: {
-        captchaToken: token,
-      },
     });
 
     if (error) {
@@ -57,7 +38,7 @@ const Login = () => {
       navigate('/dashboard');
     }
     setIsSubmitting(false);
-  }, [executeRecaptcha, navigate]);
+  };
 
   if (session) {
     return <Navigate to="/portal" replace />;
