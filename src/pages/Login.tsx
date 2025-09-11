@@ -1,8 +1,8 @@
-import { useState, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import ReCAPTCHA from 'react-google-recaptcha';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthProvider';
 import { loginSchema, LoginFormValues } from '@/lib/schemas';
@@ -10,37 +10,34 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Eye, EyeOff, AlertTriangle } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { showError, showSuccess } from '@/utils/toast';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const Login = () => {
   const { session } = useAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
-
-  const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
 
-  const onSubmit = async (data: LoginFormValues) => {
+  const onSubmit = useCallback(async (data: LoginFormValues) => {
     setIsSubmitting(true);
-    
-    if (!recaptchaSiteKey) {
-      showError("Configuração do reCAPTCHA está faltando. Contate o administrador.");
+
+    if (!executeRecaptcha) {
+      showError("reCAPTCHA não está pronto. Tente novamente em alguns segundos.");
       setIsSubmitting(false);
       return;
     }
 
-    const token = recaptchaRef.current?.getValue();
+    const token = await executeRecaptcha('login');
 
     if (!token) {
-      showError("Por favor, complete o reCAPTCHA.");
+      showError("Não foi possível obter o token do reCAPTCHA. Tente novamente.");
       setIsSubmitting(false);
       return;
     }
@@ -53,8 +50,6 @@ const Login = () => {
       },
     });
 
-    recaptchaRef.current?.reset();
-
     if (error) {
       showError(error.message);
     } else {
@@ -62,7 +57,7 @@ const Login = () => {
       navigate('/dashboard');
     }
     setIsSubmitting(false);
-  };
+  }, [executeRecaptcha, navigate]);
 
   if (session) {
     return <Navigate to="/portal" replace />;
@@ -81,7 +76,7 @@ const Login = () => {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="email"
@@ -119,23 +114,7 @@ const Login = () => {
                   </FormItem>
                 )}
               />
-              <div className="flex justify-center">
-                {recaptchaSiteKey ? (
-                  <ReCAPTCHA
-                    ref={recaptchaRef}
-                    sitekey={recaptchaSiteKey}
-                  />
-                ) : (
-                  <Alert variant="destructive">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertTitle>Erro de Configuração</AlertTitle>
-                    <AlertDescription>
-                      A chave do site reCAPTCHA não foi configurada. Por favor, adicione VITE_RECAPTCHA_SITE_KEY ao seu ambiente.
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </div>
-              <Button type="submit" className="w-full" disabled={isSubmitting || !recaptchaSiteKey}>
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? "Entrando..." : "Entrar"}
               </Button>
             </form>
